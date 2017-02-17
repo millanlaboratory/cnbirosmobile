@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package>
+  <name>cnbiros_core</name>
+  <version>0.0.1</version>
+  <description>CNBIROS Core library</description>
+  <author email="luca.tonin@epfl.ch">Luca Tonin</author>
+  <maintainer email="luca.tonin@epfl.ch">Luca Tonin</maintainer>
+
+  <license>GPLv3</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roscpp</build_depend>
+  <run_depend>roscpp</run_depend>
+
+  <build_depend>cnbiros_messages</build_depend>
+  <run_depend>cnbiros_messages</run_depend>
+  <build_depend>message_generation</build_depend>
+  <run_depend>message_runtime</run_depend>
+
+
+</package>
