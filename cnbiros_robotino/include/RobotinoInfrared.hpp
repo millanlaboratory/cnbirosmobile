@@ -14,18 +14,26 @@
 namespace cnbiros {
 	namespace robotino {
 
-class RobotinoInfrared : public core::Sensor {
-	
+
+
+class RobotinoInfrared : public core::Sensor, public  rec::robotino::api2::DistanceSensorArray {
+
 	public:
 		RobotinoInfrared(std::string hostname, 
 						 std::string name=DEFAULT_INFRARED_NAME);
 		virtual ~RobotinoInfrared(void) {};
+		
+		void distancesChangedEvent(const float* distances, unsigned int size);
 
 		void Read(void);
 	
 	protected:
 		RobotinoCom* com_;
-		rec::robotino::api2::DistanceSensorArray infraredarray_;
+
+	private:
+		grid_map::GridMap grid_;
+		grid_map_msgs::GridMap msg_;
+		
 
 };
 

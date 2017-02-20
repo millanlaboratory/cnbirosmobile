@@ -29,7 +29,7 @@ Visualization Manager:
   Class: ""
   Displays:
     - Class: rviz/Axes
-      Enabled: false
+      Enabled: true
       Length: 0.2
       Name: Axes
       Radius: 0.01
@@ -39,10 +39,10 @@ Visualization Manager:
       Autocompute Intensity Bounds: true
       Class: grid_map_rviz_plugin/GridMap
       Color: 200; 200; 200
-      Color Layer: elevation
+      Color Layer: infrared
       Color Transformer: GridMapLayer
-      Enabled: false
-      Height Layer: elevation
+      Enabled: true
+      Height Layer: infrared
       Height Transformer: GridMapLayer
       History Length: 1
       Max Color: 255; 255; 255
@@ -51,7 +51,7 @@ Visualization Manager:
       Min Intensity: 0
       Name: GridMap
       Show Grid Lines: true
-      Topic: /grid_map_simple_demo/grid_map
+      Topic: /robotino_infrared
       Unreliable: false
       Use Rainbow: true
       Value: false
@@ -159,7 +159,7 @@ Visualization Manager:
   Enabled: true
   Global Options:
     Background Color: 255; 255; 255
-    Fixed Frame: map
+    Fixed Frame: robot
     Frame Rate: 30
   Name: root
   Tools:
