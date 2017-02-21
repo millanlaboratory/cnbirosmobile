@@ -7,9 +7,14 @@ namespace cnbiros {
 	namespace robotino {
 
 Robotino:: Robotino(std::string hostname, 
+					unsigned int frequency,
 					std::string name, 
 					std::string id) : 
 					core::Robot(core::Robot::Type::Robotino, name, id) {
+
+	// Initialize ros parameters
+	this->frequency_ = frequency; 
+	this->rosrate_ 	 = new ros::Rate(frequency);
 	
 	// Initialize motor velocities
 	this->vx_ = 0.0f;
@@ -43,14 +48,16 @@ void Robotino::velocityCallback(const cnbiros_messages::RobotVelocity& msg) {
 	ROS_INFO("New velocity requested: vx=%f, vy=%f, vo=%f", this->vx_, this->vy_, this->vo_);
 }
 
-int Robotino::Run(void) {
-	this->omnidrive_.setVelocity(this->vx_, this->vy_, this->vo_);	
-	this->com_->processEvents();
-	return 0;
-}
+void Robotino::Run(void) {
+	
+	while(this->rosnode_->ok()) {
 
-int Robotino::Stop(void) {
-	return 0;
+		this->omnidrive_.setVelocity(this->vx_, this->vy_, this->vo_);	
+		this->com_->processEvents();
+		this->rosrate_->sleep();
+		
+		ros::spinOnce();
+	}
 }
 
 	}

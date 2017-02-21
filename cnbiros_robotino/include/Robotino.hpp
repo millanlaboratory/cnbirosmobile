@@ -5,17 +5,17 @@
 #include "Robot.hpp"
 #include "RobotinoCom.hpp"
 
+
 namespace cnbiros {
 	namespace robotino {
 
 class Robotino : public core::Robot {
 	public:	
-		Robotino(std::string hostname, 
+		Robotino(std::string hostname, unsigned int frequency, 
 				 std::string name="robotino", 
 				 std::string id="00000001");
 		~Robotino(void);
-		int Run (void);
-		int Stop(void);
+		void Run (void);
 
 		bool IsConnected(void);
 

@@ -15,6 +15,8 @@ void RobotinoCom::Connect(std::string hostname) {
 
 	// Set connection address
 	this->setAddress(hostname.c_str());
+	
+	this->setAutoReconnectEnabled(true);
 
 	// Blocking function
 	this->connectToServer();
