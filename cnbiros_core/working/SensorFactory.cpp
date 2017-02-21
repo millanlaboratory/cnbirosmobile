@@ -1,3 +1,4 @@
+/* TO RE-THINK ABOUT 
 #ifndef SENSORFACTORY_CPP
 #define SENSORFACTORY_CPP
 
@@ -29,3 +30,4 @@ Sensor* SensorFactory::CreateSensor(Sensor::Type type) {
 }
 
 #endif
+*/

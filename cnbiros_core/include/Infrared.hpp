@@ -15,7 +15,7 @@ class Infrared : public Sensor {
 		void SetNumSensors(unsigned int nsensors);
 		unsigned int GetNumSensors(void);
 
-		virtual void Read(void) {};
+		//virtual void Process(void) {};
 
 
 	protected:

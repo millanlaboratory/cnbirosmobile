@@ -1,3 +1,4 @@
+/* TO RE-THINK ABOUT 
 #ifndef SENSORFACTORY_HPP
 #define SENSORFACTORY_HPP
 
@@ -20,3 +21,4 @@ class SensorFactory {
 }
 
 #endif
+*/

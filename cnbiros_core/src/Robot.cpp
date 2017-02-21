@@ -7,10 +7,12 @@ namespace cnbiros {
 	namespace core {
 
 Robot::Robot(unsigned int type, std::string name, std::string id) {
-	this->type_ = type;
-	this->name_ = name;
-	this->identifier_ = id;
-	//this->isconnected_ = false;
+	this->type_ 		= type;
+	this->name_ 		= name;
+	this->identifier_	= id;
+	this->rosnode_ 		= nullptr;
+	this->rosrate_ 	 	= nullptr;
+	this->frequency_ 	= 1;
 }
 
 unsigned int Robot::GetType(void) {
@@ -33,12 +35,23 @@ void Robot::SetIdentifier(std::string id) {
 	this->identifier_ = id;
 }
 
-//bool Robot::IsConnected(void) {
-//	return this->isconnected_;
-//}
+void Robot::Register(ros::NodeHandle* node) {
+	this->rosnode_ = node;
+}
 
-void Robot::Subscribe(ros::NodeHandle* node, std::string topic) {
-	this->rossub_ = node->subscribe(topic, 1000, &Robot::velocityCallback, this);
+bool Robot::IsRegistered(void) {
+	if(this->rosnode_ != nullptr)
+		return true;
+	else
+		return false;
+}
+
+void Robot::Subscribe(std::string topic) {
+	if(this->IsRegistered())
+		this->rossub_ = this->rosnode_->subscribe(topic, CNBIROS_MESSAGE_BUFFER, &Robot::velocityCallback, this);
+	else
+		ROS_ERROR("Can't subscribe: object is not registered to any node");
+	
 }
 
 

@@ -4,7 +4,8 @@
 #include <string>
 #include <ros/ros.h>
 
-#include "cnbiros_messages/SensorMap.h"
+#include <grid_map_ros/grid_map_ros.hpp>
+#include <grid_map_msgs/GridMap.h>
 
 #define SENSOR_BUFFER_SIZE 1000
 
@@ -16,10 +17,17 @@ class Sensor {
 	public:
 		Sensor(std::string name);
 		virtual ~Sensor(void);
-		void Advertise(ros::NodeHandle* node, std::string topic);
+		
+		void Register(ros::NodeHandle* node);
+		bool IsRegistered(void);
+		void Advertise(std::string topic);
 
-		virtual void Read(void) = 0;
 
+		virtual void Process(void) = 0;
+	
+	protected:
+		void SetGridParameters(std::string layer, std::string frameid);
+		void SetGridDimensions(float xdim, float ydim, float resolution);
 
 	public:
 		enum Type {
@@ -30,12 +38,23 @@ class Sensor {
 		};
 
 	protected:
-
+		unsigned int 	frequency_;
+		
 		// ros related members
 		ros::NodeHandle* rosnode_;
 		std::string 	 rostopic_;
 		std::string 	 rosname_;
 		ros::Publisher 	 rospub_;
+		ros::Rate* 		 rosrate_;
+
+		// grid related members
+		float grid_xdim_;
+		float grid_ydim_;
+		float grid_resolution_;
+		std::string grid_base_layer_;
+		std::string grid_base_frameid_;
+		grid_map::GridMap 		grid_;
+		grid_map_msgs::GridMap 	msg_;
 
 };
 	}
