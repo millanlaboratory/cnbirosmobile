@@ -3,19 +3,20 @@
 
 #include <string>
 #include <ros/ros.h>
-#include "cnbiros_messages/RobotVelocity.h"
 
-#define CNBIROS_MESSAGE_BUFFER 1000
+#include "Flags.hpp"
+#include "cnbiros_messages/RobotVelocity.h"
 
 namespace cnbiros {
 	namespace core {
 
 class Robot {
 	public:
-		Robot(unsigned int type, std::string name, std::string id);
-		virtual ~Robot(void){};
+		Robot(unsigned int type, std::string name="", std::string id="");
+		virtual ~Robot(void);
 
 		unsigned int GetType(void);
+		void SetType(unsigned int type);
 		
 		std::string GetName(void);
 		void SetName(std::string name);
@@ -48,6 +49,7 @@ class Robot {
 		unsigned int 	frequency_;
 
 		// ros related members
+		std::string 	 topic_;
 		ros::NodeHandle* rosnode_;
 		ros::Subscriber  rossub_;
 		ros::Rate* 		 rosrate_;

@@ -7,7 +7,7 @@
 #include <grid_map_ros/grid_map_ros.hpp>
 #include <grid_map_msgs/GridMap.h>
 
-#define SENSOR_BUFFER_SIZE 1000
+#include "Flags.hpp"
 
 namespace cnbiros {
 	namespace core {
@@ -15,30 +15,20 @@ namespace cnbiros {
 class Sensor {
 
 	public:
-		Sensor(std::string name);
+		Sensor(float frequency=CNBIROS_SENSOR_NODE_FREQUENCY);
 		virtual ~Sensor(void);
 		
 		void Register(ros::NodeHandle* node);
 		bool IsRegistered(void);
 		void Advertise(std::string topic);
 
-
+		void SetGrid(std::string layer, std::string frame);
+		void SetGrid(float x, float y, float r);
+		
 		virtual void Process(void) = 0;
-	
-	protected:
-		void SetGridParameters(std::string layer, std::string frameid);
-		void SetGridDimensions(float xdim, float ydim, float resolution);
-
-	public:
-		enum Type {
-			Infrared,
-			Sonar,
-			Kinect,
-			Camera
-		};
 
 	protected:
-		unsigned int 	frequency_;
+		float 	frequency_;
 		
 		// ros related members
 		ros::NodeHandle* rosnode_;
@@ -48,13 +38,10 @@ class Sensor {
 		ros::Rate* 		 rosrate_;
 
 		// grid related members
-		float grid_xdim_;
-		float grid_ydim_;
-		float grid_resolution_;
-		std::string grid_base_layer_;
-		std::string grid_base_frameid_;
+		std::string layer_;
+		std::string frameid_;
 		grid_map::GridMap 		grid_;
-		grid_map_msgs::GridMap 	msg_;
+		grid_map_msgs::GridMap 	grid_msg_;
 
 };
 	}
