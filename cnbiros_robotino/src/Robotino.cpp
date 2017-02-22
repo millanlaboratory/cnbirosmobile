@@ -7,10 +7,8 @@ namespace cnbiros {
 	namespace robotino {
 
 Robotino:: Robotino(std::string hostname, 
-					unsigned int frequency,
-					std::string name, 
-					std::string id) : 
-					core::Robot(core::Robot::Type::Robotino, name, id) {
+					float frequency) :
+					core::Robot(core::Robot::Type::Robotino) {
 
 	// Initialize ros parameters
 	this->frequency_ = frequency; 
@@ -22,9 +20,9 @@ Robotino:: Robotino(std::string hostname,
 	this->vo_ = 0.0f;
 
 	// Initialize connection to the base
-	this->com_ = new RobotinoCom(name);
+	this->com_ = new RobotinoCom("robotino");
 
-	ROS_INFO("%s tries to connect to %s...", name.c_str(), hostname.c_str());
+	ROS_INFO("Robotino tries to connect to %s...", hostname.c_str());
 	this->com_->Connect(hostname);
 
 	// If connected associate omnidrive to comid
@@ -38,7 +36,6 @@ Robotino::~Robotino(void) {
 bool Robotino::IsConnected(void) {
 	return this->com_->IsConnected();
 }
-
 
 void Robotino::velocityCallback(const cnbiros_messages::RobotVelocity& msg) {
 

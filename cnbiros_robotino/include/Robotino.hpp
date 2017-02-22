@@ -5,15 +5,12 @@
 #include "Robot.hpp"
 #include "RobotinoCom.hpp"
 
-
 namespace cnbiros {
 	namespace robotino {
 
 class Robotino : public core::Robot {
 	public:	
-		Robotino(std::string hostname, unsigned int frequency, 
-				 std::string name="robotino", 
-				 std::string id="00000001");
+		Robotino(std::string hostname, float frequency);
 		~Robotino(void);
 		void Run (void);
 
@@ -30,11 +27,7 @@ class Robotino : public core::Robot {
 		rec::robotino::api2::OmniDrive omnidrive_;
 };
 
-
-
 	}
 }
-
-
 
 #endif

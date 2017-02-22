@@ -39,10 +39,30 @@ Visualization Manager:
       Autocompute Intensity Bounds: true
       Class: grid_map_rviz_plugin/GridMap
       Color: 160; 160; 164
-      Color Layer: raw
+      Color Layer: fusion
       Color Transformer: GridMapLayer
       Enabled: true
-      Height Layer: raw
+      Height Layer: fusion
+      Height Transformer: GridMapLayer
+      History Length: 1
+      Max Color: 160; 160; 164
+      Max Intensity: 1
+      Min Color: 0; 0; 0
+      Min Intensity: 0
+      Name: Fusion
+      Show Grid Lines: true
+      Topic: /sensors_fusion
+      Unreliable: false
+      Use Rainbow: true
+      Value: false
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Class: grid_map_rviz_plugin/GridMap
+      Color: 160; 160; 164
+      Color Layer: infrared
+      Color Transformer: GridMapLayer
+      Enabled: false
+      Height Layer: infrared
       Height Transformer: GridMapLayer
       History Length: 1
       Max Color: 160; 160; 164
@@ -51,7 +71,7 @@ Visualization Manager:
       Min Intensity: 0
       Name: Infrared
       Show Grid Lines: true
-      Topic: /robotino_infrared
+      Topic: /sensor_infrared
       Unreliable: false
       Use Rainbow: true
       Value: false

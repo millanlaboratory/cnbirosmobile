@@ -1,16 +1,34 @@
 <launch>
+	<!-- Generic parameters: base_link -->
+	<param name="hostname" value="192.168.1.3" />
 
-   <node name="robotino_node_main" pkg="cnbiros_robotino" type="robotino_node_main" output="screen" >
-      <param name="hostname" value="192.168.1.3" />
-      <param name="topicname" value="/robotino_velocity" />
-      <param name="frequency" value="10" />
-   </node>
-   <node name="robotino_node_infrared" pkg="cnbiros_robotino" type="robotino_node_infrared" output="screen" >
-      <param name="topicname" value="/robotino_infrared" />
-      <param name="frequency" value="10" />
-      <param name="decay" value="1" />
-   </node>
+	<!-- Generic parameters: Grid map -->
+	<param name="grid_x" value="2.0"  type="double" />
+	<param name="grid_y" value="2.0"  type="double" />
+	<param name="grid_r" value="0.02" type="double" />
+	<param name="grid_frame" value="robot" />
+
+	<!-- Generic parameters: nodes -->
+	<param name="frequency" value="10.0" />
+
+	<!-- Robotino base_link node -->
+	<node name="robotino_node_base" pkg="cnbiros_robotino" type="robotino_node_base" output="screen" >
+		<param name="topic" value="/command_velocity" />
+	</node>
    
-   <!-- Launch RViz with the demo configuration -->
+	<!-- Robotino infrared node -->
+	<node name="robotino_node_infrared" pkg="cnbiros_robotino" type="robotino_node_infrared" output="screen" >
+		<param name="topic" value="/sensor_infrared" />
+		<param name="grid_layer" value="infrared" />
+		<param name="decay" value="1" type="double"/>
+	</node>
+   
+	<!-- Robotino fusion node -->
+	<node name="robotino_node_fusion" pkg="cnbiros_robotino" type="robotino_node_fusion" output="screen" >
+		<param name="topic" value="/sensors_fusion" />
+		<param name="grid_layer" value="fusion" />
+	</node>
+
+   <!-- Launch rviz -->
    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find cnbiros_robotino)/rviz/grid_map.rviz" />
 </launch>

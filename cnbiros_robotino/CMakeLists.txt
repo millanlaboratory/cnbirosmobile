@@ -37,12 +37,16 @@ add_library(cnbiros_robotino
 target_link_libraries(cnbiros_robotino ${catkin_LIBRARIES} cnbiros_core ${REC_ROBOTINO_API2_LIBRARY} ${Eigen3_LIBRARY} )
 
 # Robotino node
-add_executable(robotino_node_main src/robotino_node_main.cpp)
-target_link_libraries(robotino_node_main cnbiros_robotino ${Eigen3_LIBRARY})
+add_executable(robotino_node_base src/robotino_node_base.cpp)
+target_link_libraries(robotino_node_base cnbiros_robotino ${Eigen3_LIBRARY})
 
 # Infrared node
 add_executable(robotino_node_infrared src/robotino_node_infrared.cpp)
 target_link_libraries(robotino_node_infrared cnbiros_robotino ${Eigen3_LIBRARY})
+
+# Fusion node
+add_executable(robotino_node_fusion src/robotino_node_fusion.cpp)
+target_link_libraries(robotino_node_fusion cnbiros_robotino ${Eigen3_LIBRARY})
 
 # Test executables
 add_executable(robotinotest test/robotinotest.cpp)
