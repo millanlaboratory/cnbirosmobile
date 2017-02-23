@@ -26,7 +26,7 @@ class Robot {
 		
 		void Register(ros::NodeHandle* node);
 		bool IsRegistered(void);
-		void Subscribe(std::string topic);
+		void Subscribe(std::string topic = CNBIROS_TOPIC_VELOCITY);
 
 		virtual void Dump(void);
 		

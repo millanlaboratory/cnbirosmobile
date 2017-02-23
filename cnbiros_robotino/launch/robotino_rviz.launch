@@ -6,7 +6,7 @@
 	<param name="grid_x" value="2.0"  type="double" />
 	<param name="grid_y" value="2.0"  type="double" />
 	<param name="grid_r" value="0.02" type="double" />
-	<param name="grid_frame" value="robot" />
+	<param name="grid_frame" value="base_link" />
 
 	<!-- Generic parameters: nodes -->
 	<param name="frequency" value="10.0" />
@@ -28,7 +28,7 @@
 		<param name="topic" value="/sensors_fusion" />
 		<param name="grid_layer" value="fusion" />
 	</node>
-
-   <!-- Launch rviz -->
-   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find cnbiros_robotino)/rviz/grid_map.rviz" />
+	
+	<!-- Launch rviz -->
+	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find cnbiros_robotino)/rviz/grid_map.rviz" />
 </launch>

@@ -29,7 +29,7 @@ void SensorsFusion::Advertise(std::string topic) {
 
 	this->rospub_topic_ = topic;
 	if(this->IsRegistered()) {
-		this->rospub_ = this->rosnode_->advertise<grid_map_msgs::GridMap>(this->rospub_topic_, 1000);
+		this->rospub_ = this->rosnode_->advertise<grid_map_msgs::GridMap>(this->rospub_topic_, CNBIROS_MESSAGES_BUFFER);
 	} else {
 		ROS_ERROR("Can't advertise on %s: object is not registered to any node", topic.c_str());
 	}
@@ -39,7 +39,7 @@ void SensorsFusion::Subscribe(std::string topic) {
 	
 	// Register/replace new subscriber 
 	if(this->IsRegistered()) {
-		this->rossublist_[topic] = this->rosnode_->subscribe(topic, 1000, &SensorsFusion::add_layer_callback, this);
+		this->rossublist_[topic] = this->rosnode_->subscribe(topic, CNBIROS_MESSAGES_BUFFER, &SensorsFusion::add_layer_callback, this);
 	} else {
 		ROS_ERROR("Can't subscribe to %s: object is not registered to any node", topic.c_str());
 	}

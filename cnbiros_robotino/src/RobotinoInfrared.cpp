@@ -41,11 +41,16 @@ void RobotinoInfrared::distancesChangedEvent(const float* distances, unsigned in
 	for(auto i=0; i<size; i++) {
 		x = (distances[i]+CNBIROS_ROBOTINO_RADIUS)*cos(CNBIROS_ROBOTINO_INFRARED_ANGLE*i);
 		y = (distances[i]+CNBIROS_ROBOTINO_RADIUS)*sin(CNBIROS_ROBOTINO_INFRARED_ANGLE*i);
-
+		
 		grid_map::Position position(x, y);
-		if (distances[i] <= CNBIROS_ROBOTINO_INFRARED_MAXDISTANCE-CNBIROS_ROBOTINO_RADIUS) {
-			this->grid_.atPosition(this->layer_, position) = 1.0f;
+		
+		if (distances[i] < CNBIROS_ROBOTINO_INFRARED_MAXDISTANCE ||
+			distances[i] > CNBIROS_ROBOTINO_INFRARED_MINDISTANCE) {
+			this->grid_.atPosition(this->layer_, position) = exp(-(distances[i] - CNBIROS_ROBOTINO_INFRARED_MINDISTANCE));
 		}
+
+		if (distances[i] >= CNBIROS_ROBOTINO_INFRARED_MAXDISTANCE)
+			this->grid_.atPosition(this->layer_, position) = 0.0f;
 	}
 }
 

@@ -29,5 +29,7 @@ catkin_package(
 add_library(cnbiros_core 
 			src/Robot.cpp
 			src/Sensor.cpp
-			src/SensorsFusion.cpp)
+			src/SensorsFusion.cpp
+			src/NavigationCtrl.cpp
+			src/ForceFieldCtrl.cpp)
 target_link_libraries(cnbiros_core ${catkin_LIBRARIES} ${Eigen3_LIBRARY})

@@ -9,7 +9,8 @@
 #include "Sensor.hpp"
 
 #define CNBIROS_ROBOTINO_RADIUS 				0.2f		// Radius of the base 				[meters]
-#define CNBIROS_ROBOTINO_INFRARED_MAXDISTANCE	0.6f 		// Max distance read by the sensors [meters]
+#define CNBIROS_ROBOTINO_INFRARED_MINDISTANCE	0.04f 		// Min distance read by the sensors [meters]
+#define CNBIROS_ROBOTINO_INFRARED_MAXDISTANCE	0.41f 		// Max distance read by the sensors [meters]
 #define CNBIROS_ROBOTINO_INFRARED_ANGLE		 	(40.0f*M_PI)/180.0f
 															// Angle (in radians) between two sensors
 

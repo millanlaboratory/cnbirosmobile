@@ -16,12 +16,12 @@ namespace cnbiros {
 class SensorsFusion {
 	
 	public:
-		SensorsFusion(float frequency=CNBIROS_SENSOR_NODE_FREQUENCY);
+		SensorsFusion(float frequency = CNBIROS_SENSOR_NODE_FREQUENCY);
 		virtual ~SensorsFusion(void);
 
 		void Register(ros::NodeHandle* node);
 		bool IsRegistered(void);
-		void Advertise(std::string topic = "/sensors_fusion");
+		void Advertise(std::string topic = CNBIROS_TOPIC_FUSION);
 		void Subscribe(std::string topic);
 
 		void SetGrid(std::string layer, std::string frameid);
