@@ -1,5 +1,5 @@
 #include <ros/ros.h>
-#include "Robotino.hpp"
+#include "RobotinoBase.hpp"
 
 using namespace cnbiros::core;
 using namespace cnbiros::robotino;
@@ -7,7 +7,7 @@ using namespace cnbiros::robotino;
 int main(int argc, char** argv) {
 
 	float frequency;
-	std::string hostname, topic;
+	std::string hostname, topic, odometry_topic;
 
 	// ROS initialization
 	ros::init(argc, argv, "robotino_node_base");
@@ -15,21 +15,14 @@ int main(int argc, char** argv) {
 	// Create node handler
 	ros::NodeHandle node("~");
 
-	// Retrieve configuration parameters
-	if(ros::param::get("/frequency", frequency) == false)
-		ROS_ERROR("Parameter frequency not found");
-	if(ros::param::get("/hostname", hostname) == false)
-		ROS_ERROR("Parameter hostname not found");
-	if(ros::param::get("/robotino_node_base/topic", topic) == false)
-		ROS_ERROR("Parameter topic not found");
-
 	// Create robotino instances
-	Robotino* robotino;
-	robotino = new Robotino(hostname, frequency);
-	robotino->Register(&node);
+	RobotinoBase* robotino;
+	robotino = new RobotinoBase("192.168.1.3", 10.0f);  // <-- TO BE CHANGED
+	robotino->Register(&node);							// <-- TO BE CHANGED
 
 	// Subscribe to required topic
-	robotino->Subscribe(topic);
+	robotino->Subscribe("/cmd_vel");							// <-- TO BE CHANGED
+	//robotino->AdvertiseOdometry("/base_odometry");		// <-- TO BE CHANGED
 
 	// Run main loop
 	robotino->Run();

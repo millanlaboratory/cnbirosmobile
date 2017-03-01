@@ -36,7 +36,7 @@ Visualization Manager:
       Reference Frame: <Fixed Frame>
       Value: false
     - Alpha: 1
-      Autocompute Intensity Bounds: true
+      Autocompute Intensity Bounds: false
       Class: grid_map_rviz_plugin/GridMap
       Color: 160; 160; 164
       Color Layer: fusion
@@ -48,10 +48,10 @@ Visualization Manager:
       Max Color: 160; 160; 164
       Max Intensity: 1
       Min Color: 0; 0; 0
-      Min Intensity: 0
+      Min Intensity: -1
       Name: Fusion
       Show Grid Lines: true
-      Topic: /sensors_fusion
+      Topic: /fusion
       Unreliable: false
       Use Rainbow: true
       Value: false
@@ -75,6 +75,26 @@ Visualization Manager:
       Unreliable: false
       Use Rainbow: true
       Value: false
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Class: grid_map_rviz_plugin/GridMap
+      Color: 160; 160; 164
+      Color Layer: kinectscan
+      Color Transformer: GridMapLayer
+      Enabled: false
+      Height Layer: kinectscan
+      Height Transformer: GridMapLayer
+      History Length: 1
+      Max Color: 160; 160; 164
+      Max Intensity: 1
+      Min Color: 0; 0; 0
+      Min Intensity: 0
+      Name: KinectScan
+      Show Grid Lines: true
+      Topic: /sensor_kinectscan
+      Unreliable: false
+      Use Rainbow: true
+      Value: false
     - Alpha: 0.5
       Cell Size: 1
       Class: rviz/Grid
@@ -93,6 +113,7 @@ Visualization Manager:
       Plane Cell Count: 10
       Reference Frame: <Fixed Frame>
       Value: true
+  Enabled: true
   Global Options:
     Background Color: 255; 255; 255
     Fixed Frame: base_link

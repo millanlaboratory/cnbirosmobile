@@ -3,17 +3,17 @@
 
 #include <string>
 #include <ros/ros.h>
+#include <geometry_msgs/Twist.h>
 
 #include "Flags.hpp"
-#include "cnbiros_messages/RobotVelocity.h"
 
 namespace cnbiros {
 	namespace core {
 
-class Robot {
+class RobotBase {
 	public:
-		Robot(unsigned int type, std::string name="", std::string id="");
-		virtual ~Robot(void);
+		RobotBase(unsigned int type, std::string name="", std::string id="");
+		virtual ~RobotBase(void);
 
 		unsigned int GetType(void);
 		void SetType(unsigned int type);
@@ -33,7 +33,7 @@ class Robot {
 		virtual void Run(void) = 0;
 
 	protected:
-		virtual void velocityCallback(const cnbiros_messages::RobotVelocity& msg) = 0;
+		virtual void velocityCallback(const geometry_msgs::Twist& msg) = 0;
 
 	public:
 		enum Type {

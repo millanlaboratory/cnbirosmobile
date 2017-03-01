@@ -1,12 +1,12 @@
 #ifndef ROBOT_CPP
 #define ROBOT_CPP
 
-#include "Robot.hpp"
+#include "RobotBase.hpp"
 
 namespace cnbiros {
 	namespace core {
 
-Robot::Robot(unsigned int type, std::string name, std::string id) {
+RobotBase::RobotBase(unsigned int type, std::string name, std::string id) {
 	this->type_ 		= type;
 	this->name_ 		= name;
 	this->identifier_	= id;
@@ -15,54 +15,54 @@ Robot::Robot(unsigned int type, std::string name, std::string id) {
 	this->frequency_ 	= CNBIROS_ROBOT_NODE_FREQUENCY;
 }
 
-Robot::~Robot(void) {}
+RobotBase::~RobotBase(void) {}
 
-unsigned int Robot::GetType(void) {
+unsigned int RobotBase::GetType(void) {
 	return this->type_;
 }
 
-void Robot::SetType(unsigned int type) {
+void RobotBase::SetType(unsigned int type) {
 	this->type_ = type;
 }
 
-std::string Robot::GetName(void) {
+std::string RobotBase::GetName(void) {
 	return this->name_;
 }
 
-void Robot::SetName(std::string name) {
+void RobotBase::SetName(std::string name) {
 	this->name_ = name;
 }
 
-std::string Robot::GetIdentifier(void) {
+std::string RobotBase::GetIdentifier(void) {
 	return this->identifier_;
 }
 
-void Robot::SetIdentifier(std::string id) {
+void RobotBase::SetIdentifier(std::string id) {
 	this->identifier_ = id;
 }
 
-void Robot::Register(ros::NodeHandle* node) {
+void RobotBase::Register(ros::NodeHandle* node) {
 	this->rosnode_ = node;
 }
 
-bool Robot::IsRegistered(void) {
+bool RobotBase::IsRegistered(void) {
 	if(this->rosnode_ != nullptr)
 		return true;
 	else
 		return false;
 }
 
-void Robot::Subscribe(std::string topic) {
+void RobotBase::Subscribe(std::string topic) {
 	if(this->IsRegistered())
-		this->rossub_ = this->rosnode_->subscribe(topic, CNBIROS_MESSAGES_BUFFER, &Robot::velocityCallback, this);
+		this->rossub_ = this->rosnode_->subscribe(topic, CNBIROS_MESSAGES_BUFFER, &RobotBase::velocityCallback, this);
 	else
 		ROS_ERROR("Can't subscribe: object is not registered to any node");
 	
 }
 
 
-void Robot::Dump(void) {
-	printf("[cnbiros] + Robot information:\n");
+void RobotBase::Dump(void) {
+	printf("[cnbiros] + RobotBase information:\n");
 	printf("          |- Type:\t%d\n", this->GetType());
 	printf("          |- Name:\t%s\n", this->GetName().c_str());
 	printf("          |- Id:\t%s\n", this->GetIdentifier().c_str());

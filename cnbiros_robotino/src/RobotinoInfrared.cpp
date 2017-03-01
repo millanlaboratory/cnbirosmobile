@@ -6,78 +6,73 @@
 namespace cnbiros {
 	namespace robotino {
 
-RobotinoInfrared::RobotinoInfrared(std::string hostname, 
-								   float frequency) : Sensor(frequency) {
+RobotinoInfrared::RobotinoInfrared(std::string hostname, ros::NodeHandle* node) : Sensor(node) {
 
-	// Initialize parameters
-	this->rosrate_ = new ros::Rate(frequency);
+	// Default values
+	this->hostname_     = hostname;
+	this->SetName("infrared");
 
 	// Connection to the base
-	ROS_INFO("Robotino infrared tries to connect to the base (%s)...", hostname.c_str());
-	this->com_ = new RobotinoCom("infrared");
-	this->com_->Connect(hostname);
-
-	// Default decay rate (instantaneous)
-	this->decayrate_ = 0.0f;
-
+	ROS_INFO("Robotino infrared tries to connect to the base (%s)...", this->hostname_.c_str());
+	this->com_ = new RobotinoCom(this->name_);
+	this->com_->Connect(this->hostname_);
+	
 	// Create infrared sensor association
 	this->setComId(this->com_->id());
 }
 
-void RobotinoInfrared::SetDecayTime(float time) {
-	this->decayrate_ = 1.0f/float(this->frequency_ * time);
-}
+RobotinoInfrared::~RobotinoInfrared(void) {}
 
 void RobotinoInfrared::distancesChangedEvent(const float* distances, unsigned int size) {
 
-	float x, y;
+	float x, y, angle, angleinc, radius;
+	float maxdistance, mindistance;
 
-	// In case the decay is set to 0, clear the grid once the callback is called
-	if(this->decayrate_ == 0) {
-		this->grid_[this->layer_].setConstant(0.0);
-	}
+	angleinc    = CNBIROS_ROBOTINO_INFRARED_ANGLE;
+	radius 		= CNBIROS_ROBOTINO_RADIUS;
+	maxdistance = CNBIROS_ROBOTINO_INFRARED_MAXDISTANCE;
+	mindistance = CNBIROS_ROBOTINO_INFRARED_MINDISTANCE;
+
+	this->ResetLayer(this->rosgrid_layer_);
 	
 	// Iterate along infrared sensors
 	for(auto i=0; i<size; i++) {
-		x = (distances[i]+CNBIROS_ROBOTINO_RADIUS)*cos(CNBIROS_ROBOTINO_INFRARED_ANGLE*i);
-		y = (distances[i]+CNBIROS_ROBOTINO_RADIUS)*sin(CNBIROS_ROBOTINO_INFRARED_ANGLE*i);
 		
+		// Update angle for next iteration
+		angle = angleinc*i;
+		
+		// Get cartesian cohordinates
+		x = (distances[i]+radius)*cos(angle);
+		y = (distances[i]+radius)*sin(angle);
+		
+		// Convert x,y cohordinates in position
 		grid_map::Position position(x, y);
 		
-		if (distances[i] < CNBIROS_ROBOTINO_INFRARED_MAXDISTANCE ||
-			distances[i] > CNBIROS_ROBOTINO_INFRARED_MINDISTANCE) {
-			this->grid_.atPosition(this->layer_, position) = exp(-(distances[i] - CNBIROS_ROBOTINO_INFRARED_MINDISTANCE));
+		// Skip positions outside the grid range
+		if(this->rosgrid_.isInside(position) == false)
+			continue;
+		
+		// Fill the grid cell if ranges are between the min/max limits
+		if (distances[i] > mindistance || distances[i] < maxdistance) {
+			this->rosgrid_.atPosition(this->rosgrid_layer_, position) = 1.0f;
 		}
 
-		if (distances[i] >= CNBIROS_ROBOTINO_INFRARED_MAXDISTANCE)
-			this->grid_.atPosition(this->layer_, position) = 0.0f;
+		// Fill with 0.0 above the max limit (not down by the API)
+		if (distances[i] >= maxdistance)
+			this->rosgrid_.atPosition(this->rosgrid_layer_, position) = 0.0f;
+		
 	}
 }
 
-void RobotinoInfrared::ProcessDecay(void) {
-	// Substract the decay step from the grid
-	this->grid_[this->layer_].array() -= this->decayrate_;
+void RobotinoInfrared::Run(void) {
 
-	// Set to 0 every negative value
-	for (grid_map::GridMapIterator it(this->grid_); !it.isPastEnd(); ++it) {
-		if(this->grid_.at(this->layer_, *it) < 0)
-			this->grid_.at(this->layer_, *it) = 0.0f;
-    }
-}
-
-void RobotinoInfrared::Process(void) {
-	
 	while(this->rosnode_->ok()) {
-		
+	
 		// Process robotino infrared events (via api2 callback)
 		this->com_->processEvents();
-
-		// Process map decay
-		this->ProcessDecay();
 		
-		// Publish the msg
-		grid_map::GridMapRosConverter::toMessage(this->grid_, this->grid_msg_);
-		this->rospub_.publish(this->grid_msg_);
+		// Publish the grid map	
+		this->PublishGrid();
 
 		this->rosrate_->sleep();
 		ros::spinOnce();

@@ -3,12 +3,12 @@
 
 #include <algorithm>
 #include <rec/robotino/api2/DistanceSensorArray.h>
-
-#include "Robotino.hpp"
 #include "RobotinoCom.hpp"
 #include "Sensor.hpp"
 
 #define CNBIROS_ROBOTINO_RADIUS 				0.2f		// Radius of the base 				[meters]
+#define CNBIROS_ROBOTINO_INFRARED_NUMBER		9
+#define CNBIROS_ROBOTINO_INFRARED_HEIGHT 		0.03f
 #define CNBIROS_ROBOTINO_INFRARED_MINDISTANCE	0.04f 		// Min distance read by the sensors [meters]
 #define CNBIROS_ROBOTINO_INFRARED_MAXDISTANCE	0.41f 		// Max distance read by the sensors [meters]
 #define CNBIROS_ROBOTINO_INFRARED_ANGLE		 	(40.0f*M_PI)/180.0f
@@ -22,22 +22,17 @@ namespace cnbiros {
 class RobotinoInfrared : public core::Sensor, public  rec::robotino::api2::DistanceSensorArray {
 
 	public:
-		RobotinoInfrared(std::string hostname, float frequency=CNBIROS_SENSOR_NODE_FREQUENCY);
-		virtual ~RobotinoInfrared(void) {};
-	
-		void SetDecayTime(float time);
+		RobotinoInfrared(std::string hostname, ros::NodeHandle* node);
+		virtual ~RobotinoInfrared(void);
+
 		void distancesChangedEvent(const float* distances, unsigned int size);
 
-		void Process(void);
-	protected:
-		void ProcessDecay(void);
-		void gaussian(void);
-
-	protected:
-		RobotinoCom* com_;
+		void Run(void);
 
 	private:
-		float decayrate_;
+		std::string hostname_;
+		RobotinoCom* com_;
+
 };
 
 

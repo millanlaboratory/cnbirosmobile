@@ -1,9 +1,9 @@
-#ifndef SENSOR_HPP
-#define SENSOR_HPP
+#ifndef CNBIROS_CORE_SENSOR_HPP
+#define CNBIROS_CORE_SENSOR_HPP
 
-#include <string>
+#include <map>
+
 #include <ros/ros.h>
-
 #include <grid_map_ros/grid_map_ros.hpp>
 #include <grid_map_msgs/GridMap.h>
 
@@ -13,38 +13,51 @@ namespace cnbiros {
 	namespace core {
 
 class Sensor {
-
 	public:
-		Sensor(float frequency=CNBIROS_SENSOR_NODE_FREQUENCY);
+		Sensor(ros::NodeHandle* node);
 		virtual ~Sensor(void);
-		
-		void Register(ros::NodeHandle* node);
-		bool IsRegistered(void);
-		void Advertise(std::string topic);
 
-		void SetGrid(std::string layer, std::string frame);
-		void SetGrid(float x, float y, float r);
+		void GetName(std::string& name);
+		void GetFrequency(float& frequency);
+		void GetPublishTopics(std::vector<std::string>& topics);
+		void GetPublisher(ros::Publisher& publisher, std::string topic);
+		void GetGrid(grid_map::GridMap& grid);
 		
-		virtual void Process(void) = 0;
+		void SetName(std::string name);
+		void SetFrequency(float frequency);
+		void SetPublisher(std::string topic);
+		void SetGrid(std::string layer, float xsize, 
+					 float ysize, float res, std::string frame = "base_link");
+
+		void DeletePublisher(std::string topic);
+
+		void ReplaceNaN(grid_map::GridMap& map, float value);
+
+		void PublishGrid(void);
+
+		virtual void Run(void) = 0;
 
 	protected:
-		float 	frequency_;
+		void ResetLayer(std::string layer, float value = 0.0f);
+
+	protected:
+		std::string 	name_;
+		float 			frequency_;
 		
-		// ros related members
-		ros::NodeHandle* rosnode_;
-		std::string 	 rostopic_;
-		std::string 	 rosname_;
-		ros::Publisher 	 rospub_;
-		ros::Rate* 		 rosrate_;
+		ros::Rate* 			rosrate_;
+		ros::NodeHandle*	rosnode_;
+		std::map<std::string, ros::Publisher> rospub_list_;
 
-		// grid related members
-		std::string layer_;
-		std::string frameid_;
-		grid_map::GridMap 		grid_;
-		grid_map_msgs::GridMap 	grid_msg_;
-
+		grid_map::GridMap 		rosgrid_;
+		grid_map_msgs::GridMap 	rosgrid_msg_;
+		std::string 			rosgrid_layer_;
+		std::string 			rosgrid_frame_;
+		
 };
+
+
 	}
 }
+
 
 #endif

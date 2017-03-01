@@ -1,11 +1,11 @@
-#include "Robotino.hpp"
+#include "RobotinoBase.hpp"
 
 using namespace cnbiros::core;
 using namespace cnbiros::robotino;
 
 int main(int argc, char** argv) {
 
-	Robotino robotino("192.168.1.3", 10.0f);
+	RobotinoBase robotino("192.168.1.3", 10.0f);
 
 	robotino.Dump();
 
