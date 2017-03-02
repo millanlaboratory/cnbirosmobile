@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
 	scan->SetFrequency(10.0f);
 	scan->SetSubscriber("/camera/scan");
 	scan->SetPublisher("/sensor_kinectscan");
-	scan->SetGrid("kinectscan", 5.0f, 5.0f, 0.10f);
+	scan->SetGrid("kinectscan", 5.0f, 5.0f, 0.05f);
 
 
 	// Run loop

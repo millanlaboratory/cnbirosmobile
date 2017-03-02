@@ -20,6 +20,12 @@ int main(int argc, char** argv) {
 	controller->SetSubscriber("/odom", Navigation::MsgType::AsOdometry);
 	controller->SetPublisher("/cmd_vel");
 
+	// Setting up all parameters
+	controller->SetGridLayer("fusion");
+	controller->SetInfluence(1.0f);
+	controller->SetObstruction(0.4f);
+	controller->SetStrength(0.5f);
+
 	// Run main loop
 	controller->Run();
 	

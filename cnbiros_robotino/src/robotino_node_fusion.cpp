@@ -18,7 +18,7 @@ int main(int argc, char** argv) {
 	// Configure fusion grid
 	fusion->SetFrequency(10.0f);
 	fusion->SetPublisher("/fusion");
-	fusion->SetGrid("fusion", 5.0f, 5.0f, 0.10f);
+	fusion->SetGrid("fusion", 5.0f, 5.0f, 0.05f);
 	fusion->SetDecayTime(1.0f);
 
 	fusion->SetSubscriber("/sensor_infrared");

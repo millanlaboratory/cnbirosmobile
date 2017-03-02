@@ -51,9 +51,9 @@ void RobotinoBase::AdvertiseOdometry(std::string topic) {
 
 void RobotinoBase::velocityCallback(const geometry_msgs::Twist& msg) {
 
-	//this->vx_ = msg.vx;
-	//this->vy_ = msg.vy;
-	//this->vo_ = msg.vo;
+	this->vx_ = msg.linear.x;
+	this->vy_ = msg.linear.y;
+	this->vo_ = msg.angular.z;
 	//ROS_INFO("New velocity requested: vx=%f, vy=%f, vo=%f", this->vx_, this->vy_, this->vo_);
 }
 

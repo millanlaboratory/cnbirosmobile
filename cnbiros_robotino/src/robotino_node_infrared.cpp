@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
 	// Initialization of sensor
 	infrared->SetFrequency(10.0f);
 	infrared->SetPublisher("/sensor_infrared");
-	infrared->SetGrid("infrared", 1.0f, 1.0f, 0.10f);
+	infrared->SetGrid("infrared", 1.0f, 1.0f, 0.05f);
 
 	// Run loop
 	infrared->Run();
