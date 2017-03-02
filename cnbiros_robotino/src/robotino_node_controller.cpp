@@ -6,7 +6,7 @@ using namespace cnbiros::core;
 int main(int argc, char** argv) {
 
 	// ROS initialization
-	ros::init(argc, argv, "robotino_node_navigation");
+	ros::init(argc, argv, "robotino_node_controller");
 	
 	// Create node handler
 	ros::NodeHandle node("~");
