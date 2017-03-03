@@ -9,41 +9,36 @@
 #include <grid_map_ros/grid_map_ros.hpp>
 #include <grid_map_msgs/GridMap.h>
 
-#include "Sensor.hpp"
+#include "RosInterface.hpp"
+#include "GridMapTool.hpp"
 
 namespace cnbiros {
 	namespace core {
 
-class Fusion : public Sensor {
+class Fusion : public RosInterface {
 	
 	public:
 		Fusion(ros::NodeHandle* node);
 		virtual ~Fusion(void);
 
-		void SetSubscriber(std::string topic);
-		void DeleteSubscriber(std::string topic);
+		void SubscribeTo(std::string topic);
+		void AdvertiseOn(std::string topic);
 
 		void SetDecayTime(float time);
-
 		virtual void Run(void);
 
+		void SetGrid(std::string layer, float xsize, 
+					 float ysize, float res, std::string frame = "base_link");
 
 	protected:
-		virtual void rossensor_callback(const grid_map_msgs::GridMap& msg);
+		virtual void rosgridmap_callback_(const grid_map_msgs::GridMap& msg);
 		virtual void FuseLayersTo(std::string target);
 		virtual void ProcessPersistency(std::string target);
 
-
-		//virtual void fuse_layers(std::string target);
-		//virtual void add_layer_callback(const grid_map_msgs::GridMap& msg);
-
-
 	protected:
-	
-		std::map<std::string, ros::Subscriber> rossub_list_;
-		
 		float decayrate_;
-
+		grid_map::GridMap 	rosgrid_;
+		std::string 		rosgrid_layer_;
 };
 
 	}

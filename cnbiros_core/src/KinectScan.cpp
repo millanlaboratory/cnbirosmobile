@@ -12,12 +12,11 @@ KinectScan::KinectScan(ros::NodeHandle* node) : Sensor(node) {
 
 KinectScan::~KinectScan(void) {};
 
-void KinectScan::SetSubscriber(std::string topic) {
-	this->rossub_ = this->rosnode_->subscribe(topic, CNBIROS_MESSAGES_BUFFER, 
-											  &KinectScan::roskinect_callback, this);
+void KinectScan::SubscribeTo(std::string topic) {
+	this->SetSubscriber(topic, &KinectScan::roskinect_callback_, this);
 }
 
-void KinectScan::roskinect_callback(const sensor_msgs::LaserScan& msg) {
+void KinectScan::roskinect_callback_(const sensor_msgs::LaserScan& msg) {
 
 	float x, y, angle, radius;
 	float maxangle, minangle, maxrange, minrange, angleinc, size;
@@ -31,7 +30,7 @@ void KinectScan::roskinect_callback(const sensor_msgs::LaserScan& msg) {
 	minrange = msg.range_min;
 	size  	 = (maxangle - minangle)/angleinc;
 
-	this->ResetLayer(this->rosgrid_layer_);
+	GridMapTool::Reset(this->rosgrid_, this->rosgrid_layer_);
 	
 	for (auto i=0; i<size; i++) {
 		// Update angle for next iteration
@@ -62,11 +61,13 @@ void KinectScan::roskinect_callback(const sensor_msgs::LaserScan& msg) {
 
 
 void KinectScan::Run(void) {
-
+	
+	grid_map_msgs::GridMap msg;
 	while(this->rosnode_->ok()) {
 		
 		// Publish the grid map	
-		this->PublishGrid();
+		msg = GridMapTool::ToMessage(this->rosgrid_);
+		this->Publish(msg);
 
 		ros::spinOnce();
 		this->rosrate_->sleep();

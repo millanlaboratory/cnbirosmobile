@@ -6,7 +6,7 @@
 namespace cnbiros {
 	namespace robotino {
 
-RobotinoInfrared::RobotinoInfrared(std::string hostname, ros::NodeHandle* node) : Sensor(node) {
+RobotinoInfrared::RobotinoInfrared(std::string hostname, ros::NodeHandle* node) : core::Sensor(node) {
 
 	// Default values
 	this->hostname_     = hostname;
@@ -14,7 +14,7 @@ RobotinoInfrared::RobotinoInfrared(std::string hostname, ros::NodeHandle* node) 
 
 	// Connection to the base
 	ROS_INFO("Robotino infrared tries to connect to the base (%s)...", this->hostname_.c_str());
-	this->com_ = new RobotinoCom(this->name_);
+	this->com_ = new RobotinoCom(this->GetName());
 	this->com_->Connect(this->hostname_);
 	
 	// Create infrared sensor association
@@ -33,7 +33,7 @@ void RobotinoInfrared::distancesChangedEvent(const float* distances, unsigned in
 	maxdistance = CNBIROS_ROBOTINO_INFRARED_MAXDISTANCE;
 	mindistance = CNBIROS_ROBOTINO_INFRARED_MINDISTANCE;
 
-	this->ResetLayer(this->rosgrid_layer_);
+	core::GridMapTool::Reset(this->rosgrid_, this->rosgrid_layer_);
 	
 	// Iterate along infrared sensors
 	for(auto i=0; i<size; i++) {
@@ -65,6 +65,8 @@ void RobotinoInfrared::distancesChangedEvent(const float* distances, unsigned in
 }
 
 void RobotinoInfrared::Run(void) {
+	
+	grid_map_msgs::GridMap msg;
 
 	while(this->rosnode_->ok()) {
 	
@@ -72,7 +74,8 @@ void RobotinoInfrared::Run(void) {
 		this->com_->processEvents();
 		
 		// Publish the grid map	
-		this->PublishGrid();
+		msg = core::GridMapTool::ToMessage(this->rosgrid_);
+		this->Publish(msg);
 
 		this->rosrate_->sleep();
 		ros::spinOnce();

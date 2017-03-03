@@ -14,14 +14,11 @@ class KinectScan : public Sensor {
 		~KinectScan(void);
 
 
-		void SetSubscriber(std::string topic);
+		void SubscribeTo(std::string topic);
 		void Run(void);
 
 	private:
-		void roskinect_callback(const sensor_msgs::LaserScan& msg);
-
-	private:
-		ros::Subscriber rossub_;
+		void roskinect_callback_(const sensor_msgs::LaserScan& msg);
 
 };
 

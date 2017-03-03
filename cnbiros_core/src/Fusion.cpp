@@ -6,7 +6,8 @@
 namespace cnbiros {
 	namespace core {
 
-Fusion::Fusion(ros::NodeHandle* node) : Sensor(node) {
+Fusion::Fusion(ros::NodeHandle* node) : RosInterface() {
+	this->Register(node);
 	this->SetName("fusion");
 	this->SetDecayTime(0.0f);
 
@@ -16,25 +17,15 @@ Fusion::Fusion(ros::NodeHandle* node) : Sensor(node) {
 
 Fusion::~Fusion(void) {};
 
-void Fusion::SetSubscriber(std::string topic) {
-	this->rossub_list_[topic] = this->rosnode_->subscribe(topic, CNBIROS_MESSAGES_BUFFER, 
-												&Fusion::rossensor_callback, this);
-	
-	ROS_INFO("%s subscribed on topic %s", this->name_.c_str(), topic.c_str());
+void Fusion::SubscribeTo(std::string topic) {
+	this->SetSubscriber(topic, &Fusion::rosgridmap_callback_, this);
 }
 
-void Fusion::DeleteSubscriber(std::string topic) {
-	std::map<std::string, ros::Subscriber>::iterator it;
-
-	it = this->rossub_list_.find(topic);
-
-	if(it != this->rossub_list_.end()) {
-		this->rossub_list_.erase(it);
-	}
+void Fusion::AdvertiseOn(std::string topic) {
+	this->SetPublisher<grid_map_msgs::GridMap>(topic);	
 }
 
-
-void Fusion::rossensor_callback(const grid_map_msgs::GridMap& msg) {
+void Fusion::rosgridmap_callback_(const grid_map_msgs::GridMap& msg) {
 	std::vector<std::string> layers;
 	grid_map::GridMap grid;
 	float src_resolution, dst_resolution;
@@ -59,7 +50,7 @@ void Fusion::rossensor_callback(const grid_map_msgs::GridMap& msg) {
 	}
 
 	// Replace NaN values (coming from possible resize of the incoming grid) 
-	this->ReplaceNaN(this->rosgrid_, 0.0f);
+	GridMapTool::ReplaceNaN(this->rosgrid_, 0.0f);
 }
 
 void Fusion::FuseLayersTo(std::string target) {
@@ -87,7 +78,7 @@ void Fusion::SetDecayTime(float time) {
 
 	float frequency;
 	this->decayrate_ = 1.0f;
-	this->GetFrequency(frequency);
+	frequency = this->GetFrequency();
 	
 	if (time > 0)
 		this->decayrate_ = 1.0f/(frequency*time);
@@ -103,7 +94,20 @@ void Fusion::ProcessPersistency(std::string target) {
 	this->rosgrid_[target] = (this->rosgrid_[target].array() < 0.0f).select(0, this->rosgrid_[target]);
 }
 
+
+
+void Fusion::SetGrid(std::string layer, float xsize, float ysize, float res, std::string frame) {
+
+	this->rosgrid_.add(layer);
+	this->rosgrid_layer_ = layer;	
+	GridMapTool::SetGeometry(this->rosgrid_, xsize, ysize, res);
+	GridMapTool::SetFrameId(this->rosgrid_, frame);
+	GridMapTool::Reset(this->rosgrid_, layer);
+}
+
 void Fusion::Run(void) {
+	
+	grid_map_msgs::GridMap msg;
 	
 	while(this->rosnode_->ok()) {
 
@@ -113,8 +117,9 @@ void Fusion::Run(void) {
 		// Fuse layers
 		this->FuseLayersTo(this->rosgrid_layer_);
 
-		// Publish the msg
-		this->PublishGrid();
+		// Publish the grid messeage
+		msg = GridMapTool::ToMessage(this->rosgrid_);
+		this->Publish(msg);
 		
 		ros::spinOnce();
 		this->rosrate_->sleep();

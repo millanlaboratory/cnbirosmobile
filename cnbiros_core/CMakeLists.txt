@@ -27,6 +27,8 @@ catkin_package(
 )
 
 add_library(cnbiros_core 
+			src/RosInterface.cpp
+			src/GridMapTool.cpp
 			src/RobotBase.cpp
 			src/Odometry.cpp
 			src/Sensor.cpp
@@ -39,3 +41,7 @@ target_link_libraries(cnbiros_core ${catkin_LIBRARIES} ${Eigen3_LIBRARY})
 # Kinectscan node
 add_executable(kinectscan_node_base src/kinectscan_node_base.cpp)
 target_link_libraries(kinectscan_node_base cnbiros_core ${Eigen3_LIBRARY})
+
+# Test ros interface
+add_executable(test_ros_interface test/test_ros_interface.cpp)
+target_link_libraries(test_ros_interface cnbiros_core)

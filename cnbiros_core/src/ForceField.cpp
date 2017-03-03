@@ -138,7 +138,7 @@ void ForceField::Run(void) {
 		this->LinearVelocity();
 
 		// Publish velocity message
-		this->PublishTwist();
+		this->Publish(this->rostwist_msg_);
 		
 		ros::spinOnce();
 		this->rosrate_->sleep();

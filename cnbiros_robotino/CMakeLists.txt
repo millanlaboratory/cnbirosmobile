@@ -53,9 +53,9 @@ target_link_libraries(robotino_node_infrared cnbiros_robotino ${Eigen3_LIBRARY})
 add_executable(robotino_node_fusion src/robotino_node_fusion.cpp)
 target_link_libraries(robotino_node_fusion cnbiros_robotino ${Eigen3_LIBRARY})
 
-# Controller node
-add_executable(robotino_node_controller src/robotino_node_controller.cpp)
-target_link_libraries(robotino_node_controller cnbiros_robotino ${Eigen3_LIBRARY})
+# Navigation node
+add_executable(robotino_node_navigation src/robotino_node_navigation.cpp)
+target_link_libraries(robotino_node_navigation cnbiros_robotino ${Eigen3_LIBRARY})
 
 # Test executables
 add_executable(robotinotest test/robotinotest.cpp)
