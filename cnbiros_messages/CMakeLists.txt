@@ -11,9 +11,7 @@ include_directories(${catkin_INCLUDE_DIRS} include)
 
 add_message_files(
   FILES
-  RobotVelocity.msg
-  RobotOdometry.msg
-  SensorMap.msg
+  TobiId.msg
 )
 
 generate_messages(

@@ -18,7 +18,10 @@
 	<!-- Robotino controller node -->
 	<node name="robotino_node_navigation" pkg="cnbiros_robotino" type="robotino_node_navigation" output="screen" >
 	</node>
-	
+
+	<!-- Cnbi TobiId node -->
+	<include file="$(find cnbiros_core)/launch/cnbiros_tobiid.launch" />
+
 	<!-- Launch rviz -->
 	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find cnbiros_robotino)/rviz/grid_map.rviz" />
 
