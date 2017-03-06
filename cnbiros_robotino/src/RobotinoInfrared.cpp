@@ -13,7 +13,8 @@ RobotinoInfrared::RobotinoInfrared(std::string hostname, ros::NodeHandle* node) 
 	this->SetName("infrared");
 
 	// Connection to the base
-	ROS_INFO("Robotino infrared tries to connect to the base (%s)...", this->hostname_.c_str());
+	ROS_INFO("Robotino %s tries to connect to the base (%s)...", 
+			 this->GetName().c_str(), this->hostname_.c_str());
 	this->com_ = new RobotinoCom(this->GetName());
 	this->com_->Connect(this->hostname_);
 	

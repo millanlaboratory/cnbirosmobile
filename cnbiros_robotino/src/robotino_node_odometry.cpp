@@ -17,7 +17,7 @@ int main(int argc, char** argv) {
 
 	// Create robotino instances
 	RobotinoOdometry* odometry;
-	odometry = new RobotinoOdometry("192.168.1.3", &node, 10.0f); 	// <-- TO BE CHANGED
+	odometry = new RobotinoOdometry("192.168.1.3", &node);
 
 	// Run main loop
 	odometry->Run();

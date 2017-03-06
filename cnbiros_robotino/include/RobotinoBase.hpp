@@ -13,25 +13,20 @@ namespace cnbiros {
 
 class RobotinoBase : public core::RobotBase {
 	public:	
-		RobotinoBase(std::string hostname, float frequency);
+		RobotinoBase(std::string hostname, ros::NodeHandle* node);
 		~RobotinoBase(void);
 		void Run (void);
 
-		bool IsConnected(void);
-
-		void AdvertiseOdometry(std::string topic = CNBIROS_TOPIC_ODOMETRY);
-		virtual void velocityCallback(const geometry_msgs::Twist& msg);
+	protected:
+		void rosvelocity_callback_(const geometry_msgs::Twist& msg);
 
 	protected:
-		RobotinoCom* com_;
+		std::string hostname_;
 		float vx_;
 		float vy_;
 		float vo_;
+		RobotinoCom* com_;
 		rec::robotino::api2::OmniDrive omnidrive_;
-		rec::robotino::api2::Odometry odometry_;
-
-		std::string 	rostopic_odometry_;
-		ros::Publisher 	rospub_odometry_;
 };
 
 	}

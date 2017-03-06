@@ -11,10 +11,7 @@ namespace cnbiros {
 class RobotinoOdometry : public cnbiros::core::Odometry, public rec::robotino::api2::Odometry {
 	public:
 		RobotinoOdometry(std::string hostname,
-						 ros::NodeHandle* node,
-						 float frequency 	 = CNBIROS_NODE_FREQUENCY,
-						 std::string frameid = "odom",
-						 std::string child_frameid = "base_link");
+						 ros::NodeHandle* node);
 		~RobotinoOdometry(void);
 
 	
@@ -28,6 +25,7 @@ class RobotinoOdometry : public cnbiros::core::Odometry, public rec::robotino::a
 
 	private:
 		RobotinoCom* com_;
+		std::string  hostname_;
 
 };
 

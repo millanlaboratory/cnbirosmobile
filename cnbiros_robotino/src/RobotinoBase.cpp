@@ -6,55 +6,33 @@
 namespace cnbiros {
 	namespace robotino {
 
-RobotinoBase:: RobotinoBase(std::string hostname, 
-					float frequency) :
-					core::RobotBase(core::RobotBase::Type::Robotino) {
+RobotinoBase:: RobotinoBase(std::string hostname, ros::NodeHandle* node) : core::RobotBase(node) {
 
-	// Initialize ros parameters
-	this->frequency_ = frequency; 
-	this->rosrate_ 	 = new ros::Rate(frequency);
+	// Default values
+	this->hostname_     = hostname;
+	this->SetName("base");
 	
 	// Initialize motor velocities
 	this->vx_ = 0.0f;
 	this->vy_ = 0.0f;
 	this->vo_ = 0.0f;
 
-	// Initialize connection to the base
-	this->com_ = new RobotinoCom("robotino");
-
-	ROS_INFO("RobotinoBase tries to connect to %s...", hostname.c_str());
-	this->com_->Connect(hostname);
+	// Connection to the base
+	ROS_INFO("Robotino %s tries to connect to the base (%s)...", 
+			this->GetName().c_str(), this->hostname_.c_str());
+	this->com_ = new RobotinoCom(this->GetName());
+	this->com_->Connect(this->hostname_);
 
 	// If connected associate omnidrive to comid
 	this->omnidrive_.setComId(this->com_->id());
 }
 
-RobotinoBase::~RobotinoBase(void) {
-	this->com_->Disconnect();
-}
+RobotinoBase::~RobotinoBase(void) {}
 
-bool RobotinoBase::IsConnected(void) {
-	return this->com_->IsConnected();
-}
-
-void RobotinoBase::AdvertiseOdometry(std::string topic) {
-
-	this->rostopic_odometry_ = topic;
-	if(this->IsRegistered()) {
-		this->rospub_odometry_ = this->rosnode_->advertise<cnbiros_messages::RobotOdometry>(this->rostopic_odometry_, CNBIROS_MESSAGES_BUFFER);
-	} else {
-		ROS_ERROR("Can't advertise on %s: object is not registered to any node", topic.c_str());
-	}
-
-
-}
-
-void RobotinoBase::velocityCallback(const geometry_msgs::Twist& msg) {
-
+void RobotinoBase::rosvelocity_callback_(const geometry_msgs::Twist& msg) {
 	this->vx_ = msg.linear.x;
 	this->vy_ = msg.linear.y;
 	this->vo_ = msg.angular.z;
-	//ROS_INFO("New velocity requested: vx=%f, vy=%f, vo=%f", this->vx_, this->vy_, this->vo_);
 }
 
 void RobotinoBase::Run(void) {

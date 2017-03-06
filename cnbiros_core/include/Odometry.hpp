@@ -7,42 +7,28 @@
 #include <nav_msgs/Odometry.h>
 
 #include "Flags.hpp"
+#include "RosInterface.hpp"
 
 namespace cnbiros {
 	namespace core {
 
-class Odometry {
+class Odometry : public RosInterface {
 
 	public:
-		Odometry(ros::NodeHandle* node, 
-				 float frequency,
-				 std::string frameid,
-				 std::string child_frameid);
+		Odometry(ros::NodeHandle* node);
 		virtual ~Odometry(void);
 
-		
+		void AdvertiseOn(std::string topic);	
 		virtual void Run(void) = 0;
 	protected:
-		virtual void compute_tf(float x, float y, float z, float omega);
 		virtual void compute_odometry(float x, float y, float z, 
 							  		  float vx, float vy, float vz, 
 							  		  float vomega, unsigned int sequence);
 
+		//virtual void compute_tf(float x, float y, float z, float omega);
 	protected:
-		float frequency_;
-		std::string frame_id_;
-		std::string child_frame_id_;
 
 		nav_msgs::Odometry 				rosodom_msg_;
-		geometry_msgs::Quaternion 		rosodom_quat_;
-		geometry_msgs::TransformStamped rosodom_tf_;
-
-		ros::NodeHandle* 		 rosnode_;
-		ros::Rate* 				 rosrate_;
-		ros::Publisher 			 rospub_;
-		tf::TransformBroadcaster rostf_;
-
-
 };
 
 

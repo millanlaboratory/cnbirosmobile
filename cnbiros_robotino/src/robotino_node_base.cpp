@@ -6,9 +6,6 @@ using namespace cnbiros::robotino;
 
 int main(int argc, char** argv) {
 
-	float frequency;
-	std::string hostname, topic, odometry_topic;
-
 	// ROS initialization
 	ros::init(argc, argv, "robotino_node_base");
 	
@@ -17,12 +14,10 @@ int main(int argc, char** argv) {
 
 	// Create robotino instances
 	RobotinoBase* robotino;
-	robotino = new RobotinoBase("192.168.1.3", 10.0f);  // <-- TO BE CHANGED
-	robotino->Register(&node);							// <-- TO BE CHANGED
+	robotino = new RobotinoBase("192.168.1.3", &node);
 
 	// Subscribe to required topic
-	robotino->Subscribe("/cmd_vel");							// <-- TO BE CHANGED
-	//robotino->AdvertiseOdometry("/base_odometry");		// <-- TO BE CHANGED
+	robotino->SubscribeTo("/cmd_vel");
 
 	// Run main loop
 	robotino->Run();

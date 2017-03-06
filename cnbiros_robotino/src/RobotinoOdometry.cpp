@@ -6,19 +6,20 @@
 namespace cnbiros {
 	namespace robotino {
 
-RobotinoOdometry::RobotinoOdometry(std::string hostname,
-								   ros::NodeHandle* node,
-								   float frequency,
-								   std::string frameid,
-								   std::string child_frameid) : 
-								   cnbiros::core::Odometry(node, frequency, frameid, child_frameid) {
+RobotinoOdometry::RobotinoOdometry(std::string hostname, ros::NodeHandle* node) :
+								   cnbiros::core::Odometry(node) {
+
+	// Default values
+	this->hostname_     = hostname;
+	this->SetName("odometry");
 
 	// Connection to the base
-	ROS_INFO("Robotino infrared tries to connect to the base (%s)...", hostname.c_str());
-	this->com_ = new RobotinoCom("odometry");
-	this->com_->Connect(hostname);
+	ROS_INFO("Robotino %s tries to connect to the base (%s)...", 
+			 this->GetName().c_str(), this->hostname_.c_str());
+	this->com_ = new RobotinoCom(this->GetName());
+	this->com_->Connect(this->hostname_);
 
-	// Create infrared sensor association
+	// Create odometry association
 	this->setComId(this->com_->id());
 }
 
@@ -31,9 +32,6 @@ void RobotinoOdometry::readingsEvent(double x, double y, double omega,
 	float z  = 0.0f;
 	float vz = 0.0f;
 
-	// Compute tf transformation
-	this->compute_tf(x, y, z, omega);
-
 	// Compute odometry
 	this->compute_odometry(x, y, z, vx, vy, vz, vomega, sequence);
 }
@@ -42,7 +40,9 @@ void RobotinoOdometry::Run(void) {
 
 	while(this->rosnode_->ok()) {
 		
+	
 		this->com_->processEvents();
+		this->Publish(this->rosodom_msg_);
 		
 		this->rosrate_->sleep();
 		ros::spinOnce();
