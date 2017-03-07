@@ -22,8 +22,6 @@ int main(int argc, char** argv) {
 	// Run main loop
 	robotino->Run();
 		
-	ros::spin();
-		
 	delete robotino;
 
 	return 0;

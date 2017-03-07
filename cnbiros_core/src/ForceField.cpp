@@ -75,20 +75,24 @@ float ForceField::GetSigma(float distance, float obstruction) {
 }
 
 void ForceField::AngularVelocity(void) {
-
+	
 	grid_map::GridMap grid;
 	grid_map::Position current;
 	float x, y, angle, radius, lambda, sigma;
 	float fobs = 0.0f;
 	
 	// Convert current grid map message to grid map
+	if(this->has_message_ == true) {
+	
 	grid_map::GridMapRosConverter::fromMessage(this->rosgridmap_msg_, grid);
 
+	//if(this->has_message_ == true) {
 	// Get circular iterator submap around the robot
 	for(grid_map::CircleIterator it(grid, grid_map::Position(0.0f, 0.0f), this->GetInfluence());
 		!it.isPastEnd(); ++it) {
-	
+		
 		// get current position
+		//printf("Entering circle submap\n");
 		grid.getPosition(*it, current);
 
 		// exclude the positions on the back
@@ -111,39 +115,33 @@ void ForceField::AngularVelocity(void) {
 			lambda = this->GetLambda(radius, this->GetStrength(), this->GetSpatialDecay());
 			sigma  = this->GetSigma(radius, this->GetObstruction());
 
-			fobs  += lambda*(-angle)*exp(-pow((-angle),2)/(2.0f*pow(sigma, 2)));
+			fobs  += lambda*(angle)*exp(-pow((angle),2)/(2.0f*pow(sigma, 2)));
 		}
 	}
 
 	this->rostwist_msg_.angular.x = 0.0f;
 	this->rostwist_msg_.angular.y = 0.0f;
 	this->rostwist_msg_.angular.z = -fobs;
+	}
 }
 
 void ForceField::LinearVelocity(void) {
-	this->rostwist_msg_.linear.x = 0.1f;
+	this->rostwist_msg_.linear.x = 0.0f;
 	this->rostwist_msg_.linear.y = 0.0f;
 	this->rostwist_msg_.linear.z = 0.0f;
 }
 
-void ForceField::Run(void) {
+void ForceField::onRunning(void) {
 
+	// Compute angular velocity based on force fields
+	this->AngularVelocity();
+	
+	// Compute linear velocity based on force fields
+	this->LinearVelocity();
 
-	while(this->rosnode_->ok()) {
-
-		// Compute angular velocity based on force fields
-		this->AngularVelocity();
+	// Publish velocity message
+	this->Publish(this->rostwist_msg_);
 		
-		// Compute linear velocity based on force fields
-		this->LinearVelocity();
-
-		// Publish velocity message
-		this->Publish(this->rostwist_msg_);
-		
-		ros::spinOnce();
-		this->rosrate_->sleep();
-	}
-
 }
 
 

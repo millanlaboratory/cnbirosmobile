@@ -92,23 +92,18 @@ void TobiId::ConvertFromIdMessage(IDMessage* idm, cnbiros_messages::TobiId* rosm
 	rosmsg->event 		 = idm->GetEvent();
 }
 
-void TobiId::Run(void) {
+void TobiId::onRunning(void) {
 
 	cnbiros_messages::TobiId rosmsg;
 
-	while(this->rosnode_->ok() && this->IsAttached()) {
 
-		if(this->tobiid_->GetMessage(this->ids_) == true) {
-		
-			ROS_INFO("New ID message received from bci");
-			this->ConvertFromIdMessage(this->idm_, &rosmsg);
-			this->Publish(rosmsg);
-		}
-
-		this->rosrate_->sleep();
-		ros::spinOnce();
-
+	if(this->tobiid_->GetMessage(this->ids_) == true) {
+	
+		ROS_INFO("New ID message received from bci");
+		this->ConvertFromIdMessage(this->idm_, &rosmsg);
+		this->Publish(rosmsg);
 	}
+
 
 }
 

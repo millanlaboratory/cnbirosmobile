@@ -25,8 +25,6 @@ int main(int argc, char** argv) {
 	// Run loop
 	infrared->Run();
 		
-	ros::spin();
-		
 	delete infrared;
 
 	return 0;

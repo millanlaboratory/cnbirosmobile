@@ -15,6 +15,7 @@ class GridMapTool {
 		static void SetGeometry(grid_map::GridMap& map, float xsize, float ysize, float res);
 		static void SetFrameId(grid_map::GridMap& map, std::string frame);
 		static grid_map_msgs::GridMap ToMessage(grid_map::GridMap& map);
+	//	static void FillGaussian(grid_map::GridMap& map, grid_map::Position center, float radius);
 };
 	}
 }

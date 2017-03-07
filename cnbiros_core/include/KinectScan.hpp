@@ -15,7 +15,7 @@ class KinectScan : public Sensor {
 
 
 		void SubscribeTo(std::string topic);
-		void Run(void);
+		void onRunning(void);
 
 	private:
 		void roskinect_callback_(const sensor_msgs::LaserScan& msg);

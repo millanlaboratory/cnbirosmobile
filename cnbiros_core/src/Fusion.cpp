@@ -105,25 +105,20 @@ void Fusion::SetGrid(std::string layer, float xsize, float ysize, float res, std
 	GridMapTool::Reset(this->rosgrid_, layer);
 }
 
-void Fusion::Run(void) {
+void Fusion::onRunning(void) {
 	
 	grid_map_msgs::GridMap msg;
 	
-	while(this->rosnode_->ok()) {
+	// Process layer persistency
+	this->ProcessPersistency(this->rosgrid_layer_);
 
-		// Process layer persistency
-		this->ProcessPersistency(this->rosgrid_layer_);
+	// Fuse layers
+	this->FuseLayersTo(this->rosgrid_layer_);
 
-		// Fuse layers
-		this->FuseLayersTo(this->rosgrid_layer_);
-
-		// Publish the grid messeage
-		msg = GridMapTool::ToMessage(this->rosgrid_);
-		this->Publish(msg);
+	// Publish the grid messeage
+	msg = GridMapTool::ToMessage(this->rosgrid_);
+	this->Publish(msg);
 		
-		ros::spinOnce();
-		this->rosrate_->sleep();
-	}
 }
 
 	}

@@ -27,10 +27,11 @@ int main(int argc, char** argv) {
 	navigation->SetStrength(0.5f);
 
 	// Run main loop
+	printf("Navigation -> Run()\n");
 	navigation->Run();
-	
-	ros::spin();
-	
+
+
+	ros::shutdown();
 	delete navigation;
 
 	return 0;

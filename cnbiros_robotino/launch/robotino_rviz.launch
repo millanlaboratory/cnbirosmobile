@@ -21,6 +21,9 @@
 
 	<!-- Cnbi TobiId node -->
 	<include file="$(find cnbiros_core)/launch/cnbiros_tobiid.launch" />
+	
+	<!-- Cnbi bci node -->
+	<include file="$(find cnbiros_core)/launch/cnbiros_bci.launch" />
 
 	<!-- Launch rviz -->
 	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find cnbiros_robotino)/rviz/grid_map.rviz" />

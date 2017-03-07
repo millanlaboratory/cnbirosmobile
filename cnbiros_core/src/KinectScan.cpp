@@ -8,6 +8,12 @@ namespace cnbiros {
 
 KinectScan::KinectScan(ros::NodeHandle* node) : Sensor(node) {
 	this->SetName("kinectscan");
+
+	// Initialization TF
+	this->SetParentFrame("base_link");
+	this->SetChildFrame("base_kinectscan");
+
+	this->SetTransformMessage(tf::Vector3(0.12f, 0.0f, 0.46f), 0.0f);
 }
 
 KinectScan::~KinectScan(void) {};
@@ -30,6 +36,9 @@ void KinectScan::roskinect_callback_(const sensor_msgs::LaserScan& msg) {
 	minrange = msg.range_min;
 	size  	 = (maxangle - minangle)/angleinc;
 
+	geometry_msgs::PointStamped base_kinect, base_link;
+	base_kinect.header.frame_id = this->GetChildFrame();
+
 	GridMapTool::Reset(this->rosgrid_, this->rosgrid_layer_);
 	
 	for (auto i=0; i<size; i++) {
@@ -41,11 +50,14 @@ void KinectScan::roskinect_callback_(const sensor_msgs::LaserScan& msg) {
 			continue;
 
 		// Get cartesian cohordinates -> To be added: position of the kinect
-		x = (msg.ranges[i]+radius)*cos(angle);
-		y = (msg.ranges[i]+radius)*sin(angle);
-	
+		base_kinect.point.x = msg.ranges[i]*cos(angle);
+		base_kinect.point.y = msg.ranges[i]*sin(angle);
+
+		// Transform point from kinect frame to base frame
+		this->TransformPoint(this->GetParentFrame(), base_kinect, base_link);
+
 		// Convert x,y cohordinates in position
-		grid_map::Position position(x, y);
+		grid_map::Position position(base_link.point.x, base_link.point.y);
 		
 		// Skip positions outside the grid range
 		if(this->rosgrid_.isInside(position) == false)
@@ -60,18 +72,13 @@ void KinectScan::roskinect_callback_(const sensor_msgs::LaserScan& msg) {
 }
 
 
-void KinectScan::Run(void) {
+void KinectScan::onRunning(void) {
 	
 	grid_map_msgs::GridMap msg;
-	while(this->rosnode_->ok()) {
-		
-		// Publish the grid map	
-		msg = GridMapTool::ToMessage(this->rosgrid_);
-		this->Publish(msg);
-
-		ros::spinOnce();
-		this->rosrate_->sleep();
-	}
+	
+	// Publish the grid map	
+	msg = GridMapTool::ToMessage(this->rosgrid_);
+	this->Publish(msg);
 }
 
 	}

@@ -52,6 +52,10 @@ target_link_libraries(kinectscan_node_base cnbiros_core ${Eigen3_LIBRARY})
 add_executable(tobiid_node_base src/tobiid_node_base.cpp)
 target_link_libraries(tobiid_node_base cnbiros_core tobicore tobiid cnbiloop cnbicore)
 
+# TobiId node
+add_executable(bci_node_base src/bci_node_base.cpp)
+target_link_libraries(bci_node_base cnbiros_core ${Eigen3_LIBRARY})
+
 # Test ros interface
 add_executable(test_ros_interface test/test_ros_interface.cpp)
 target_link_libraries(test_ros_interface cnbiros_core)

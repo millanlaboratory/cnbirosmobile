@@ -2,6 +2,8 @@
 #define CNBIROS_CORE_ROSINTERFACE_HPP
 
 #include <ros/ros.h>
+#include <tf/transform_broadcaster.h>
+#include <tf/transform_listener.h>
 
 #include "Flags.hpp"
 
@@ -77,7 +79,7 @@ class RosInterface {
 		void Publish(M& msg);
 
 		//! Main run method
-		virtual void Run(void) {};
+		void Run(void);
 
 		//! Set stop flag to true
 		//! \sa Resume(), IsStopped()
@@ -93,16 +95,45 @@ class RosInterface {
 		//! \sa Stop(), Resume()
 		bool IsStopped(void);
 
+		void SetParentFrame(std::string frameid);
+		void SetChildFrame(std::string frameid);
+		void SetTransformMessage(tf::Vector3 translation, float yaw);
+		void SetTransformMessage(tf::Vector3 translation, geometry_msgs::Quaternion quaternion);
+		void TransformPoint(std::string frame, geometry_msgs::PointStamped& in,
+				            geometry_msgs::PointStamped& out);
+
+		std::string GetParentFrame(void);
+		std::string GetChildFrame(void);
+		geometry_msgs::TransformStamped GetTransformMessage(void);
+	
 	protected:
-		ros::NodeHandle* 	rosnode_;
-		ros::Rate* 			rosrate_;
-		ros::Publisher 		rospub_;
+		//! Callback to be executed while the interface is running
+		//! \sa Run()
+		virtual void onRunning(void);
+
+	private:
+		void SendTransform(geometry_msgs::TransformStamped msg);
+
+	protected:
+		ros::NodeHandle* 			rosnode_; 				// <- private?
+		ros::Rate* 					rosrate_; 				// <- private?
+		ros::Publisher 				rospub_;
 		std::map<std::string, ros::Subscriber> 	rossubs_;
 
 	private:
-		std::string name_;
-		float 		frequency_;
-		bool 		is_stopped_;
+		//! Generic interface attributes
+		std::string 	name_;
+		float 			frequency_;
+		bool 			is_stopped_;
+
+		//! Frame related attributes
+		std::string 	rosframe_child_;
+		std::string 	rosframe_parent_;
+
+		//! Transform related attributes
+		tf::TransformBroadcaster 		rostf_broadcaster_; 
+		tf::TransformListener 			rostf_listener_;
+		geometry_msgs::TransformStamped rostf_msg_;
 };
 
 

@@ -35,16 +35,10 @@ void RobotinoBase::rosvelocity_callback_(const geometry_msgs::Twist& msg) {
 	this->vo_ = msg.angular.z;
 }
 
-void RobotinoBase::Run(void) {
+void RobotinoBase::onRunning(void) {
 	
-	while(this->rosnode_->ok()) {
-
-		this->omnidrive_.setVelocity(this->vx_, this->vy_, this->vo_);	
-		this->com_->processEvents();
-		this->rosrate_->sleep();
-		
-		ros::spinOnce();
-	}
+	this->omnidrive_.setVelocity(this->vx_, this->vy_, this->vo_);	
+	this->com_->processEvents();
 }
 
 	}

@@ -21,6 +21,15 @@ RobotinoOdometry::RobotinoOdometry(std::string hostname, ros::NodeHandle* node) 
 
 	// Create odometry association
 	this->setComId(this->com_->id());
+
+	// Reset odometry
+	this->set(0.0f, 0.0f, 0.0f);
+	this->Reset(this->rosodom_msg_);
+
+	// Initialize TF
+	this->SetParentFrame("odom");
+	this->SetChildFrame("base_link");
+	
 }
 
 RobotinoOdometry::~RobotinoOdometry(void) {}
@@ -33,21 +42,19 @@ void RobotinoOdometry::readingsEvent(double x, double y, double omega,
 	float vz = 0.0f;
 
 	// Compute odometry
-	this->compute_odometry(x, y, z, vx, vy, vz, vomega, sequence);
+	this->rosodom_msg_ = this->ConvertToMessage(x, y, z, -omega, vx, vy, vz, vomega, sequence);
 }
 
-void RobotinoOdometry::Run(void) {
+void RobotinoOdometry::onRunning(void) {
 
-	while(this->rosnode_->ok()) {
-		
-	
-		this->com_->processEvents();
-		this->Publish(this->rosodom_msg_);
-		
-		this->rosrate_->sleep();
-		ros::spinOnce();
+	this->com_->processEvents();
+	this->Publish(this->rosodom_msg_);
 
-	}
+	// Transformation
+	this->SetTransformMessage(tf::Vector3(this->rosodom_msg_.pose.pose.position.x,
+										  this->rosodom_msg_.pose.pose.position.y,
+										  this->rosodom_msg_.pose.pose.position.z),
+							  this->rosodom_msg_.pose.pose.orientation);
 }
 
 

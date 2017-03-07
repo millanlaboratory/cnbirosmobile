@@ -1,8 +1,5 @@
 <?xml version="1.0"?>
 
 <launch>
-	<group ns="tobiid">
-		<node pkg="cnbiros_core" type="tobiid_node_base" name="tobiid_node_base" output="screen" />
-	</group>
-
+	<node pkg="cnbiros_core" type="tobiid_node_base" name="tobiid_node_base" output="screen" />
 </launch>

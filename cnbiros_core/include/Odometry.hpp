@@ -19,16 +19,11 @@ class Odometry : public RosInterface {
 		virtual ~Odometry(void);
 
 		void AdvertiseOn(std::string topic);	
-		virtual void Run(void) = 0;
-	protected:
-		virtual void compute_odometry(float x, float y, float z, 
-							  		  float vx, float vy, float vz, 
-							  		  float vomega, unsigned int sequence);
+		void Reset(nav_msgs::Odometry& msg);
+		nav_msgs::Odometry ConvertToMessage(float x, float y, float z, float omega,
+							  		  	    float vx, float vy, float vz, float vomega, 
+									  	    unsigned int sequence);
 
-		//virtual void compute_tf(float x, float y, float z, float omega);
-	protected:
-
-		nav_msgs::Odometry 				rosodom_msg_;
 };
 
 

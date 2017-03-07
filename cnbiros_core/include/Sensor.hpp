@@ -22,7 +22,7 @@ class Sensor : public RosInterface {
 		void AdvertiseOn(std::string topic);
 		void SetGrid(std::string layer, float xsize, float ysize, float res,
 					 std::string frame = "base_link");	
-	
+
 	protected:
 		grid_map::GridMap 		rosgrid_;
 		std::string 			rosgrid_layer_;

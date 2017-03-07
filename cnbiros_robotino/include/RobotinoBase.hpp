@@ -15,7 +15,7 @@ class RobotinoBase : public core::RobotBase {
 	public:	
 		RobotinoBase(std::string hostname, ros::NodeHandle* node);
 		~RobotinoBase(void);
-		void Run (void);
+		void onRunning(void);
 
 	protected:
 		void rosvelocity_callback_(const geometry_msgs::Twist& msg);

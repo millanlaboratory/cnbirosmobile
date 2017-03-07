@@ -20,6 +20,13 @@ RobotinoInfrared::RobotinoInfrared(std::string hostname, ros::NodeHandle* node) 
 	
 	// Create infrared sensor association
 	this->setComId(this->com_->id());
+	
+	// Initialization TF
+	this->SetParentFrame("base_link");
+	this->SetChildFrame("base_infrared");
+
+	this->SetTransformMessage(tf::Vector3(0.0f, 0.0f, 0.0f), 0.0f);
+
 }
 
 RobotinoInfrared::~RobotinoInfrared(void) {}
@@ -34,6 +41,9 @@ void RobotinoInfrared::distancesChangedEvent(const float* distances, unsigned in
 	maxdistance = CNBIROS_ROBOTINO_INFRARED_MAXDISTANCE;
 	mindistance = CNBIROS_ROBOTINO_INFRARED_MINDISTANCE;
 
+	geometry_msgs::PointStamped base_infrared, base_link;
+	base_infrared.header.frame_id = this->GetChildFrame();
+
 	core::GridMapTool::Reset(this->rosgrid_, this->rosgrid_layer_);
 	
 	// Iterate along infrared sensors
@@ -43,11 +53,14 @@ void RobotinoInfrared::distancesChangedEvent(const float* distances, unsigned in
 		angle = angleinc*i;
 		
 		// Get cartesian cohordinates
-		x = (distances[i]+radius)*cos(angle);
-		y = (distances[i]+radius)*sin(angle);
+		base_infrared.point.x = (distances[i]+radius)*cos(angle);
+		base_infrared.point.y = (distances[i]+radius)*sin(angle);
+	
+		// Transform point from infrared frame to base frame
+		this->TransformPoint(this->GetParentFrame(), base_infrared, base_link);
 		
 		// Convert x,y cohordinates in position
-		grid_map::Position position(x, y);
+		grid_map::Position position(base_link.point.x, base_link.point.y);
 		
 		// Skip positions outside the grid range
 		if(this->rosgrid_.isInside(position) == false)
@@ -65,22 +78,18 @@ void RobotinoInfrared::distancesChangedEvent(const float* distances, unsigned in
 	}
 }
 
-void RobotinoInfrared::Run(void) {
+void RobotinoInfrared::onRunning(void) {
 	
 	grid_map_msgs::GridMap msg;
 
-	while(this->rosnode_->ok()) {
 	
-		// Process robotino infrared events (via api2 callback)
-		this->com_->processEvents();
-		
-		// Publish the grid map	
-		msg = core::GridMapTool::ToMessage(this->rosgrid_);
-		this->Publish(msg);
+	// Process robotino infrared events (via api2 callback)
+	this->com_->processEvents();
+	
+	// Publish the grid map	
+	msg = core::GridMapTool::ToMessage(this->rosgrid_);
+	this->Publish(msg);
 
-		this->rosrate_->sleep();
-		ros::spinOnce();
-	}
 }
 
 	}

@@ -27,7 +27,7 @@ class RobotinoInfrared : public core::Sensor, public  rec::robotino::api2::Dista
 
 		void distancesChangedEvent(const float* distances, unsigned int size);
 
-		void Run(void);
+		void onRunning(void);
 
 	private:
 		std::string hostname_;

@@ -101,8 +101,8 @@ Visualization Manager:
       Color: 160; 160; 164
       Enabled: true
       Line Style:
-        Line Width: 0.0299999993
-        Value: Lines
+      Line Width: 0.0299999993
+      Value: Lines
       Name: Grid
       Normal Cell Count: 0
       Offset:
@@ -112,6 +112,47 @@ Visualization Manager:
       Plane: XY
       Plane Cell Count: 10
       Reference Frame: <Fixed Frame>
+      Value: true
+    - Class: rviz/TF
+      Enabled: true
+      Frame Timeout: 15
+      Frames:
+        All Enabled: true
+        base_bci:
+          Value: true
+        base_infrared:
+          Value: true
+        base_kinectscan:
+          Value: true
+        base_link:
+          Value: true
+        camera_depth_frame:
+          Value: true
+        camera_depth_optical_frame:
+          Value: true
+        camera_link:
+          Value: true
+        camera_rgb_frame:
+          Value: true
+        camera_rgb_optical_frame:
+          Value: true
+        odom:
+          Value: true
+      Marker Scale: 1
+      Name: TF
+      Show Arrows: true
+      Show Axes: true
+      Show Names: true
+      Tree:
+        odom:
+          base_link:
+            base_bci:
+              {}
+            base_infrared:
+              {}
+            base_kinectscan:
+              {}
+      Update Interval: 0
       Value: true
   Enabled: true
   Global Options:

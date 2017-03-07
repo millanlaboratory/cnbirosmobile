@@ -26,8 +26,6 @@ int main(int argc, char** argv) {
 	// Run loop
 	scan->Run();
 		
-	ros::spin();
-		
 	delete scan;
 
 	return 0;

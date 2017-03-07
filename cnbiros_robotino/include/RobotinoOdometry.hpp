@@ -14,9 +14,7 @@ class RobotinoOdometry : public cnbiros::core::Odometry, public rec::robotino::a
 						 ros::NodeHandle* node);
 		~RobotinoOdometry(void);
 
-	
-
-		void Run(void);
+		void onRunning(void);
 	private:
 		void readingsEvent(double x, double y, double omega, 
 				           float vx, float vy, float vomega, 
@@ -26,6 +24,7 @@ class RobotinoOdometry : public cnbiros::core::Odometry, public rec::robotino::a
 	private:
 		RobotinoCom* com_;
 		std::string  hostname_;
+		nav_msgs::Odometry 	rosodom_msg_;
 
 };
 

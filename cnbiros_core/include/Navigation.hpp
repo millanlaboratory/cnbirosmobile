@@ -27,7 +27,7 @@ class Navigation : public RosInterface {
 		virtual void rosgridmap_callback_(const grid_map_msgs::GridMap& msg);
 
 	protected:
-	
+		bool has_message_;	
 		grid_map_msgs::GridMap 	rosgridmap_msg_;
 		geometry_msgs::Twist 	rostwist_msg_;
 };

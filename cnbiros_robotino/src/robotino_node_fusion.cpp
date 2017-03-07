@@ -19,16 +19,15 @@ int main(int argc, char** argv) {
 	fusion->SetFrequency(10.0f);
 	fusion->AdvertiseOn("/fusion");
 	fusion->SetGrid("fusion", 5.0f, 5.0f, 0.05f);
-	fusion->SetDecayTime(1.0f);
+	fusion->SetDecayTime(0.5f);
 
 	fusion->SubscribeTo("/sensor_infrared");
 	fusion->SubscribeTo("/sensor_kinectscan");
 	fusion->SubscribeTo("/sensor_sonar");
+	fusion->SubscribeTo("/input_bci");
 
 	// Run main loop
 	fusion->Run();
-
-	ros::spin();
 
 	delete fusion;
 

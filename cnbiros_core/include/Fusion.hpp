@@ -25,10 +25,11 @@ class Fusion : public RosInterface {
 		void AdvertiseOn(std::string topic);
 
 		void SetDecayTime(float time);
-		virtual void Run(void);
 
 		void SetGrid(std::string layer, float xsize, 
 					 float ysize, float res, std::string frame = "base_link");
+
+		void onRunning(void);
 
 	protected:
 		virtual void rosgridmap_callback_(const grid_map_msgs::GridMap& msg);

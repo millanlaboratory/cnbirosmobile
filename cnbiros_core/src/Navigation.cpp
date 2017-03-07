@@ -11,6 +11,7 @@ Navigation::Navigation(ros::NodeHandle* node) {
 	// Default initialization
 	this->Register(node);
 	this->SetName("navigation");
+	this->has_message_ = false;
 }
 
 Navigation::~Navigation(void) {};
@@ -24,6 +25,7 @@ void Navigation::AdvertiseOn(std::string topic) {
 }
 
 void Navigation::rosgridmap_callback_(const grid_map_msgs::GridMap& msg) {
+	this->has_message_ = true;
 	this->rosgridmap_msg_ = msg;
 }
 

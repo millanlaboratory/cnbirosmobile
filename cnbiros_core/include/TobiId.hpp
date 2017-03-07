@@ -25,7 +25,7 @@ class TobiId : public RosInterface {
 		void ConvertToIdMessage(cnbiros_messages::TobiId* rosmsg, IDMessage* idm);
 		void ConvertFromIdMessage(IDMessage* idm, cnbiros_messages::TobiId* rosmsg);
 
-		void Run(void);
+		void onRunning(void);
 	protected:
 		virtual void on_tobiid_received_(const cnbiros_messages::TobiId& msg);
 

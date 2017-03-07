@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+
+<launch>
+	<node pkg="cnbiros_core" type="bci_node_base" name="bci_node_base" output="screen" />
+</launch>

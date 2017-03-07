@@ -4,7 +4,7 @@
 #define CNBIROS_FORCEFIELD_INFLUENCE 		1.0f		// Maximum radius of influences 			[meters]
 #define CNBIROS_FORCEFIELD_OBSTRUCTION 		0.4f		// Default obstruction (size of the device) [meters] 
 #define CNBIROS_FORCEFIELD_STRENGTH 		1.0f		// Default stength of attractors/repellors
-#define CNBIROS_FORCEFIELD_SPATIALDECAY 	1.0f		// Default spatial decay of attractors/repellors
+#define CNBIROS_FORCEFIELD_SPATIALDECAY 	0.5f		// Default spatial decay of attractors/repellors
 
 #include "Navigation.hpp"
 
@@ -30,7 +30,7 @@ class ForceField : public Navigation {
 		float GetStrength(void);
 		float GetSpatialDecay(void);
 
-		void Run(void);
+		void onRunning(void);
 
 	protected:
 		void AngularVelocity(void);
