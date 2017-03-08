@@ -37,10 +37,7 @@
 
     </node>
 
-	<group ns="kinectscan">
-		<param name="frequency" value="10.0" type="double" />
-		<param name="kinect_topic" value="/$(arg camera)/scan" />
-		<node pkg="cnbiros_core" type="kinectscan_node_base" name="kinectscan_node_base" output="screen" />
-	</group>
+    <node pkg="cnbiros_core" type="kinectscan_node_base" name="kinectscan_node_base" output="screen" />
+	
 
 </launch>

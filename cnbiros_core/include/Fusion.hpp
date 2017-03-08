@@ -18,28 +18,28 @@ namespace cnbiros {
 class Fusion : public RosInterface {
 	
 	public:
-		Fusion(ros::NodeHandle* node);
+		Fusion(ros::NodeHandle* node, std::string name = CNBIROS_FUSION_NAME);
 		virtual ~Fusion(void);
 
-		void SubscribeTo(std::string topic);
-		void AdvertiseOn(std::string topic);
-
+		void AddSource(std::string topic);
 		void SetDecayTime(float time);
 
-		void SetGrid(std::string layer, float xsize, 
-					 float ysize, float res, std::string frame = "base_link");
-
-		void onRunning(void);
-
 	protected:
-		virtual void rosgridmap_callback_(const grid_map_msgs::GridMap& msg);
-		virtual void FuseLayersTo(std::string target);
-		virtual void ProcessPersistency(std::string target);
+		virtual void onRunning(void);
+		virtual void onStop(void);
+		virtual void onStart(void);
+		
+		virtual void process_fusion(grid_map::GridMap& map, std::string target);
+		virtual void process_decay(grid_map::GridMap& map, std::string target, float decayrate);	
+
+	private:
+		void rosgridmap_callback_(const grid_map_msgs::GridMap& msg);
+
 
 	protected:
 		float decayrate_;
 		grid_map::GridMap 	rosgrid_;
-		std::string 		rosgrid_layer_;
+		std::string 		fusion_layer_;
 };
 
 	}

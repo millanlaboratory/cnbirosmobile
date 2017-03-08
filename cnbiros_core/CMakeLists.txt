@@ -2,11 +2,9 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 cmake_minimum_required(VERSION 2.8.3)
 project(cnbiros_core)
 
-find_package(catkin REQUIRED COMPONENTS roscpp tf nav_msgs message_generation cnbiros_messages cv_bridge grid_map_ros)
+find_package(catkin REQUIRED COMPONENTS roscpp tf nav_msgs message_generation cnbiros_messages cnbiros_services cv_bridge grid_map_ros)
 find_package(PkgConfig)
 pkg_search_module(Eigen3 REQUIRED eigen3)
-#pkg_search_module(tobicore REQUIRED tobicore)
-#pkg_search_module(cnbiloop REQUIRED cnbiloop)
 
 SET(CMAKE_BUILD_TYPE RelWithDebInfo)
 
@@ -24,15 +22,14 @@ catkin_package(
   CATKIN_DEPENDS
   	roscpp
   	cnbiros_messages
+	cnbiros_services
   DEPENDS
   	Eigen3
 )
 
 add_library(cnbiros_core 
 			src/RosInterface.cpp
-			src/TobiId.cpp
 			src/GridMapTool.cpp
-			src/BciInput.cpp
 			src/RobotBase.cpp
 			src/Odometry.cpp
 			src/Sensor.cpp
@@ -40,20 +37,11 @@ add_library(cnbiros_core
 			src/Fusion.cpp
 			src/Navigation.cpp
 			src/ForceField.cpp)
-target_link_libraries(cnbiros_core ${catkin_LIBRARIES} ${Eigen3_LIBRARY} 
-					  tobicore tobiid tobiic cnbiloop cnbicore)
+target_link_libraries(cnbiros_core ${catkin_LIBRARIES} ${Eigen3_LIBRARY})
 
 # Kinectscan node
 add_executable(kinectscan_node_base src/kinectscan_node_base.cpp)
 target_link_libraries(kinectscan_node_base cnbiros_core ${Eigen3_LIBRARY})
-
-# TobiId node
-add_executable(tobiid_node_base src/tobiid_node_base.cpp)
-target_link_libraries(tobiid_node_base cnbiros_core tobicore tobiid cnbiloop cnbicore)
-
-# TobiId node
-add_executable(bci_node_base src/bci_node_base.cpp)
-target_link_libraries(bci_node_base cnbiros_core ${Eigen3_LIBRARY})
 
 # Test ros interface
 add_executable(test_ros_interface test/test_ros_interface.cpp)

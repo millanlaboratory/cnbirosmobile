@@ -1,10 +1,10 @@
 #include <ros/ros.h>
 #include <cnbiloop/ClLoop.hpp>
-
 #include <cnbiloop/ClTobiId.hpp>
+
 #include "TobiId.hpp"
 
-using namespace cnbiros::core;
+using namespace cnbiros::bci;
 
 int main(int argc, char** argv) {
 

@@ -18,10 +18,6 @@ int main(int argc, char** argv) {
 
 	// Initialization of sensor
 	scan->SetFrequency(10.0f);
-	scan->SubscribeTo("/camera/scan");
-	scan->AdvertiseOn("/sensor_kinectscan");
-	scan->SetGrid("kinectscan", 5.0f, 5.0f, 0.05f);
-
 
 	// Run loop
 	scan->Run();

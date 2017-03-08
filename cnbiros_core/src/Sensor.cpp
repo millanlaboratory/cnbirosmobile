@@ -6,29 +6,38 @@
 namespace cnbiros {
 	namespace core {
 
-Sensor::Sensor(ros::NodeHandle* node) {
+Sensor::Sensor(ros::NodeHandle* node, std::string name) : RosInterface(node) {
 
-	// Default initialization
-	this->Register(node);
+	// Abstract sensor initialization
+	this->SetName(name);
+	this->SetPublisher<grid_map_msgs::GridMap>("/sensor_" + this->GetName());
+
+	// GridMap initialization
+	this->rosgrid_.add(this->GetName());
+	this->sensor_layer_ = this->GetName();	
+	GridMapTool::SetGeometry(this->rosgrid_, CNBIROS_GRIDMAP_XSIZE, 
+							 CNBIROS_GRIDMAP_YSIZE, CNBIROS_GRIDMAP_RESOLUTION);
+	GridMapTool::SetFrameId(this->rosgrid_, CNBIROS_GRIDMAP_FRAME);
+	GridMapTool::Reset(this->rosgrid_, this->GetName());
 }
 
 Sensor::~Sensor(void) {};
 
-void Sensor::AdvertiseOn(std::string topic) {
-	this->SetPublisher<grid_map_msgs::GridMap>(topic);
+void Sensor::onStop(void) {
+	grid_map_msgs::GridMap msg;
+	
+	GridMapTool::Reset(this->rosgrid_);
+	GridMapTool::ToMessage(this->rosgrid_, msg);
+	this->Publish(msg);
 }
 
-void Sensor::SetGrid(std::string layer, float xsize, float ysize, float res,
-					 std::string frame) {
-
-	this->rosgrid_.add(layer);
-	this->rosgrid_layer_ = layer;	
-	GridMapTool::SetGeometry(this->rosgrid_, xsize, ysize, res);
-	GridMapTool::SetFrameId(this->rosgrid_, frame);
-	GridMapTool::Reset(this->rosgrid_, layer);
+void Sensor::onStart(void) {
+	grid_map_msgs::GridMap msg;
+	
+	GridMapTool::Reset(this->rosgrid_);
+	GridMapTool::ToMessage(this->rosgrid_, msg);
+	this->Publish(msg);
 }
-
-
 
 
 

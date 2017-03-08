@@ -6,10 +6,9 @@
 namespace cnbiros {
 	namespace core {
 
-Navigation::Navigation(ros::NodeHandle* node) {
+Navigation::Navigation(ros::NodeHandle* node) : RosInterface(node) {
 
 	// Default initialization
-	this->Register(node);
 	this->SetName("navigation");
 	this->has_message_ = false;
 }

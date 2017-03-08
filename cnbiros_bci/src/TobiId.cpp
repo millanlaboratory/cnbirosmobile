@@ -1,13 +1,12 @@
-#ifndef CNBIROS_CORE_TOBIID_CPP
-#define CNBIROS_CORE_TOBIID_CPP
+#ifndef CNBIROS_BCI_TOBIID_CPP
+#define CNBIROS_BCI_TOBIID_CPP
 
 #include "TobiId.hpp"
 
 namespace cnbiros {
-	namespace core {
+	namespace bci {
 
-TobiId::TobiId(ros::NodeHandle* node, unsigned int mode) {
-	this->Register(node);	
+TobiId::TobiId(ros::NodeHandle* node, unsigned int mode) : core::RosInterface(node) {
 	this->SetName("tobiid");
 
 	this->tobiid_ = new ClTobiId(mode);

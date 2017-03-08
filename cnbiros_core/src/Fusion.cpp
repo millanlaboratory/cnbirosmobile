@@ -6,23 +6,26 @@
 namespace cnbiros {
 	namespace core {
 
-Fusion::Fusion(ros::NodeHandle* node) : RosInterface() {
-	this->Register(node);
-	this->SetName("fusion");
+Fusion::Fusion(ros::NodeHandle* node, std::string name) : RosInterface(node) {
+
+	// Abstract fusion initialization
+	this->SetName(name);
+	this->SetPublisher<grid_map_msgs::GridMap>("/" + this->GetName());
 	this->SetDecayTime(0.0f);
 
-	ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, 
-								   ros::console::levels::Debug);
-};
+	// GridMap initialization
+	this->rosgrid_.add(this->GetName());
+	this->fusion_layer_ = this->GetName();	
+	GridMapTool::SetGeometry(this->rosgrid_, CNBIROS_GRIDMAP_XSIZE, 
+							 CNBIROS_GRIDMAP_YSIZE, CNBIROS_GRIDMAP_RESOLUTION);
+	GridMapTool::SetFrameId(this->rosgrid_, CNBIROS_GRIDMAP_FRAME);
+	GridMapTool::Reset(this->rosgrid_, this->GetName());
+}
 
 Fusion::~Fusion(void) {};
 
-void Fusion::SubscribeTo(std::string topic) {
+void Fusion::AddSource(std::string topic) {
 	this->SetSubscriber(topic, &Fusion::rosgridmap_callback_, this);
-}
-
-void Fusion::AdvertiseOn(std::string topic) {
-	this->SetPublisher<grid_map_msgs::GridMap>(topic);	
 }
 
 void Fusion::rosgridmap_callback_(const grid_map_msgs::GridMap& msg) {
@@ -40,7 +43,7 @@ void Fusion::rosgridmap_callback_(const grid_map_msgs::GridMap& msg) {
 
 	// If different change resolution of the incoming map
 	if(src_resolution != dst_resolution) {		
-		ROS_DEBUG_THROTTLE(10, "Incoming grid map has different resolution, "
+		ROS_WARN_THROTTLE(10, "Incoming grid map has different resolution, "
 						   	   "grid map discarded. Set the same resolution "
 						   	   "for all incoming grid maps");
 	} else {
@@ -53,27 +56,6 @@ void Fusion::rosgridmap_callback_(const grid_map_msgs::GridMap& msg) {
 	GridMapTool::ReplaceNaN(this->rosgrid_, 0.0f);
 }
 
-void Fusion::FuseLayersTo(std::string target) {
-
-	std::vector<std::string> layers;
-	std::vector<std::string>::iterator it;
-
-	//this->rosgrid_[target].setConstant(0.0f);
-	layers = this->rosgrid_.getLayers();
-
-	for(it = layers.begin(); it != layers.end(); ++it) {
-		if((*it).compare(target) != 0) {
-			this->rosgrid_[target] += this->rosgrid_[*it];
-		}
-	}
-
-	// Normalization with respect to the maximum [0 1]
-	// TO THINK ABOUT
-	//this->rosgrid_[target] /= this->rosgrid_[target].maxCoeff();
-	
-	this->rosgrid_[target] = (this->rosgrid_[target].array() > 1.0f).select(1, this->rosgrid_[target]);
-}
-
 void Fusion::SetDecayTime(float time) {
 
 	float frequency;
@@ -84,41 +66,57 @@ void Fusion::SetDecayTime(float time) {
 		this->decayrate_ = 1.0f/(frequency*time);
 }
 
-void Fusion::ProcessPersistency(std::string target) {
+void Fusion::process_decay(grid_map::GridMap& map, std::string target, float decayrate) {
 	
 	unsigned int nrows, ncols;
-	nrows = this->rosgrid_[target].rows();
-	ncols = this->rosgrid_[target].cols();
+	Eigen::MatrixXf mdecay;
+	
+	nrows = map[target].rows();
+	ncols = map[target].cols();
 
-	this->rosgrid_[target] -= Eigen::MatrixXf::Constant(nrows, ncols, this->decayrate_);
-	this->rosgrid_[target] = (this->rosgrid_[target].array() < 0.0f).select(0, this->rosgrid_[target]);
+	mdecay = Eigen::MatrixXf::Constant(nrows, ncols, decayrate);
+
+	map[target] = (map[target].array() > 0.0f).select(
+				   map[target]-mdecay , map[target]);
+	map[target] = (map[target].array() < 0.0f).select(
+				   map[target]+mdecay , map[target]);
 }
 
-
-
-void Fusion::SetGrid(std::string layer, float xsize, float ysize, float res, std::string frame) {
-
-	this->rosgrid_.add(layer);
-	this->rosgrid_layer_ = layer;	
-	GridMapTool::SetGeometry(this->rosgrid_, xsize, ysize, res);
-	GridMapTool::SetFrameId(this->rosgrid_, frame);
-	GridMapTool::Reset(this->rosgrid_, layer);
+void Fusion::process_fusion(grid_map::GridMap& map, std::string target) {
+	GridMapTool::SumLayers(map, target);
+	GridMapTool::SetLayerMinMax(map, target, -1.0f, 1.0f);
 }
+
 
 void Fusion::onRunning(void) {
 	
 	grid_map_msgs::GridMap msg;
 	
-	// Process layer persistency
-	this->ProcessPersistency(this->rosgrid_layer_);
+	// Process decay 
+	this->process_decay(this->rosgrid_, this->fusion_layer_, this->decayrate_);
 
-	// Fuse layers
-	this->FuseLayersTo(this->rosgrid_layer_);
+	// Fuse layers and limit the values between -1 and 1
+	this->process_fusion(this->rosgrid_, this->fusion_layer_);
 
 	// Publish the grid messeage
-	msg = GridMapTool::ToMessage(this->rosgrid_);
+	GridMapTool::ToMessage(this->rosgrid_, msg);
 	this->Publish(msg);
-		
+}
+
+void Fusion::onStop(void) {
+	grid_map_msgs::GridMap msg;
+	
+	GridMapTool::Reset(this->rosgrid_);
+	GridMapTool::ToMessage(this->rosgrid_, msg);
+	this->Publish(msg);
+}
+
+void Fusion::onStart(void) {
+	grid_map_msgs::GridMap msg;
+	
+	GridMapTool::Reset(this->rosgrid_);
+	GridMapTool::ToMessage(this->rosgrid_, msg);
+	this->Publish(msg);
 }
 
 	}

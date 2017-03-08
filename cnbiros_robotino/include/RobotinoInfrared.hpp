@@ -6,6 +6,8 @@
 #include "RobotinoCom.hpp"
 #include "Sensor.hpp"
 
+#define CNBIROS_INFRARED_NAME 	"infrared"
+
 #define CNBIROS_ROBOTINO_RADIUS 				0.2f		// Radius of the base 				[meters]
 #define CNBIROS_ROBOTINO_INFRARED_NUMBER		9
 #define CNBIROS_ROBOTINO_INFRARED_HEIGHT 		0.03f
@@ -22,7 +24,9 @@ namespace cnbiros {
 class RobotinoInfrared : public core::Sensor, public  rec::robotino::api2::DistanceSensorArray {
 
 	public:
-		RobotinoInfrared(std::string hostname, ros::NodeHandle* node);
+		RobotinoInfrared(ros::NodeHandle* node, 
+						 std::string hostname, 
+						 std::string name = CNBIROS_INFRARED_NAME);
 		virtual ~RobotinoInfrared(void);
 
 		void distancesChangedEvent(const float* distances, unsigned int size);

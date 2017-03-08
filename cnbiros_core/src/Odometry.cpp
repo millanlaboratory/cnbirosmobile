@@ -6,9 +6,7 @@
 namespace cnbiros {
 	namespace core {
 
-Odometry::Odometry(ros::NodeHandle* node) {
-
-	this->Register(node);
+Odometry::Odometry(ros::NodeHandle* node) : RosInterface(node) {
 
 	// Initialize TF
 	this->SetParentFrame("odom");

@@ -6,10 +6,7 @@
 namespace cnbiros {
 	namespace core {
 
-RobotBase::RobotBase(ros::NodeHandle* node) : RosInterface() {
-
-	// Default initialization
-	this->Register(node);
+RobotBase::RobotBase(ros::NodeHandle* node) : RosInterface(node) {
 }
 
 RobotBase::~RobotBase(void) {}

@@ -6,9 +6,11 @@
 namespace cnbiros {
 	namespace core {
 
-KinectScan::KinectScan(ros::NodeHandle* node) : Sensor(node) {
-	this->SetName("kinectscan");
+KinectScan::KinectScan(ros::NodeHandle* node, std::string name) : Sensor(node, name) {
 
+	// Initialization kinect subscriber
+	this->SetSubscriber(CNBIROS_KINECTSCAN_TOPIC, &KinectScan::roskinect_callback_, this);
+	
 	// Initialization TF
 	this->SetParentFrame("base_link");
 	this->SetChildFrame("base_kinectscan");
@@ -17,10 +19,6 @@ KinectScan::KinectScan(ros::NodeHandle* node) : Sensor(node) {
 }
 
 KinectScan::~KinectScan(void) {};
-
-void KinectScan::SubscribeTo(std::string topic) {
-	this->SetSubscriber(topic, &KinectScan::roskinect_callback_, this);
-}
 
 void KinectScan::roskinect_callback_(const sensor_msgs::LaserScan& msg) {
 
@@ -39,7 +37,7 @@ void KinectScan::roskinect_callback_(const sensor_msgs::LaserScan& msg) {
 	geometry_msgs::PointStamped base_kinect, base_link;
 	base_kinect.header.frame_id = this->GetChildFrame();
 
-	GridMapTool::Reset(this->rosgrid_, this->rosgrid_layer_);
+	GridMapTool::Reset(this->rosgrid_, this->sensor_layer_);
 	
 	for (auto i=0; i<size; i++) {
 		// Update angle for next iteration
@@ -65,7 +63,7 @@ void KinectScan::roskinect_callback_(const sensor_msgs::LaserScan& msg) {
 
 		// Fill the grid cell if ranges are between the min/max limits
 		if (msg.ranges[i] > minrange || msg.ranges[i] < maxrange) {
-			this->rosgrid_.atPosition(this->rosgrid_layer_, position) = 1.0f;
+			this->rosgrid_.atPosition(this->sensor_layer_, position) = 1.0f;
 		}
 
 	}
@@ -77,7 +75,7 @@ void KinectScan::onRunning(void) {
 	grid_map_msgs::GridMap msg;
 	
 	// Publish the grid map	
-	msg = GridMapTool::ToMessage(this->rosgrid_);
+	GridMapTool::ToMessage(this->rosgrid_, msg);
 	this->Publish(msg);
 }
 

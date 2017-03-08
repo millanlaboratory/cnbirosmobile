@@ -1,21 +1,21 @@
-#ifndef CNBIROS_CORE_BCIINPUT_HPP
-#define CNBIROS_CORE_BCIINPUT_HPP
+#ifndef CNBIROS_BCI_BCIINPUT_HPP
+#define CNBIROS_BCI_BCIINPUT_HPP
 
 #include <ros/ros.h>
 #include <tf/transform_broadcaster.h>
 #include <nav_msgs/Odometry.h>
 #include <grid_map_ros/grid_map_ros.hpp>
 #include <grid_map_msgs/GridMap.h>
-#include <cnbiros_messages/TobiId.h>
 
+#include "cnbiros_messages/TobiId.h"
 #include "Flags.hpp"
 #include "RosInterface.hpp"
 #include "GridMapTool.hpp"
 
 namespace cnbiros {
-	namespace core {
+	namespace bci {
 
-class BciInput : public RosInterface {
+class BciInput : public core::RosInterface {
 
 	public: 
 		BciInput(ros::NodeHandle* node);

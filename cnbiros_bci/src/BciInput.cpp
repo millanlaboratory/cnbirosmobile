@@ -1,13 +1,12 @@
-#ifndef CNBIROS_CORE_BCIINPUT_CPP
-#define CNBIROS_CORE_BCIINPUT_CPP
+#ifndef CNBIROS_BCI_BCIINPUT_CPP
+#define CNBIROS_BCI_BCIINPUT_CPP
 
 #include "BciInput.hpp"
 
 namespace cnbiros {
-	namespace core {
+	namespace bci {
 
-BciInput::BciInput(ros::NodeHandle* node) {
-	this->Register(node);
+BciInput::BciInput(ros::NodeHandle* node) : core::RosInterface(node) {
 	this->SetName("bci");
 
 	this->SetSubscriber("/tobiid_bci2ros", &BciInput::on_tobiid_received_, this);
@@ -39,9 +38,9 @@ void BciInput::SetGrid(std::string layer, float xsize, float ysize, float res,
 					 std::string frame) {
 
 	if(this->rosgrid_.exists(layer)) {
-		GridMapTool::SetGeometry(this->rosgrid_, xsize, ysize, res);
-		GridMapTool::SetFrameId(this->rosgrid_, frame);
-		GridMapTool::Reset(this->rosgrid_, layer);
+		core::GridMapTool::SetGeometry(this->rosgrid_, xsize, ysize, res);
+		core::GridMapTool::SetFrameId(this->rosgrid_, frame);
+		core::GridMapTool::Reset(this->rosgrid_, layer);
 	}
 }
 
@@ -56,7 +55,7 @@ void BciInput::on_odometry_received_(const nav_msgs::Odometry& msg) {
 
 	if (this->target_angle_ != 0.0f) {
 		if(fabs(orientation - this->target_angle_) < 0.05f) {
-			GridMapTool::Reset(this->rosgrid_, "bci_discrete");
+			core::GridMapTool::Reset(this->rosgrid_, "bci_discrete");
 			this->target_angle_ = 0.0f;
 			ROS_INFO("TARGET REACHED");
 		}
@@ -86,7 +85,7 @@ void BciInput::on_tobiid_received_(const cnbiros_messages::TobiId& msg) {
 	geometry_msgs::PointStamped base_bci, base_link;
 	base_bci.header.frame_id = this->GetChildFrame();
 	
-	GridMapTool::Reset(this->rosgrid_, "bci_discrete");
+	core::GridMapTool::Reset(this->rosgrid_, "bci_discrete");
 
 	switch(msg.event) {
 		case 1:
@@ -126,7 +125,7 @@ void BciInput::ResetDiscrete(float time) {
 	elapsed = ros::Time::now().toSec() - this->received_time_.toSec();
 	
 	if(elapsed > time) {
-		GridMapTool::Reset(this->rosgrid_, "bci_discrete");
+		core::GridMapTool::Reset(this->rosgrid_, "bci_discrete");
 	}
 
 }
@@ -138,7 +137,7 @@ void BciInput::onRunning(void) {
 	
 
 	// Publish the grid map	
-	msg = GridMapTool::ToMessage(this->rosgrid_);
+	core::GridMapTool::ToMessage(this->rosgrid_, msg);
 	this->Publish(msg);
 
 	//this->ResetDiscrete(3.0f);

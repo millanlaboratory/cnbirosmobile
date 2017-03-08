@@ -15,12 +15,10 @@ int main(int argc, char** argv) {
 
 	// Create sensor instance
 	RobotinoInfrared* infrared;
-	infrared = new RobotinoInfrared("192.168.1.3", &node);
+	infrared = new RobotinoInfrared(&node, "192.168.1.3");
 	
 	// Initialization of sensor
 	infrared->SetFrequency(10.0f);
-	infrared->AdvertiseOn("/sensor_infrared");
-	infrared->SetGrid("infrared", 1.0f, 1.0f, 0.05f);
 
 	// Run loop
 	infrared->Run();

@@ -2,6 +2,8 @@
 #define CNBIROS_CORE_KINECTSCAN_HPP
 
 #include <sensor_msgs/LaserScan.h>
+
+#include "Flags.hpp"
 #include "Sensor.hpp"
 
 namespace cnbiros {
@@ -10,11 +12,9 @@ namespace cnbiros {
 class KinectScan : public Sensor {
 
 	public:
-		KinectScan(ros::NodeHandle* node);
+		KinectScan(ros::NodeHandle* node, std::string name = CNBIROS_KINECTSCAN_NAME);
 		~KinectScan(void);
 
-
-		void SubscribeTo(std::string topic);
 		void onRunning(void);
 
 	private:

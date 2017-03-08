@@ -6,11 +6,12 @@
 namespace cnbiros {
 	namespace robotino {
 
-RobotinoInfrared::RobotinoInfrared(std::string hostname, ros::NodeHandle* node) : core::Sensor(node) {
+RobotinoInfrared::RobotinoInfrared(ros::NodeHandle* node, 
+								   std::string hostname, 
+								   std::string name) : core::Sensor(node, name) {
 
 	// Default values
 	this->hostname_     = hostname;
-	this->SetName("infrared");
 
 	// Connection to the base
 	ROS_INFO("Robotino %s tries to connect to the base (%s)...", 
@@ -44,7 +45,7 @@ void RobotinoInfrared::distancesChangedEvent(const float* distances, unsigned in
 	geometry_msgs::PointStamped base_infrared, base_link;
 	base_infrared.header.frame_id = this->GetChildFrame();
 
-	core::GridMapTool::Reset(this->rosgrid_, this->rosgrid_layer_);
+	core::GridMapTool::Reset(this->rosgrid_, this->sensor_layer_);
 	
 	// Iterate along infrared sensors
 	for(auto i=0; i<size; i++) {
@@ -68,12 +69,12 @@ void RobotinoInfrared::distancesChangedEvent(const float* distances, unsigned in
 		
 		// Fill the grid cell if ranges are between the min/max limits
 		if (distances[i] > mindistance || distances[i] < maxdistance) {
-			this->rosgrid_.atPosition(this->rosgrid_layer_, position) = 1.0f;
+			this->rosgrid_.atPosition(this->sensor_layer_, position) = 1.0f;
 		}
 
 		// Fill with 0.0 above the max limit (not down by the API)
 		if (distances[i] >= maxdistance)
-			this->rosgrid_.atPosition(this->rosgrid_layer_, position) = 0.0f;
+			this->rosgrid_.atPosition(this->sensor_layer_, position) = 0.0f;
 		
 	}
 }
@@ -87,7 +88,7 @@ void RobotinoInfrared::onRunning(void) {
 	this->com_->processEvents();
 	
 	// Publish the grid map	
-	msg = core::GridMapTool::ToMessage(this->rosgrid_);
+	core::GridMapTool::ToMessage(this->rosgrid_, msg);
 	this->Publish(msg);
 
 }

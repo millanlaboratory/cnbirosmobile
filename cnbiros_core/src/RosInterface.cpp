@@ -6,34 +6,57 @@
 namespace cnbiros {
 	namespace core {
 
-RosInterface::RosInterface(void) {
-	this->rosnode_ 	  		= nullptr;
+RosInterface::RosInterface(ros::NodeHandle* node) {
+	this->rosnode_ 	  		= node;
 	this->name_    	  		= "rosinterface";
 	this->is_stopped_ 		= false;
 	this->frequency_  		= CNBIROS_NODE_FREQUENCY;
 	this->rosrate_    		= new ros::Rate(this->frequency_);
 	this->rosframe_child_  	= "";
 	this->rosframe_parent_ 	= "";
+
+
+	// Initialize services
+	this->rossrv_state_ = this->rosnode_->advertiseService("rosinterface_state",
+									&RosInterface::on_rosinterface_service_, this); 
+	
 }
 
 RosInterface::~RosInterface(void) {
-	printf("Shutting down %s...\n", this->GetName().c_str());
-	if(this->IsRegistered()) {
-		this->rosnode_->shutdown();
+	this->rosnode_->shutdown();
+}
+
+bool RosInterface::on_rosinterface_service_(cnbiros_services::RosInterfaceState::Request &req,
+											cnbiros_services::RosInterfaceState::Response &res) {
+
+	res.result = true;
+
+	switch(req.state) {
+		case RosInterfaceState::Start:
+			ROS_INFO("%s interface requested to start", this->GetName().c_str());
+			if(this->IsStopped() == true) {
+				this->Resume();
+			}
+			break;
+		case RosInterfaceState::Stop:
+			ROS_INFO("%s interface requested to stop", this->GetName().c_str());
+			if(this->IsStopped() == false) {
+				this->Stop();
+			}
+			break;
+		case RosInterfaceState::Resume:
+			ROS_INFO("%s interface requested to resume", this->GetName().c_str());
+			if(this->IsStopped() == true) {
+				this->Resume();
+			}
+			break;
+		default:
+			ROS_INFO("Unknown request for %s interface", this->GetName().c_str());
+			res.result = false;
+			break;
 	}
-}
 
-void RosInterface::Register(ros::NodeHandle* node) {
-	this->rosnode_ = node;
-}
-
-bool RosInterface::IsRegistered(void) {
-	bool isregistered = false;
-
-	if (this->rosnode_ != nullptr)
-		isregistered = true;
-	
-	return isregistered;
+	return res.result;
 }
 
 void RosInterface::SetName(std::string name) {
@@ -70,11 +93,15 @@ ros::Subscriber* RosInterface::GetSubscriber(std::string topic) {
 }
 
 void RosInterface::Stop(void) {
+	ROS_INFO("%s interface stops", this->GetName().c_str());
 	this->is_stopped_ = true;
+	this->onStop();
 }
 
 void RosInterface::Resume(void) {
+	ROS_INFO("%s interface starts", this->GetName().c_str());
 	this->is_stopped_ = false;
+	this->onStart();
 }
 
 bool RosInterface::IsStopped(void) {
@@ -83,8 +110,7 @@ bool RosInterface::IsStopped(void) {
 
 void RosInterface::Run(void) {
 
-	//while(this->rosnode_->ok()) {
-	while(ros::ok()) {
+	while(this->rosnode_->ok()) {
 
 		if(this->IsStopped() == false) {
 			
@@ -100,8 +126,7 @@ void RosInterface::Run(void) {
 	ros::spin();
 }
 
-void RosInterface::onRunning(void) {
-}
+void RosInterface::onRunning(void) {}
 
 void RosInterface::SetParentFrame(std::string frameid) {
 	this->rosframe_parent_ = frameid;

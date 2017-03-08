@@ -17,14 +17,12 @@ int main(int argc, char** argv) {
 
 	// Configure fusion grid
 	fusion->SetFrequency(10.0f);
-	fusion->AdvertiseOn("/fusion");
-	fusion->SetGrid("fusion", 5.0f, 5.0f, 0.05f);
 	fusion->SetDecayTime(0.5f);
 
-	fusion->SubscribeTo("/sensor_infrared");
-	fusion->SubscribeTo("/sensor_kinectscan");
-	fusion->SubscribeTo("/sensor_sonar");
-	fusion->SubscribeTo("/input_bci");
+	fusion->AddSource("/sensor_infrared");
+	fusion->AddSource("/sensor_kinectscan");
+	fusion->AddSource("/sensor_sonar");
+	fusion->AddSource("/input_bci");
 
 	// Run main loop
 	fusion->Run();

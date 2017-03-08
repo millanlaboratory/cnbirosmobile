@@ -17,4 +17,21 @@
 #define CNBIROS_TOPIC_VELOCITY 			"/base_velocity" 	// Default motor velocity topic
 #define CNBIROS_TOPIC_KINECTSCAN 		"/camera/scan"
 
+
+
+// NEW FLAGS (for sure used)
+
+// GridMap default definitions
+#define CNBIROS_GRIDMAP_XSIZE 		5.0f
+#define CNBIROS_GRIDMAP_YSIZE 		5.0f
+#define CNBIROS_GRIDMAP_RESOLUTION 	0.05f
+#define CNBIROS_GRIDMAP_FRAME 		"base_link"
+
+// Kinectscan default definitions
+#define CNBIROS_KINECTSCAN_NAME 	"kinectscan"
+#define CNBIROS_KINECTSCAN_TOPIC 	"/camera/scan"
+
+// Fusion default definitions
+#define CNBIROS_FUSION_NAME 		"fusion"
+
 #endif

@@ -2,7 +2,7 @@
 
 #include "BciInput.hpp"
 
-using namespace cnbiros::core;
+using namespace cnbiros::bci;
 
 int main(int argc, char** argv) {
 

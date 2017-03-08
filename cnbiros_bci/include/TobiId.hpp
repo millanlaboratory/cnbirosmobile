@@ -1,5 +1,5 @@
-#ifndef CNBIROS_CORE_TOBIID_HPP
-#define CNBIROS_CORE_TOBIID_HPP
+#ifndef CNBIROS_BCI_TOBIID_HPP
+#define CNBIROS_BCI_TOBIID_HPP
 
 #include <ros/ros.h>
 #include <cnbiloop/ClTobiId.hpp>
@@ -8,9 +8,9 @@
 #include "RosInterface.hpp"
 
 namespace cnbiros {
-	namespace core {
+	namespace bci {
 
-class TobiId : public RosInterface {
+class TobiId : public core::RosInterface {
 	
 	public:
 		TobiId(ros::NodeHandle* node, unsigned int mode);

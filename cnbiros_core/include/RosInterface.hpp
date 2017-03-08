@@ -5,26 +5,23 @@
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_listener.h>
 
+#include "cnbiros_services/RosInterfaceState.h"
 #include "Flags.hpp"
 
 namespace cnbiros {
 	namespace core {
 
+enum RosInterfaceState{Start, Stop, Resume};
+
+
 class RosInterface {
 
 	public:
 		//! Constructor
-		RosInterface(void);
+		RosInterface(ros::NodeHandle* node);
 
 		//! Destructor
 		virtual ~RosInterface(void);
-
-		//! Register the interface to a node
-		//! \param node	Pointer to the node	 
-		void Register(ros::NodeHandle* node);
-
-		//! Check if the interface is registered to a node
-		bool IsRegistered(void);
 
 		//! Set interface name 
 		//! \param name Name of the interface
@@ -111,8 +108,14 @@ class RosInterface {
 		//! \sa Run()
 		virtual void onRunning(void);
 
+		virtual void onStop(void) {};
+		virtual void onStart(void) {};
+
 	private:
 		void SendTransform(geometry_msgs::TransformStamped msg);
+		
+		bool on_rosinterface_service_(cnbiros_services::RosInterfaceState::Request &req,
+									  cnbiros_services::RosInterfaceState::Response &res);
 
 	protected:
 		ros::NodeHandle* 			rosnode_; 				// <- private?
@@ -121,16 +124,19 @@ class RosInterface {
 		std::map<std::string, ros::Subscriber> 	rossubs_;
 
 	private:
-		//! Generic interface attributes
+		//! Generic interface members
 		std::string 	name_;
 		float 			frequency_;
 		bool 			is_stopped_;
 
-		//! Frame related attributes
+		//! Services related members
+		ros::ServiceServer rossrv_state_;
+
+		//! Frame related members
 		std::string 	rosframe_child_;
 		std::string 	rosframe_parent_;
 
-		//! Transform related attributes
+		//! Transform related members
 		tf::TransformBroadcaster 		rostf_broadcaster_; 
 		tf::TransformListener 			rostf_listener_;
 		geometry_msgs::TransformStamped rostf_msg_;
@@ -139,36 +145,17 @@ class RosInterface {
 
 template<class M>
 void RosInterface::SetSubscriber(std::string topic, void(*fp)(M)) {
-
-	if(this->IsRegistered()) {
-		this->rossubs_[topic] = this->rosnode_->subscribe(topic, CNBIROS_MESSAGES_BUFFER, fp);
-	} else {
-		ROS_ERROR("[%s] - Cannot subscribe to %s: node is not registered", 
-				  this->GetName().c_str(), topic.c_str());
-	}
-				  
+	this->rossubs_[topic] = this->rosnode_->subscribe(topic, CNBIROS_MESSAGES_BUFFER, fp);
 }
 
 template<class M, class T>
 void RosInterface::SetSubscriber(std::string topic, void(T::*fp)(M), T* obj) {
-	
-	if(this->IsRegistered()) {
-		this->rossubs_[topic] = this->rosnode_->subscribe(topic, CNBIROS_MESSAGES_BUFFER, fp, obj);
-	} else {
-		ROS_ERROR("[%s] - Cannot subscribe to %s: node is not registered", 
-				  this->GetName().c_str(), topic.c_str());
-	}
+	this->rossubs_[topic] = this->rosnode_->subscribe(topic, CNBIROS_MESSAGES_BUFFER, fp, obj);
 }
 
 template<class M>
 void RosInterface::SetPublisher(std::string topic) {
-		
-	if(this->IsRegistered()) {
-		this->rospub_ = this->rosnode_->advertise<M>(topic, CNBIROS_MESSAGES_BUFFER);
-	} else {
-		ROS_ERROR("[%s] - Cannot advertise on %s: node is not registered", 
-				  this->GetName().c_str(), topic.c_str());
-	}
+	this->rospub_ = this->rosnode_->advertise<M>(topic, CNBIROS_MESSAGES_BUFFER);
 }
 
 template<class M>
