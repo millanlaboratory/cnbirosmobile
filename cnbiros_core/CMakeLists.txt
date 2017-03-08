@@ -30,7 +30,6 @@ catkin_package(
 
 add_library(cnbiros_core 
 			src/RosInterface.cpp
-			src/CnbiInterface.cpp
 			src/TobiId.cpp
 			src/GridMapTool.cpp
 			src/BciInput.cpp
