@@ -11,6 +11,7 @@
 
 #include "RosInterface.hpp"
 #include "GridMapTool.hpp"
+#include "cnbiros_services/GridMapReset.h"
 
 namespace cnbiros {
 	namespace core {
@@ -34,12 +35,16 @@ class Fusion : public RosInterface {
 
 	private:
 		void rosgridmap_callback_(const grid_map_msgs::GridMap& msg);
-
+		bool on_gridmap_reset_(cnbiros_services::GridMapReset::Request& req,
+							  cnbiros_services::GridMapReset::Response& res);
 
 	protected:
-		float decayrate_;
-		grid_map::GridMap 	rosgrid_;
+		float 				decayrate_;
 		std::string 		fusion_layer_;
+		grid_map::GridMap 	rosgrid_;
+
+	private:
+		ros::ServiceServer	rossrv_reset_;
 };
 
 	}

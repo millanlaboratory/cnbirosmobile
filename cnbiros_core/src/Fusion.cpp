@@ -13,6 +13,9 @@ Fusion::Fusion(ros::NodeHandle* node, std::string name) : RosInterface(node) {
 	this->SetPublisher<grid_map_msgs::GridMap>("/" + this->GetName());
 	this->SetDecayTime(0.0f);
 
+	// Service for fusion gridmap reset
+	this->rossrv_reset_ = this->rosnode_->advertiseService("gridmap_reset", 
+											&Fusion::on_gridmap_reset_, this);
 	// GridMap initialization
 	this->rosgrid_.add(this->GetName());
 	this->fusion_layer_ = this->GetName();	
@@ -23,6 +26,26 @@ Fusion::Fusion(ros::NodeHandle* node, std::string name) : RosInterface(node) {
 }
 
 Fusion::~Fusion(void) {};
+
+bool Fusion::on_gridmap_reset_(cnbiros_services::GridMapReset::Request& req,
+							  cnbiros_services::GridMapReset::Response& res) {
+
+	grid_map_msgs::GridMap msg;
+	
+	res.result = false;
+	if(req.reset == true) {
+		ROS_INFO("GridMap of %s requested to reset", this->GetName().c_str());
+		
+		if(this->IsStopped() == false) {
+			GridMapTool::Reset(this->rosgrid_);
+			GridMapTool::ToMessage(this->rosgrid_, msg);
+			this->Publish(msg);
+			res.result = true;
+		}
+	}
+
+	return res.result;
+}
 
 void Fusion::AddSource(std::string topic) {
 	this->SetSubscriber(topic, &Fusion::rosgridmap_callback_, this);
