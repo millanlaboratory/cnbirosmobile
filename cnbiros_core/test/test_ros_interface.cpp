@@ -27,6 +27,8 @@ class DerivedInterface : public RosInterface {
 			printf("[ObjectCallback] Received std_msg::Float\n");
 		}
 
+		void onRunning(void) {};
+
 };
 
 int main (int argc, char** argv) {
@@ -39,15 +41,11 @@ int main (int argc, char** argv) {
 
 	ros::NodeHandle node("~");
 
-	RosInterface* iface;
-	iface = new RosInterface(&node);
-
-	iface->SetSubscriber("/test_topic", callback_msg_string);
-	iface->SetSubscriber("/test_topic2", callback_msg_float);
-
 	DerivedInterface iface_d(&node);
 	iface_d.SetSubscriber("/test_topic", &DerivedInterface::callback_object_msg_string, &iface_d);
 	iface_d.SetSubscriber("/test_topic2", &DerivedInterface::callback_object_msg_float, &iface_d);
+	iface_d.SetSubscriber("/test_topic3", callback_msg_string);
+	iface_d.SetSubscriber("/test_topic4", callback_msg_float);
 	iface_d.SetPublisher<std_msgs::Float32>("/test_topic3");
 	
 	ros::Subscriber* gsub = iface_d.GetSubscriber("/test_topic2");
