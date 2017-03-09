@@ -1,90 +1,82 @@
-#ifndef ODOMETRY_CPP
-#define ODOMETRY_CPP
+#ifndef CNBIROS_CORE_ODOMETRY_CPP
+#define CNBIROS_CORE_ODOMETRY_CPP
 
 #include "Odometry.hpp"
 
 namespace cnbiros {
 	namespace core {
 
-Odometry::Odometry(ros::NodeHandle* node) : RosInterface(node) {
+Odometry::Odometry(ros::NodeHandle* node, std::string name) : RosInterface(node) {
 
+	// Abstract sensor initialization
+	this->SetName(name);
+	this->SetPublisher<nav_msgs::Odometry>("/" + this->GetName());
+	
+	// Service for sensor gridmap reset
+	this->rossrv_reset_ = this->rosnode_->advertiseService("odometry_reset", 
+											&Odometry::on_odometry_reset_, this);
+	
 	// Initialize TF
-	this->SetParentFrame("odom");
+	this->SetParentFrame(this->GetName());
 	this->SetChildFrame("base_link");
 }
 
 Odometry::~Odometry(void) {}
 
-void Odometry::AdvertiseOn(std::string topic) {
-	this->SetPublisher<nav_msgs::Odometry>(topic);
-}
-
-
-nav_msgs::Odometry Odometry::ConvertToMessage(float x, float y, float z, 
-											  float omega, float vx, float vy, 
-											  float vz, float vomega, 
-											  unsigned int sequence) {
-
-	nav_msgs::Odometry odom_msg;
+void Odometry::set_message(float x, float y, float z, float omega, 
+						   float vx, float vy, float vz, float vomega, 
+						   unsigned int sequence) {
 
 	// Fill odometry message
-	odom_msg.header.stamp    = ros::Time::now();
-	odom_msg.header.frame_id = this->GetParentFrame();
-	odom_msg.header.seq      = sequence;
+	this->rosodom_msg_.header.stamp    = ros::Time::now();
+	this->rosodom_msg_.header.frame_id = this->GetParentFrame();
+	this->rosodom_msg_.header.seq      = sequence;
 
-	odom_msg.pose.pose.position.x  = x;
-	odom_msg.pose.pose.position.y  = y;
-	odom_msg.pose.pose.position.z  = z;
-	odom_msg.pose.pose.orientation = tf::createQuaternionMsgFromYaw(omega);
+	this->rosodom_msg_.pose.pose.position.x  = x;
+	this->rosodom_msg_.pose.pose.position.y  = y;
+	this->rosodom_msg_.pose.pose.position.z  = z;
+	this->rosodom_msg_.pose.pose.orientation = tf::createQuaternionMsgFromYaw(omega);
 
-	odom_msg.child_frame_id = this->GetChildFrame();
-	odom_msg.twist.twist.linear.x = vx;
-	odom_msg.twist.twist.linear.y = vy;
-	odom_msg.twist.twist.linear.z = vz;
-	odom_msg.twist.twist.angular.z  = vomega;
-
-	return odom_msg;
+	this->rosodom_msg_.child_frame_id = this->GetChildFrame();
+	this->rosodom_msg_.twist.twist.linear.x = vx;
+	this->rosodom_msg_.twist.twist.linear.y = vy;
+	this->rosodom_msg_.twist.twist.linear.z = vz;
+	this->rosodom_msg_.twist.twist.angular.z  = vomega;
 }
 
-void Odometry::Reset(nav_msgs::Odometry& msg) {
+void Odometry::reset_message(void) {
 
 	// Fill odometry message
-	msg.header.stamp    = ros::Time::now();
-	msg.header.frame_id = "odom";
-	msg.header.seq      = 0;
+	this->rosodom_msg_.header.stamp    = ros::Time::now();
+	this->rosodom_msg_.header.frame_id = this->GetParentFrame();
+	this->rosodom_msg_.header.seq      = 0;
 
-	msg.pose.pose.position.x  = 0.0f;
-	msg.pose.pose.position.y  = 0.0f;
-	msg.pose.pose.position.z  = 0.0f;
-	msg.pose.pose.orientation = tf::createQuaternionMsgFromYaw(0.0f);
+	this->rosodom_msg_.pose.pose.position.x  = 0.0f;
+	this->rosodom_msg_.pose.pose.position.y  = 0.0f;
+	this->rosodom_msg_.pose.pose.position.z  = 0.0f;
+	this->rosodom_msg_.pose.pose.orientation = tf::createQuaternionMsgFromYaw(0.0f);
 
 	//this->rosodom_msg_.child_frame_id = this->child_frame_id_;
-	msg.twist.twist.linear.x = 0.0f;
-	msg.twist.twist.linear.y = 0.0f;
-	msg.twist.twist.linear.z = 0.0f;
-	msg.twist.twist.angular.z  = 0.0f;
+	this->rosodom_msg_.twist.twist.linear.x = 0.0f;
+	this->rosodom_msg_.twist.twist.linear.y = 0.0f;
+	this->rosodom_msg_.twist.twist.linear.z = 0.0f;
+	this->rosodom_msg_.twist.twist.angular.z  = 0.0f;
 }
 
-/*
-void Odometry::ConvertToTffloat x, float y, float z, float omega) {
+bool Odometry::on_odometry_reset_(cnbiros_services::OdometryReset::Request& req,
+								  cnbiros_services::OdometryReset::Response& res) {
 
-	// Create quaternion from yaw (angle)
-	this->rosodom_quat_ = tf::createQuaternionMsgFromYaw(omega);
+	res.result = true;
 
-	// Fill tf message
-	this->rosodom_tf_.header.stamp 	  = ros::Time::now();
-	this->rosodom_tf_.header.frame_id = this->frame_id_;
-	this->rosodom_tf_.child_frame_id  = this->child_frame_id_;
+	if(req.reset == true) {
+		ROS_INFO("%s requested to reset", this->GetName().c_str());
 
-	this->rosodom_tf_.transform.translation.x = x;
-	this->rosodom_tf_.transform.translation.y = y;
-	this->rosodom_tf_.transform.translation.z = z;
-	this->rosodom_tf_.transform.rotation	  = this->rosodom_quat_;
+		this->onReset();
+		this->reset_message();
+	}
 
-	// Broadcast the transformation
-	this->rostf_.sendTransform(this->rosodom_tf_);
+	return res.result;
 }
-*/
 
 	}
 }

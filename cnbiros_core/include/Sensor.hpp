@@ -26,7 +26,7 @@ class Sensor : public RosInterface {
 
 	private:
 		bool on_gridmap_reset_(cnbiros_services::GridMapReset::Request& req,
-							  cnbiros_services::GridMapReset::Response& res);
+							   cnbiros_services::GridMapReset::Response& res);
 
 	protected:
 		grid_map::GridMap 		rosgrid_;

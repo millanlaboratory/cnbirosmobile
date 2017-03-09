@@ -16,9 +16,6 @@ int main(int argc, char** argv) {
 	RobotinoBase* robotino;
 	robotino = new RobotinoBase("192.168.1.3", &node);
 
-	// Subscribe to required topic
-	robotino->SubscribeTo("/cmd_vel");
-
 	// Run main loop
 	robotino->Run();
 		

@@ -1,12 +1,11 @@
-#ifndef ROBOTINOINFRARED_HPP
-#define ROBOTINOINFRARED_HPP
+#ifndef CNBIROS_ROBOTINO_INFRARED_HPP
+#define CNBIROS_ROBOTINO_INFRARED_HPP
 
 #include <algorithm>
 #include <rec/robotino/api2/DistanceSensorArray.h>
 #include "RobotinoCom.hpp"
 #include "Sensor.hpp"
 
-#define CNBIROS_INFRARED_NAME 	"infrared"
 
 #define CNBIROS_ROBOTINO_RADIUS 				0.2f		// Radius of the base 				[meters]
 #define CNBIROS_ROBOTINO_INFRARED_NUMBER		9

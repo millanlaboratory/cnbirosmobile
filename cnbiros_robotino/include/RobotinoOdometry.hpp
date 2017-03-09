@@ -1,5 +1,5 @@
-#ifndef ROBOTINO_ODOMETRY_HPP
-#define ROBOTINO_ODOMETRY_HPP
+#ifndef CNBIROS_ROBOTINO_ODOMETRY_HPP
+#define CNBIROS_ROBOTINO_ODOMETRY_HPP
 
 #include <rec/robotino/api2/Odometry.h>
 #include "Odometry.hpp"
@@ -11,10 +11,12 @@ namespace cnbiros {
 class RobotinoOdometry : public cnbiros::core::Odometry, public rec::robotino::api2::Odometry {
 	public:
 		RobotinoOdometry(std::string hostname,
-						 ros::NodeHandle* node);
+						 ros::NodeHandle* node,
+						 std::string name = CNBIROS_ODOMETRY_NAME);
 		~RobotinoOdometry(void);
 
 		void onRunning(void);
+		void onReset(void);
 	private:
 		void readingsEvent(double x, double y, double omega, 
 				           float vx, float vy, float vomega, 
@@ -24,7 +26,6 @@ class RobotinoOdometry : public cnbiros::core::Odometry, public rec::robotino::a
 	private:
 		RobotinoCom* com_;
 		std::string  hostname_;
-		nav_msgs::Odometry 	rosodom_msg_;
 
 };
 

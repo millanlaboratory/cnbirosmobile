@@ -1,5 +1,5 @@
-#ifndef ODOMETRY_HPP
-#define ODOMETRY_HPP
+#ifndef CNBIROS_CORE_ODOMETRY_HPP
+#define CNBIROS_CORE_ODOMETRY_HPP
 
 #include <string>
 #include <ros/ros.h>
@@ -8,6 +8,7 @@
 
 #include "Flags.hpp"
 #include "RosInterface.hpp"
+#include "cnbiros_services/OdometryReset.h"
 
 namespace cnbiros {
 	namespace core {
@@ -15,15 +16,26 @@ namespace cnbiros {
 class Odometry : public RosInterface {
 
 	public:
-		Odometry(ros::NodeHandle* node);
+		Odometry(ros::NodeHandle* node, std::string name);
 		virtual ~Odometry(void);
 
-		void AdvertiseOn(std::string topic);	
-		void Reset(nav_msgs::Odometry& msg);
-		nav_msgs::Odometry ConvertToMessage(float x, float y, float z, float omega,
-							  		  	    float vx, float vy, float vz, float vomega, 
-									  	    unsigned int sequence);
+	protected:
+		
+		virtual void onRunning(void) = 0;
+		virtual void onReset(void) = 0;
 
+		void reset_message(void);
+		void set_message(float x, float y, float z, float omega,
+						 float vx, float vy, float vz, float vomega, 
+						 unsigned int sequence);
+
+	private:
+		 virtual bool on_odometry_reset_(cnbiros_services::OdometryReset::Request& req,
+										 cnbiros_services::OdometryReset::Response& res);
+
+	protected:
+		nav_msgs::Odometry 	rosodom_msg_;
+		ros::ServiceServer	rossrv_reset_;
 };
 
 

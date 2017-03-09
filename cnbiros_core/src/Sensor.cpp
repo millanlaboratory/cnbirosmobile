@@ -16,8 +16,7 @@ Sensor::Sensor(ros::NodeHandle* node, std::string name) : RosInterface(node) {
 	// Service for sensor gridmap reset
 	this->rossrv_reset_ = this->rosnode_->advertiseService("gridmap_reset", 
 											&Sensor::on_gridmap_reset_, this);
-
-
+	
 	// GridMap initialization
 	this->rosgrid_.add(this->GetName());
 	this->sensor_layer_ = this->GetName();	

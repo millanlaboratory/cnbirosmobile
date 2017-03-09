@@ -19,8 +19,6 @@ int main(int argc, char** argv) {
 	RobotinoOdometry* odometry;
 	odometry = new RobotinoOdometry("192.168.1.3", &node);
 
-	odometry->AdvertiseOn("/odom");
-
 	// Run main loop
 	odometry->Run();
 		

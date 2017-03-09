@@ -6,7 +6,7 @@
 namespace cnbiros {
 	namespace robotino {
 
-RobotinoBase:: RobotinoBase(std::string hostname, ros::NodeHandle* node) : core::RobotBase(node) {
+RobotinoBase:: RobotinoBase(std::string hostname, ros::NodeHandle* node, std::string name) : core::RobotBase(node, name) {
 
 	// Default values
 	this->hostname_     = hostname;
@@ -29,11 +29,6 @@ RobotinoBase:: RobotinoBase(std::string hostname, ros::NodeHandle* node) : core:
 
 RobotinoBase::~RobotinoBase(void) {}
 
-void RobotinoBase::rosvelocity_callback_(const geometry_msgs::Twist& msg) {
-	this->vx_ = msg.linear.x;
-	this->vy_ = msg.linear.y;
-	this->vo_ = msg.angular.z;
-}
 
 void RobotinoBase::onRunning(void) {
 	

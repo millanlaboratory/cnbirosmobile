@@ -6,145 +6,115 @@
 namespace cnbiros {
 	namespace core {
 
-ForceField::ForceField(ros::NodeHandle* node) : Navigation(node) {
-	this->SetName("forcefield");
+ForceField::ForceField(ros::NodeHandle* node, std::string name) : Navigation(node, name) {
 
-	this->influence_ 	 = CNBIROS_FORCEFIELD_INFLUENCE;
-	this->obstruction_ 	 = CNBIROS_FORCEFIELD_OBSTRUCTION;
-	this->strength_  	 = CNBIROS_FORCEFIELD_STRENGTH;
-	this->spatialdecay_  = CNBIROS_FORCEFIELD_SPATIALDECAY;
-	this->rosgrid_layer_ = "";
+	this->SetParameter("obstruction", 	CNBIROS_FORCEFIELD_OBSTRUCTION, true);
+	this->SetParameter("spatialdecay", 	CNBIROS_FORCEFIELD_SPATIALDECAY, true);
+
+	// GridMap Layer initialization
+	this->SetGridLayer(CNBIROS_FORCEFIELD_GRIDLAYER);
+	
+	// GridMap initialization
+	this->rosgrid_.add(this->GetGridLayer());
+	GridMapTool::SetGeometry(this->rosgrid_, CNBIROS_GRIDMAP_XSIZE, 
+							 CNBIROS_GRIDMAP_YSIZE, CNBIROS_GRIDMAP_RESOLUTION);
+	GridMapTool::SetFrameId(this->rosgrid_, CNBIROS_GRIDMAP_FRAME);
+	GridMapTool::Reset(this->rosgrid_, this->GetGridLayer());
 }
 
 ForceField::~ForceField(void) {};
 
 void ForceField::SetGridLayer(std::string layer) {
-	this->rosgrid_layer_ = layer;
+	this->grid_layer_ = layer;
 }
 
 std::string ForceField::GetGridLayer(void) {
-	return this->rosgrid_layer_;
+	return this->grid_layer_;
 }
 
-void ForceField::SetInfluence(float radius) {
-	this->influence_ = radius;
-}
-
-void ForceField::SetObstruction(float size) {
-	this->obstruction_ = size;
-}
-
-void ForceField::SetStrength(float strength) {
-	this->strength_ = strength;
-}
-
-void ForceField::SetSpatialDecay(float decay) {
-	this->spatialdecay_ = decay;
-}
-
-float ForceField::GetInfluence(void) {
-	return this->influence_;
-}
-
-float ForceField::GetObstruction(void) {
-	return this->obstruction_;
-}
-
-float ForceField::GetStrength(void) {
-	return this->strength_;
-}
-
-float ForceField::GetSpatialDecay(void) {
-	return this->spatialdecay_;
-}
-
-float ForceField::ToAngle(float x, float y) {
+float ForceField::compute_angle_(float x, float y) {
 	return -(std::atan2(y, x) - M_PI/2.0f);
 }
 
-float ForceField::ToRadius(float x, float y) {
+float ForceField::compute_distance_(float x, float y) {
 	return std::sqrt(std::pow(x, 2) + std::pow(y, 2));
 }
 
-float ForceField::GetLambda(float distance, float beta1, float beta2) {
+float ForceField::compute_lambda_(float distance, float beta1, float beta2) {
 	return beta1*exp(-(distance/beta2));
 }
 
-float ForceField::GetSigma(float distance, float obstruction) {
+float ForceField::compute_sigma_(float distance, float obstruction) {
 	return std::atan( std::tan(M_PI/360.0f) + obstruction/(obstruction + distance));
 }
 
-void ForceField::AngularVelocity(void) {
+bool ForceField::AngularVelocity(geometry_msgs::Twist& msg) {
 	
-	grid_map::GridMap grid;
-	grid_map::Position current;
-	float x, y, angle, radius, lambda, sigma;
+	grid_map::Position 	cPosition;
+	grid_map::Index 	cIndex;
+	float x, y, angle, distance, strength;
+	float lambda, sigma;
+	float obstruction, spatialdecay;
 	float fobs = 0.0f;
-	
-	// Convert current grid map message to grid map
-	if(this->has_message_ == true) {
-	
-	grid_map::GridMapRosConverter::fromMessage(this->rosgridmap_msg_, grid);
 
-	//if(this->has_message_ == true) {
-	// Get circular iterator submap around the robot
-	for(grid_map::CircleIterator it(grid, grid_map::Position(0.0f, 0.0f), this->GetInfluence());
-		!it.isPastEnd(); ++it) {
-		
+	this->GetParameter("obstruction",  obstruction);
+	this->GetParameter("spatialdecay", spatialdecay);
+
+
+	if(GridMapTool::Exists(this->rosgrid_, this->grid_layer_) == false)
+		return false;
+
+	grid_map::Matrix& data = this->rosgrid_[this->grid_layer_];	
+
+	for(grid_map::GridMapIterator it(this->rosgrid_); !it.isPastEnd(); ++it) {
+
+		cIndex = grid_map::Index(*it);
+
 		// get current position
-		//printf("Entering circle submap\n");
-		grid.getPosition(*it, current);
+		this->rosgrid_.getPosition(cIndex, cPosition);
 
 		// exclude the positions on the back
-		if(current.x() < 0.0f)
-			continue;
-
-		// check for the existence of the target layer
-		if(grid.exists(this->GetGridLayer()) == false)
+		if(cPosition.x() < 0.0f)
 			continue;
 
 		// get x and y cohordinates (reverse for standard usage)
-		x = -current.y();
-		y = current.x();
+		x = -cPosition.y();
+		y =  cPosition.x();
+		strength = data(cIndex(0), cIndex(1));
 
 		// compute angular velocity based on attractors/repellors
-		if (grid.at(this->GetGridLayer(), *it) != 0.0f) {
+		angle    = this->compute_angle_(x, y);
+		distance = this->compute_distance_(x, y);
+		lambda   = this->compute_lambda_(distance, strength, spatialdecay);
+		sigma    = this->compute_sigma_(distance, obstruction);
 
-			angle  = this->ToAngle(x, y);
-			radius = this->ToRadius(x, y);
-			lambda = this->GetLambda(radius, this->GetStrength(), this->GetSpatialDecay());
-			sigma  = this->GetSigma(radius, this->GetObstruction());
+		fobs  += lambda*(angle)*exp(-pow((angle),2)/(2.0f*pow(sigma, 2)));
 
-			fobs  += lambda*(angle)*exp(-pow((angle),2)/(2.0f*pow(sigma, 2)));
-		}
 	}
-
-	this->rostwist_msg_.angular.x = 0.0f;
-	this->rostwist_msg_.angular.y = 0.0f;
-	this->rostwist_msg_.angular.z = -fobs;
-	}
+	msg.angular.x = 0.0f;
+	msg.angular.y = 0.0f;
+	msg.angular.z = fobs;
 }
 
-void ForceField::LinearVelocity(void) {
-	this->rostwist_msg_.linear.x = 0.0f;
-	this->rostwist_msg_.linear.y = 0.0f;
-	this->rostwist_msg_.linear.z = 0.0f;
+void ForceField::LinearVelocity(geometry_msgs::Twist& msg) {
+	msg.linear.x = 0.0f;
+	msg.linear.y = 0.0f;
+	msg.linear.z = 0.0f;
 }
 
 void ForceField::onRunning(void) {
-
-	// Compute angular velocity based on force fields
-	this->AngularVelocity();
 	
+	geometry_msgs::Twist msg;
+	
+	// Compute angular velocity based on force fields
+	this->AngularVelocity(msg);
+
 	// Compute linear velocity based on force fields
-	this->LinearVelocity();
+	this->LinearVelocity(msg);
 
 	// Publish velocity message
-	this->Publish(this->rostwist_msg_);
-		
+	this->Publish(msg);
 }
-
-
 
 	}
 }

@@ -13,18 +13,14 @@ namespace cnbiros {
 
 class RobotinoBase : public core::RobotBase {
 	public:	
-		RobotinoBase(std::string hostname, ros::NodeHandle* node);
+		RobotinoBase(std::string hostname, ros::NodeHandle* node, std::string name = CNBIROS_ROBOTBASE_NAME);
 		~RobotinoBase(void);
+	
+	private:
 		void onRunning(void);
 
 	protected:
-		void rosvelocity_callback_(const geometry_msgs::Twist& msg);
-
-	protected:
 		std::string hostname_;
-		float vx_;
-		float vy_;
-		float vo_;
 		RobotinoCom* com_;
 		rec::robotino::api2::OmniDrive omnidrive_;
 };

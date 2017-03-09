@@ -1,17 +1,18 @@
-#ifndef ROBOTINO_ODOMETRY_CPP
-#define ROBOTINO_ODOMETRY_CPP
+#ifndef CNBIROS_ROBOTINO_ODOMETRY_CPP
+#define CNBIROS_ROBOTINO_ODOMETRY_CPP
 
 #include "RobotinoOdometry.hpp"
 
 namespace cnbiros {
 	namespace robotino {
 
-RobotinoOdometry::RobotinoOdometry(std::string hostname, ros::NodeHandle* node) :
-								   cnbiros::core::Odometry(node) {
+RobotinoOdometry::RobotinoOdometry(std::string hostname, 
+								   ros::NodeHandle* node,
+								   std::string name) :
+								   cnbiros::core::Odometry(node, name) {
 
 	// Default values
 	this->hostname_     = hostname;
-	this->SetName("odometry");
 
 	// Connection to the base
 	ROS_INFO("Robotino %s tries to connect to the base (%s)...", 
@@ -24,7 +25,7 @@ RobotinoOdometry::RobotinoOdometry(std::string hostname, ros::NodeHandle* node) 
 
 	// Reset odometry
 	this->set(0.0f, 0.0f, 0.0f);
-	this->Reset(this->rosodom_msg_);
+	this->reset_message();
 
 	// Initialize TF
 	this->SetParentFrame("odom");
@@ -42,21 +43,25 @@ void RobotinoOdometry::readingsEvent(double x, double y, double omega,
 	float vz = 0.0f;
 
 	// Compute odometry
-	this->rosodom_msg_ = this->ConvertToMessage(x, y, z, -omega, vx, vy, vz, vomega, sequence);
+	this->set_message(x, y, z, -omega, vx, vy, vz, vomega, sequence);
 }
 
 void RobotinoOdometry::onRunning(void) {
 
 	this->com_->processEvents();
-	this->Publish(this->rosodom_msg_);
 
+	this->Publish(this->rosodom_msg_);
+	
 	// Transformation
 	this->SetTransformMessage(tf::Vector3(this->rosodom_msg_.pose.pose.position.x,
 										  this->rosodom_msg_.pose.pose.position.y,
 										  this->rosodom_msg_.pose.pose.position.z),
-							  this->rosodom_msg_.pose.pose.orientation);
+							  			  this->rosodom_msg_.pose.pose.orientation);
 }
 
+void RobotinoOdometry::onReset(void) {
+	this->set(0.0f, 0.0f, 0.0f);
+}
 
 	}
 }
