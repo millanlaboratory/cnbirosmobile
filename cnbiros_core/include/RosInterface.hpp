@@ -15,41 +15,62 @@ enum RosInterfaceState{Start, Stop, Resume};
 
 //* RosInterface class
 /**
- *	RosInterface represents the base class to interface with ROS. 
- *	It wraps some common ros methods and hides their complexity 
- *	(i.e., subscribe and advertise topics).
- * 	
- *	It is an abstract class, so it can be instanciated only as derived class
- *	with explicitly implementation of the callback method onRunning().
+ * RosInterface represents the base class to interface with ROS.  It wraps some
+ * common ros methods and hides their complexity (i.e., subscribe and advertise
+ * topics). It is an abstract class, so it can be instanciated only as derived
+ * class with explicitly implementation of the callback method onRunning().
+ * 
+ * <b>Behaviour:</b> \n 
+ * Once instantiated, a derived class of RosInterface starts an internal loop
+ * that spins on the given ROS node. The class automatically spins on all ROS
+ * subscribers (spinOnce() method). The internal loop runs until the node is
+ * running (e.g., ros::shutdown is not called) or until it is stopped by the
+ * Stop() method.  While the interface is running, specific operations can be
+ * defined in the onRunning() virtual method. In addition, the class has an
+ * internatl TF broadcaster to broadcast automatically transformations (if it
+ * is is defined).
  *
- *	An important attribute of the class is its name (accessible via SetName(),
- *	GetName()). This attribute is used to automatically advertise and subscribe
- *	topics in its derived classes (and possibly services).
+ * <b>Basic methods and members:</b> \n
+ * <ul>
+ * <li>SetName() and GetName(): 
+ * An important attribute of the class is its #name_.  This attribute is used to
+ * automatically advertise and subscribe topics in its derived classes (and
+ * possibly services)
+ * <li>SetFrequency() and GetFrequency(): 
+ * These methods are used to set and get the spinning node frequency.
+ * <li>SetSubscriber() and GetSubscriber(): 
+ * These methods are used to add a new subscriber to the class and to define the
+ * related callback. By assumption a RosInterface might have many subscriber
+ * <li>SetPublisher(): 
+ * This method creates a publisher for the interface. By assumption a
+ * RosInterface might have only one publisher (additional publisher might be add
+ * manually in the derived classes) 
+ * <li>Run(), Stop(), Resume(): 
+ * These methods control the internal loop of the RosInterface()
+ * <li>onRunning(), onStop(), onStart(): 
+ * These callbacks can be implemented in the derived classes and they are
+ * executed while the interface is running, once it stops or once it starts,
+ * respectively
+ * </ul>
  *
- * 	Once instantiated, a derived class of RosInterface start an internal loop
- * 	that spins on ROS subscribed topics and ROS services. While the
- * 	interface is running, specific operations can be defined in the onRunning()
- * 	virtual method.
+ * <b>Services:</b> \n
+ * By default, a RosInterface implements a standard ROS service to control the
+ * state of the interface. By means of this service is possible to Start, Stop
+ * and Resume the internal loop of the interface. The service is accessible via
+ * ROS methods on <i>~/rosinterface_state</i>.
  *
- * 	Two secondary callbacks are called when the interfaces is stopped or started
- * 	(onStop() and onStart() virtual methods, respectively). By default, these
- * 	callbacks are empty, but they can be customized in the derived classes.
- *
- * 	In addition, the RosInterface provides some method to deal with the ROS
- * 	Transformation. By default, if defined, a transformation is published
- * 	automatically in the interface loop.
- *
- * 	Finally, RosInterface starts a standard ROS service to control the state of
- * 	the interface (Start, Stop, Resume). The service is accessible via ROS
- * 	methods on "~/rosinterface_state".
- *
+ * <b>Actions:</b> \n
+ * <i>NOT IMPLEMENTED YET</i>
  */
+
 class RosInterface {
 
 	public:
 		/*! \brief Constructor
 		 *
 		 * Constructor with pointer to ROS node handler
+		 *
+		 * \param 	node 	Pointer to the ROS node handler
 		 */
 		RosInterface(ros::NodeHandle* node);
 
@@ -61,12 +82,12 @@ class RosInterface {
 		 * The name of the interface will be used to automatically set most of
 		 * the subscriber/publisher/services.
 		 *
-		 * \param name Name of the interface
+		 * \param 	name 	Name of the interface
 		 */
 		void SetName(std::string name);
 
 		/*! \brief Get interface name
-		 * \return The interface name
+		 * \return 			The interface name
 		 */
 		std::string GetName(void);
 
@@ -76,10 +97,10 @@ class RosInterface {
 		 * is cycling.
 		 *
 		 * By default the frequency rate of the interface is set at
-		 * CNBIROS_NODE_FREQUENCY. The frequency can be changed also if the
+		 * #CNBIROS_NODE_FREQUENCY. The frequency can be changed also if the
 		 * interface is already running.
 		 *
-		 * \param frequency Frequency of the interface
+		 * \param	frequency	Frequency of the interface
 		 */
 		void SetFrequency(float frequency);
 		
@@ -90,10 +111,11 @@ class RosInterface {
 
 		/*! \brief Get the interface subscriber on topic
 		 *
-		 * Returns a pointer of type ros::Subscriber related to required subscriber.
+		 * Returns a pointer of type ros::Subscriber related to required
+		 * subscriber.
 		 *
-		 *  \param topic subscriber topic
-		 *  \return Pointer to the subscriber
+		 * \param	topic 	subscriber topic
+		 * \return 		Pointer to the subscriber
 		 */
 		ros::Subscriber* GetSubscriber(std::string topic);
 
@@ -111,52 +133,62 @@ class RosInterface {
 		
 		/*! \brief Set a new interface subscriber on topic
 		 * 	
-		 * 	Add a new subscriber to the interface subscriber list. This method is
-		 * 	used with a class method as callback.
-		 * 	\param topic 	Name of the subscribed topic
-		 *  \param fp 		Callback function to be called when a message
-		 *  				arrives on the subscribed topic
-		 *  \param obj		Pointer to the object where the callback is
-		 *  				istantiated
+		 * Add a new subscriber to the interface subscriber list. This method
+		 * is used with a class method as callback. The message buffer size is
+		 * set by default equal to #CNBIROS_MESSAGES_BUFFER.
+		 * 
+		 * \param topic 	Name of the subscribed topic
+		 * \param fp 		Callback function to be called when a message
+		 * 					arrives on the subscribed topic
+		 * \param obj		Pointer to the object where the callback is
+		 *					istantiated
 		 */
 		template<class M, class T>
 		void SetSubscriber(std::string topic, void(T::*fp)(M), T* obj);
 
 		/*! \brief Set a new interface publisher
 		 *
-		 *	Create a new publisher that advertises on the required topic.
-		 *	By assumption, a RosInterface has only a publisher.
-		 *
-		 *  \param topic 	Name of the advertise topic
+		 * Create a new publisher that advertises on the required topic.  By
+		 * assumption, a RosInterface has only a publisher. The message buffer
+		 * size is set by default equal to #CNBIROS_MESSAGES_BUFFER.
+		 * 
+		 * \param topic 	Name of the advertise topic
 		 */
 		template<class M>
 		void SetPublisher(std::string topic);
 
-		/*! \brief Publish message on advertise topic 
+		/*! \brief Publish message on advertise topic. 
 		 *
-		 *   \param msg 		Message to be published
+		 * The message buffer size is set by default equal to
+		 * #CNBIROS_MESSAGES_BUFFER.
+		 *
+		 * \param msg 	Message to be published
 		 */
 		template<class M>
 		void Publish(M& msg);
 
 		/*! \brief Main run method
 		 * 	
-		 * 	Method to start the interface
+		 * Method to start the interface
 		 */ 
 		void Run(void);
 
 		/*! \brief Stop the interface 
+		 *
 		 * \sa Resume(), IsStopped()
 		 */ 
 		void Stop(void);
 
 		/*! \brief Restart the interface 
-		 * 	\sa Stop(), IsStopped()
+		 *
+		 * \sa Stop(), IsStopped()
 		 */
 		void Resume(void);
 
 		/*! \brief Check if the interface is stopped
-		 * \return Stop flag
+		 *
+		 * \return 			Stop flag
+		 * 
 		 * \sa Stop(), Resume()
 		 */
 		bool IsStopped(void);
@@ -164,14 +196,16 @@ class RosInterface {
 		/*! \brief Set the parent frame for the interface
 		 *
 		 * Set the parent frame for the interface for transformation purposes
-		 * \param frameid id of parent frame
+		 *
+		 * \param	frameid	Id of parent frame
 		 */
 		void SetParentFrame(std::string frameid);
 
 		/*! \brief Set the child frame id for the interface
 		 *
 		 * Set the child frame id for the interface for transformation purposes
-		 * \param frameid id of child frame
+		 * 
+		 * \param	frameid	Id of child frame
 		 */
 		void SetChildFrame(std::string frameid);
 
@@ -199,20 +233,22 @@ class RosInterface {
 		 *
 		 * Transforms an input point messages in the out message with respect to
 		 * the given frame
+		 *
 		 * \param 		frame 	target frame for transformation
 		 * \param[in] 	in 		Input points
-		 * \param[out] out		Output points (transformed)
+		 * \param[out] 	out		Output points (transformed)
 		 */
 		void TransformPoint(std::string frame, geometry_msgs::PointStamped& in,
 				            geometry_msgs::PointStamped& out);
 
 		/*! \brief Get parent frame id
-		 * \return Parent frame id
+		 *
+		 * \return 				Parent frame id
 		 */
 		std::string GetParentFrame(void);
 		
 		/*! \brief Get child frame id
-		 * \return Child frame id
+		 * \return 				Child frame id
 		 */
 		std::string GetChildFrame(void);
 		
@@ -220,7 +256,8 @@ class RosInterface {
 		 *
 		 * It converts the current RosInterface transformation to a geometry
 		 * message.
-		 * \return Converted transformation
+		 *
+		 * \return 				Converted transformation
 		 */
 		geometry_msgs::TransformStamped GetTransformMessage(void);
 	
@@ -229,14 +266,16 @@ class RosInterface {
 		 * 
 		 * This callback is called at every iteration of the interface. Can be
 		 * instanciated and defined in the derived class.
+		 *
 		 * \sa Run()
 		 */
 		virtual void onRunning(void) = 0;
 
 		/*! Callback to be executed when the interface stops
 		 * 
-		 * This callback is called when the interface stops. Can be
-		 * instanciated and defined in the derived class.
+		 * This callback is called when the interface stops. Can be instanciated
+		 * and defined in the derived class.
+		 *
 		 * \sa Stop()
 		 */
 		virtual void onStop(void) {};
@@ -245,6 +284,7 @@ class RosInterface {
 		 * 
 		 * This callback is called when the interface starts. Can be
 		 * instanciated and defined in the derived class.
+		 *
 		 * \sa Start()
 		 */
 		virtual void onStart(void) {};
