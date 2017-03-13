@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>cnbiros_services</name>
-  <version>0.0.1</version>
+  <version>0.2</version>
   <description>CNBIROS Service library</description>
   <author email="luca.tonin@epfl.ch">Luca Tonin</author>
   <maintainer email="luca.tonin@epfl.ch">Luca Tonin</maintainer>
