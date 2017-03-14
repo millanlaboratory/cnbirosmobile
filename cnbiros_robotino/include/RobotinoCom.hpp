@@ -1,5 +1,5 @@
-#ifndef ROBOTINOCOM_HPP
-#define ROBOTINOCOM_HPP
+#ifndef CNBIROS_ROBOTINO_COM_HPP
+#define CNBIROS_ROBOTINO_COM_HPP
 
 #include <rec/robotino/api2/Com.h>
 #include <ros/ros.h>

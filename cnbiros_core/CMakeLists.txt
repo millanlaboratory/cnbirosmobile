@@ -30,7 +30,7 @@ catkin_package(
 add_library(cnbiros_core 
 			src/RosInterface.cpp
 			src/GridMapTool.cpp
-			src/RobotBase.cpp
+			src/Motors.cpp
 			src/Odometry.cpp
 			src/Sensor.cpp
 			src/KinectScan.cpp

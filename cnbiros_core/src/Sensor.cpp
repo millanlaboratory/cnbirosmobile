@@ -6,15 +6,16 @@
 namespace cnbiros {
 	namespace core {
 
-Sensor::Sensor(ros::NodeHandle* node, std::string name) : RosInterface(node) {
+Sensor::Sensor(std::string name) {
 
 	// Abstract sensor initialization
 	this->SetName(name);
-	this->SetPublisher<grid_map_msgs::GridMap>("/sensor_" + this->GetName());
+	this->rostopic_pub_ = "/sensor_" + this->GetName();
+	this->SetPublisher<grid_map_msgs::GridMap>(this->rostopic_pub_);
 
 
 	// Service for sensor gridmap reset
-	this->rossrv_reset_ = this->rosnode_->advertiseService("gridmap_reset", 
+	this->rossrv_reset_ = this->advertiseService("gridmap_reset", 
 											&Sensor::on_gridmap_reset_, this);
 	
 	// GridMap initialization
@@ -40,7 +41,7 @@ bool Sensor::on_gridmap_reset_(cnbiros_services::GridMapReset::Request& req,
 		if(this->IsStopped() == false) {
 			GridMapTool::Reset(this->rosgrid_);
 			GridMapTool::ToMessage(this->rosgrid_, msg);
-			this->Publish(msg);
+			this->Publish(this->rostopic_pub_, msg);
 			res.result = true;
 		}
 	}
@@ -53,7 +54,7 @@ void Sensor::onStop(void) {
 	
 	GridMapTool::Reset(this->rosgrid_);
 	GridMapTool::ToMessage(this->rosgrid_, msg);
-	this->Publish(msg);
+	this->Publish(this->rostopic_pub_, msg);
 }
 
 void Sensor::onStart(void) {
@@ -61,7 +62,7 @@ void Sensor::onStart(void) {
 	
 	GridMapTool::Reset(this->rosgrid_);
 	GridMapTool::ToMessage(this->rosgrid_, msg);
-	this->Publish(msg);
+	this->Publish(this->rostopic_pub_, msg);
 }
 
 

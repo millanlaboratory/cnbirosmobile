@@ -7,9 +7,8 @@ namespace cnbiros {
 	namespace robotino {
 
 RobotinoOdometry::RobotinoOdometry(std::string hostname, 
-								   ros::NodeHandle* node,
 								   std::string name) :
-								   cnbiros::core::Odometry(node, name) {
+								   cnbiros::core::Odometry(name) {
 
 	// Default values
 	this->hostname_     = hostname;
@@ -50,13 +49,7 @@ void RobotinoOdometry::onRunning(void) {
 
 	this->com_->processEvents();
 
-	this->Publish(this->rosodom_msg_);
-	
-	// Transformation
-	this->SetTransformMessage(tf::Vector3(this->rosodom_msg_.pose.pose.position.x,
-										  this->rosodom_msg_.pose.pose.position.y,
-										  this->rosodom_msg_.pose.pose.position.z),
-							  			  this->rosodom_msg_.pose.pose.orientation);
+	this->Publish(this->rostopic_pub_, this->rosodom_msg_);
 }
 
 void RobotinoOdometry::onReset(void) {

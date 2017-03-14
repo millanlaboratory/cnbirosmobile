@@ -6,18 +6,12 @@ using namespace cnbiros::robotino;
 
 int main(int argc, char** argv) {
 
-	float frequency;
-	std::string hostname;
-
 	// ROS initialization
 	ros::init(argc, argv, "robotino_node_odometry");
 	
-	// Create node handler
-	ros::NodeHandle node("~");
-
 	// Create robotino instances
 	RobotinoOdometry* odometry;
-	odometry = new RobotinoOdometry("192.168.1.3", &node);
+	odometry = new RobotinoOdometry("192.168.1.3");
 
 	// Run main loop
 	odometry->Run();

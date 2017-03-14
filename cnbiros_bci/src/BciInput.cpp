@@ -6,7 +6,7 @@
 namespace cnbiros {
 	namespace bci {
 
-BciInput::BciInput(ros::NodeHandle* node) : core::RosInterface(node) {
+BciInput::BciInput(void) {
 	this->SetName("bci");
 
 	this->SetSubscriber("/tobiid_bci2ros", &BciInput::on_tobiid_received_, this);

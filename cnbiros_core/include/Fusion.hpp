@@ -76,7 +76,7 @@ class Fusion : public RosInterface {
 		 * \param node 	Pointer to the ROS node handler 
 		 * \param name 	Name of the sensor
 		 */
-		Fusion(ros::NodeHandle* node, std::string name = CNBIROS_FUSION_NAME);
+		Fusion(std::string name = CNBIROS_FUSION_NAME);
 		
 		//! \brief Destructor
 		virtual ~Fusion(void);
@@ -161,6 +161,7 @@ class Fusion : public RosInterface {
 	protected:
 		float 				decayrate_;
 		std::string 		fusion_layer_;
+		std::string 		rostopic_pub_;
 		grid_map::GridMap 	rosgrid_;
 
 	private:

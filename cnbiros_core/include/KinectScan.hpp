@@ -50,7 +50,7 @@ class KinectScan : public Sensor {
 		 * \param node 	Pointer to the ROS node handler 
 		 * \param name 	Name of the sensor
 		 */
-		KinectScan(ros::NodeHandle* node, std::string name = CNBIROS_KINECTSCAN_NAME);
+		KinectScan(std::string name = CNBIROS_KINECTSCAN_NAME);
 		
 		//! \brief Destructor
 		~KinectScan(void);

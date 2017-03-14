@@ -1,5 +1,5 @@
-#ifndef ROBOT_HPP
-#define ROBOT_HPP
+#ifndef CNBIROS_CORE_MOTORS_HPP
+#define CNBIROS_CORE_MOTORS_HPP
 
 #include <string>
 #include <ros/ros.h>
@@ -12,10 +12,10 @@
 namespace cnbiros {
 	namespace core {
 
-class RobotBase : public RosInterface {
+class Motors : public RosInterface {
 	public:
-		RobotBase(ros::NodeHandle* node, std::string name);
-		virtual ~RobotBase(void);
+		Motors(std::string name);
+		virtual ~Motors(void);
 
 
 	protected:

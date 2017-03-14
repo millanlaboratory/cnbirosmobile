@@ -8,12 +8,9 @@ int main(int argc, char** argv) {
 	// ROS initialization
 	ros::init(argc, argv, "robotino_node_navigation");
 	
-	// Create node handler
-	ros::NodeHandle node("~");
-	
 	// Create fusion object
 	ForceField* navigation;	
-	navigation = new ForceField(&node);
+	navigation = new ForceField;
 	
 	// Register to the node and advertise/subscribe to topics
 	navigation->AddSource("/fusion");

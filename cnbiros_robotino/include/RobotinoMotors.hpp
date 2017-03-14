@@ -1,20 +1,20 @@
-#ifndef ROBOTINO_HPP
-#define ROBOTINO_HPP
+#ifndef CNBIROS_ROBOTINO_MOTORS_HPP
+#define CNBIROS_ROBOTINO_MOTORS_HPP
 
 #include <rec/robotino/api2/OmniDrive.h>
 #include <rec/robotino/api2/Odometry.h>
 
-#include "RobotBase.hpp"
+#include "Motors.hpp"
 #include "RobotinoCom.hpp"
 #include "cnbiros_messages/RobotOdometry.h"
 
 namespace cnbiros {
 	namespace robotino {
 
-class RobotinoBase : public core::RobotBase {
+class RobotinoMotors : public core::Motors{
 	public:	
-		RobotinoBase(std::string hostname, ros::NodeHandle* node, std::string name = CNBIROS_ROBOTBASE_NAME);
-		~RobotinoBase(void);
+		RobotinoMotors(std::string hostname, std::string name = CNBIROS_ROBOTBASE_NAME);
+		~RobotinoMotors(void);
 	
 	private:
 		void onRunning(void);

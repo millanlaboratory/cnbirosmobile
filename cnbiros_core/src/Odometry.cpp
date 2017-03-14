@@ -6,14 +6,15 @@
 namespace cnbiros {
 	namespace core {
 
-Odometry::Odometry(ros::NodeHandle* node, std::string name) : RosInterface(node) {
+Odometry::Odometry(std::string name) {
 
 	// Abstract sensor initialization
 	this->SetName(name);
-	this->SetPublisher<nav_msgs::Odometry>("/" + this->GetName());
+	this->rostopic_pub_ = "/" + this->GetName();
+	this->SetPublisher<nav_msgs::Odometry>(this->rostopic_pub_);
 	
 	// Service for sensor gridmap reset
-	this->rossrv_reset_ = this->rosnode_->advertiseService("odometry_reset", 
+	this->rossrv_reset_ = this->advertiseService("odometry_reset", 
 											&Odometry::on_odometry_reset_, this);
 	
 	// Initialize TF

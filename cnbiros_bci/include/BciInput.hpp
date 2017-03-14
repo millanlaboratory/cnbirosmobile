@@ -18,7 +18,7 @@ namespace cnbiros {
 class BciInput : public core::RosInterface {
 
 	public: 
-		BciInput(ros::NodeHandle* node);
+		BciInput(void);
 		~BciInput(void);
 	
 		void AdvertiseOn(std::string topic);

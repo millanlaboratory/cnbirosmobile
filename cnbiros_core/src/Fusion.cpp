@@ -6,15 +6,16 @@
 namespace cnbiros {
 	namespace core {
 
-Fusion::Fusion(ros::NodeHandle* node, std::string name) : RosInterface(node) {
+Fusion::Fusion(std::string name) {
 
 	// Abstract fusion initialization
 	this->SetName(name);
-	this->SetPublisher<grid_map_msgs::GridMap>("/" + this->GetName());
+	this->rostopic_pub_ = "/" + this->GetName();
+	this->SetPublisher<grid_map_msgs::GridMap>(this->rostopic_pub_);
 	this->SetDecayTime(0.0f);
 
 	// Service for fusion gridmap reset
-	this->rossrv_reset_ = this->rosnode_->advertiseService("gridmap_reset", 
+	this->rossrv_reset_ = this->advertiseService("gridmap_reset", 
 											&Fusion::on_gridmap_reset_, this);
 	// GridMap initialization
 	this->rosgrid_.add(this->GetName());
@@ -39,7 +40,7 @@ bool Fusion::on_gridmap_reset_(cnbiros_services::GridMapReset::Request& req,
 		if(this->IsStopped() == false) {
 			GridMapTool::Reset(this->rosgrid_);
 			GridMapTool::ToMessage(this->rosgrid_, msg);
-			this->Publish(msg);
+			this->Publish(this->rostopic_pub_, msg);
 			res.result = true;
 		}
 	}
@@ -123,7 +124,7 @@ void Fusion::onRunning(void) {
 
 	// Publish the grid messeage
 	GridMapTool::ToMessage(this->rosgrid_, msg);
-	this->Publish(msg);
+	this->Publish(this->rostopic_pub_, msg);
 }
 
 void Fusion::onStop(void) {
@@ -131,7 +132,7 @@ void Fusion::onStop(void) {
 	
 	GridMapTool::Reset(this->rosgrid_);
 	GridMapTool::ToMessage(this->rosgrid_, msg);
-	this->Publish(msg);
+	this->Publish(this->rostopic_pub_, msg);
 }
 
 void Fusion::onStart(void) {
@@ -139,7 +140,7 @@ void Fusion::onStart(void) {
 	
 	GridMapTool::Reset(this->rosgrid_);
 	GridMapTool::ToMessage(this->rosgrid_, msg);
-	this->Publish(msg);
+	this->Publish(this->rostopic_pub_, msg);
 }
 
 	}

@@ -28,19 +28,19 @@ catkin_package(
   	Eigen3
 )
 
-add_library(cnbiros_bci 
-			src/TobiId.cpp
-			src/BciInput.cpp)
-target_link_libraries(cnbiros_bci ${catkin_LIBRARIES} ${Eigen3_LIBRARY} 
-					  cnbiros_core tobicore tobiid tobiic cnbiloop cnbicore)
-
-# TobiId node
-add_executable(tobiid_node_base src/tobiid_node_base.cpp)
-target_link_libraries(tobiid_node_base 	cnbiros_bci cnbiros_core tobicore 
-										tobiid 
-										cnbiloop 
-										cnbicore)
-
-# BCI Input node
-add_executable(bci_node_base src/bci_node_base.cpp)
-target_link_libraries(bci_node_base cnbiros_bci ${Eigen3_LIBRARY})
+#add_library(cnbiros_bci 
+#			src/TobiId.cpp
+#			src/BciInput.cpp)
+#target_link_libraries(cnbiros_bci ${catkin_LIBRARIES} ${Eigen3_LIBRARY} 
+#					  cnbiros_core tobicore tobiid tobiic cnbiloop cnbicore)
+#
+## TobiId node
+#add_executable(tobiid_node_base src/tobiid_node_base.cpp)
+#target_link_libraries(tobiid_node_base 	cnbiros_bci cnbiros_core tobicore 
+#										tobiid 
+#										cnbiloop 
+#										cnbicore)
+#
+## BCI Input node
+#add_executable(bci_node_base src/bci_node_base.cpp)
+#target_link_libraries(bci_node_base cnbiros_bci ${Eigen3_LIBRARY})

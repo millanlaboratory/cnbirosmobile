@@ -1,5 +1,5 @@
-#ifndef ROBOTINOCOM_CPP
-#define ROBOTINOCOM_CPP
+#ifndef CNBIROS_ROBOTINO_COM_CPP
+#define CNBIROS_ROBOTINO_COM_CPP
 
 #include "RobotinoCom.hpp"
 

@@ -19,7 +19,7 @@ namespace cnbiros {
 class Navigation : public RosInterface {
 
 	public:
-		Navigation(ros::NodeHandle* node, std::string name);
+		Navigation(std::string name);
 		virtual ~Navigation(void);
 
 		void AddSource(std::string topic);
@@ -43,6 +43,7 @@ class Navigation : public RosInterface {
 		ros::ServiceServer  			rossrv_param_;
 
 		std::string 			grid_layer_;
+		std::string 			rostopic_pub_;
 		grid_map::GridMap 		rosgrid_;
 };
 

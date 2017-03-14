@@ -63,16 +63,12 @@ enum RosInterfaceState{Start, Stop, Resume};
  * <i>NOT IMPLEMENTED YET</i>
  */
 
-class RosInterface {
+class RosInterface : public ros::NodeHandle {
 
 	public:
 		/*! \brief Constructor
-		 *
-		 * Constructor with pointer to ROS node handler
-		 *
-		 * \param 	node 	Pointer to the ROS node handler
 		 */
-		RosInterface(ros::NodeHandle* node);
+		RosInterface(std::string ns="~");
 
 		//! \brief Destructor
 		virtual ~RosInterface(void);
@@ -146,6 +142,9 @@ class RosInterface {
 		template<class M, class T>
 		void SetSubscriber(std::string topic, void(T::*fp)(M), T* obj);
 
+
+		ros::Publisher* GetPublisher(std::string topic);
+
 		/*! \brief Set a new interface publisher
 		 *
 		 * Create a new publisher that advertises on the required topic.  By
@@ -165,7 +164,7 @@ class RosInterface {
 		 * \param msg 	Message to be published
 		 */
 		template<class M>
-		void Publish(M& msg);
+		void Publish(std::string topic, M& msg);
 
 		/*! \brief Main run method
 		 * 	
@@ -209,38 +208,6 @@ class RosInterface {
 		 */
 		void SetChildFrame(std::string frameid);
 
-		/*! \brief Set the transformation of the interface
-		 *
-		 * Update the transformation of the interface, given a translation
-		 * vector and the orientation with respect the z-axis
-		 *
-		 * \param translation 	Vector with translation in x-, y-, z-axis
-		 * \param yaw 			Value of orientation with respect to z-axis
-		 */
-		void SetTransformMessage(tf::Vector3 translation, float yaw);
-		
-		/*! \brief Set the transformation of the interface
-		 *
-		 * Update the transformation of the interface, given a translation
-		 * vector and a quaternion 
-		 *
-		 * \param translation 	Vector with translation in x-, y-, z-axis
-		 * \param quaternion 	Quaternion
-		 */
-		void SetTransformMessage(tf::Vector3 translation, geometry_msgs::Quaternion quaternion);
-
-		/*! \brief Points transformation with respect to the required frame
-		 *
-		 * Transforms an input point messages in the out message with respect to
-		 * the given frame
-		 *
-		 * \param 		frame 	target frame for transformation
-		 * \param[in] 	in 		Input points
-		 * \param[out] 	out		Output points (transformed)
-		 */
-		void TransformPoint(std::string frame, geometry_msgs::PointStamped& in,
-				            geometry_msgs::PointStamped& out);
-
 		/*! \brief Get parent frame id
 		 *
 		 * \return 				Parent frame id
@@ -252,16 +219,7 @@ class RosInterface {
 		 */
 		std::string GetChildFrame(void);
 		
-		/*! \brief Convert transformation in message
-		 *
-		 * It converts the current RosInterface transformation to a geometry
-		 * message.
-		 *
-		 * \return 				Converted transformation
-		 */
-		geometry_msgs::TransformStamped GetTransformMessage(void);
-	
-	protected:
+		protected:
 		/*! Callback to be executed while the interface is running
 		 * 
 		 * This callback is called at every iteration of the interface. Can be
@@ -290,22 +248,19 @@ class RosInterface {
 		virtual void onStart(void) {};
 
 	private:
-		void SendTransform(geometry_msgs::TransformStamped msg);
 		
 		bool on_rosinterface_service_(cnbiros_services::RosInterfaceState::Request &req,
 									  cnbiros_services::RosInterfaceState::Response &res);
-
-	protected:
-		ros::NodeHandle* 			rosnode_; 				// <- private?
-		ros::Rate* 					rosrate_; 				// <- private?
-		ros::Publisher 				rospub_;
-		std::map<std::string, ros::Subscriber> 	rossubs_;
 
 	private:
 		//! Generic interface members
 		std::string 	name_;
 		float 			frequency_;
 		bool 			is_stopped_;
+		
+		ros::Rate* 								rosrate_; 						
+		std::map<std::string, ros::Publisher> 	rospubs_;
+		std::map<std::string, ros::Subscriber> 	rossubs_;
 
 		//! Services related members
 		ros::ServiceServer rossrv_state_;
@@ -313,32 +268,30 @@ class RosInterface {
 		//! Frame related members
 		std::string 	rosframe_child_;
 		std::string 	rosframe_parent_;
-
-		//! Transform related members
-		tf::TransformBroadcaster 		rostf_broadcaster_; 
-		tf::TransformListener 			rostf_listener_;
-		geometry_msgs::TransformStamped rostf_msg_;
 };
 
 
 template<class M>
 void RosInterface::SetSubscriber(std::string topic, void(*fp)(M)) {
-	this->rossubs_[topic] = this->rosnode_->subscribe(topic, CNBIROS_MESSAGES_BUFFER, fp);
+	this->rossubs_[topic] = this->subscribe(topic, CNBIROS_MESSAGES_BUFFER, fp);
 }
 
 template<class M, class T>
 void RosInterface::SetSubscriber(std::string topic, void(T::*fp)(M), T* obj) {
-	this->rossubs_[topic] = this->rosnode_->subscribe(topic, CNBIROS_MESSAGES_BUFFER, fp, obj);
+	this->rossubs_[topic] = this->subscribe(topic, CNBIROS_MESSAGES_BUFFER, fp, obj);
 }
 
 template<class M>
 void RosInterface::SetPublisher(std::string topic) {
-	this->rospub_ = this->rosnode_->advertise<M>(topic, CNBIROS_MESSAGES_BUFFER);
+	this->rospubs_[topic] = this->advertise<M>(topic, CNBIROS_MESSAGES_BUFFER);
 }
 
 template<class M>
-void RosInterface::Publish(M& msg) {
-	this->rospub_.publish(msg);
+void RosInterface::Publish(std::string topic, M& msg) {
+	ros::Publisher* ptr_pub;
+	ptr_pub = this->GetPublisher(topic);
+
+	ptr_pub->publish(msg);
 }
 
 

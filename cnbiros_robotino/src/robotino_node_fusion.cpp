@@ -8,12 +8,9 @@ int main(int argc, char** argv) {
 	// ROS initialization
 	ros::init(argc, argv, "robotino_node_fusion");
 	
-	// Create node handler
-	ros::NodeHandle node("~");
-
 	// Create fusion object
 	Fusion* 	fusion;
-	fusion = new Fusion(&node);				
+	fusion = new Fusion;				
 
 	// Configure fusion grid
 	fusion->SetFrequency(10.0f);

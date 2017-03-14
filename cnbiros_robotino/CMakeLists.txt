@@ -31,7 +31,7 @@ catkin_package(
 )
 
 add_library(cnbiros_robotino 
-			src/RobotinoBase.cpp
+			src/RobotinoMotors.cpp
 			src/RobotinoCom.cpp
 			src/RobotinoOdometry.cpp
 			src/RobotinoInfrared.cpp)

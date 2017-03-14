@@ -6,7 +6,7 @@
 namespace cnbiros {
 	namespace core {
 
-KinectScan::KinectScan(ros::NodeHandle* node, std::string name) : Sensor(node, name) {
+KinectScan::KinectScan(std::string name) : Sensor(name) {
 
 	// Initialization kinect subscriber
 	this->SetSubscriber(CNBIROS_KINECTSCAN_TOPIC, &KinectScan::roskinect_callback_, this);
@@ -15,7 +15,6 @@ KinectScan::KinectScan(ros::NodeHandle* node, std::string name) : Sensor(node, n
 	this->SetParentFrame("base_link");
 	this->SetChildFrame("base_kinectscan");
 
-	this->SetTransformMessage(tf::Vector3(0.12f, 0.0f, 0.46f), 0.0f);
 }
 
 KinectScan::~KinectScan(void) {};
@@ -48,14 +47,11 @@ void KinectScan::roskinect_callback_(const sensor_msgs::LaserScan& msg) {
 			continue;
 
 		// Get cartesian cohordinates -> To be added: position of the kinect
-		base_kinect.point.x = msg.ranges[i]*cos(angle);
-		base_kinect.point.y = msg.ranges[i]*sin(angle);
-
-		// Transform point from kinect frame to base frame
-		this->TransformPoint(this->GetParentFrame(), base_kinect, base_link);
+		x = msg.ranges[i]*cos(angle);
+		y = msg.ranges[i]*sin(angle);
 
 		// Convert x,y cohordinates in position
-		grid_map::Position position(base_link.point.x, base_link.point.y);
+		grid_map::Position position(x, y);
 		
 		// Skip positions outside the grid range
 		if(this->rosgrid_.isInside(position) == false)
@@ -76,7 +72,7 @@ void KinectScan::onRunning(void) {
 	
 	// Publish the grid map	
 	GridMapTool::ToMessage(this->rosgrid_, msg);
-	this->Publish(msg);
+	this->Publish(this->rostopic_pub_, msg);
 }
 
 	}

@@ -6,7 +6,7 @@
 namespace cnbiros {
 	namespace core {
 
-ForceField::ForceField(ros::NodeHandle* node, std::string name) : Navigation(node, name) {
+ForceField::ForceField(std::string name) : Navigation(name) {
 
 	this->SetParameter("obstruction", 	CNBIROS_FORCEFIELD_OBSTRUCTION, true);
 	this->SetParameter("spatialdecay", 	CNBIROS_FORCEFIELD_SPATIALDECAY, true);
@@ -113,7 +113,7 @@ void ForceField::onRunning(void) {
 	this->LinearVelocity(msg);
 
 	// Publish velocity message
-	this->Publish(msg);
+	this->Publish(this->rostopic_pub_, msg);
 }
 
 	}

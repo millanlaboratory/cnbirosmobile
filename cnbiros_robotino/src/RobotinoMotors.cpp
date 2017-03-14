@@ -1,12 +1,12 @@
-#ifndef ROBOTINO_CPP
-#define ROBOTINO_CPP
+#ifndef CNBIROS_ROBOTINO_MOTORS_CPP
+#define CNBIROS_ROBOTINO_MOTORS_CPP
 
-#include "RobotinoBase.hpp"
+#include "RobotinoMotors.hpp"
 
 namespace cnbiros {
 	namespace robotino {
 
-RobotinoBase:: RobotinoBase(std::string hostname, ros::NodeHandle* node, std::string name) : core::RobotBase(node, name) {
+RobotinoMotors:: RobotinoMotors(std::string hostname, std::string name) : core::Motors(name) {
 
 	// Default values
 	this->hostname_     = hostname;
@@ -27,10 +27,10 @@ RobotinoBase:: RobotinoBase(std::string hostname, ros::NodeHandle* node, std::st
 	this->omnidrive_.setComId(this->com_->id());
 }
 
-RobotinoBase::~RobotinoBase(void) {}
+RobotinoMotors::~RobotinoMotors(void) {}
 
 
-void RobotinoBase::onRunning(void) {
+void RobotinoMotors::onRunning(void) {
 	
 	this->omnidrive_.setVelocity(this->vx_, this->vy_, this->vo_);	
 	this->com_->processEvents();

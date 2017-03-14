@@ -6,14 +6,15 @@
 namespace cnbiros {
 	namespace core {
 
-Navigation::Navigation(ros::NodeHandle* node, std::string name) : RosInterface(node) {
+Navigation::Navigation(std::string name) {
 
 	// Abstract sensor initialization
 	this->SetName(name);
-	this->SetPublisher<geometry_msgs::Twist>("/cmd_vel");
+	this->rostopic_pub_ = "/cmd_vel";
+	this->SetPublisher<geometry_msgs::Twist>(this->rostopic_pub_);
 
 	// Service for navigation parameter
-	this->rossrv_param_ = this->rosnode_->advertiseService("parameter_set", 
+	this->rossrv_param_ = this->advertiseService("parameter_set", 
 											&Navigation::on_parameter_set_, this);
 }
 
@@ -98,14 +99,14 @@ void Navigation::rosgridmap_callback_(const grid_map_msgs::GridMap& msg) {
 void Navigation::onStop(void) {
 	geometry_msgs::Twist msg;	
 	
-	this->Publish(msg);
+	this->Publish(this->rostopic_pub_, msg);
 	GridMapTool::Reset(this->rosgrid_);
 }
 
 void Navigation::onStart(void) {
 	geometry_msgs::Twist msg;	
 	
-	this->Publish(msg);
+	this->Publish(this->rostopic_pub_, msg);
 	GridMapTool::Reset(this->rosgrid_);
 }
 

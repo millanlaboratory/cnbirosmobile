@@ -13,7 +13,7 @@ namespace cnbiros {
 class TobiId : public core::RosInterface {
 	
 	public:
-		TobiId(ros::NodeHandle* node, unsigned int mode);
+		TobiId(unsigned int mode);
 		virtual ~TobiId(void);
 	
 		bool Attach(std::string pipe, float wait = 10.0f);

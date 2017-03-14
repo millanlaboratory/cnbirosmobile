@@ -53,7 +53,7 @@ class Odometry : public RosInterface {
 		 * \param node 	Pointer to the ROS node handler 
 		 * \param name 	Name of the odometry
 		 */
-		Odometry(ros::NodeHandle* node, std::string name);
+		Odometry(std::string name);
 		
 		//! \brief Destructor
 		virtual ~Odometry(void);
@@ -100,6 +100,7 @@ class Odometry : public RosInterface {
 	protected:
 		nav_msgs::Odometry 	rosodom_msg_;
 		ros::ServiceServer	rossrv_reset_;
+		std::string 		rostopic_pub_;
 };
 
 

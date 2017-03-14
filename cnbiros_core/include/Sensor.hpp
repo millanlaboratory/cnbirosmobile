@@ -66,7 +66,7 @@ class Sensor : public RosInterface {
 		 * \param node 	Pointer to the ROS node handler 
 		 * \param name 	Name of the sensor
 		 */
-		Sensor(ros::NodeHandle* node, std::string name);
+		Sensor(std::string name);
 		
 		//! \brief Destructor
 		virtual ~Sensor(void);
@@ -106,7 +106,7 @@ class Sensor : public RosInterface {
 	protected: 
 		grid_map::GridMap 		rosgrid_; 
 		std::string				sensor_layer_; 
-		std::string 			rostopic_grid_;
+		std::string 			rostopic_pub_;
 
 	private: 
 		ros::ServiceServer 		rossrv_reset_;

@@ -10,7 +10,7 @@ namespace cnbiros {
 class ForceField : public Navigation {
 	
 	public:
-		ForceField(ros::NodeHandle* node, std::string name=CNBIROS_FORCEFIELD_NAME);
+		ForceField(std::string name=CNBIROS_FORCEFIELD_NAME);
 		~ForceField(void);
 
 		void SetGridLayer(std::string layer);

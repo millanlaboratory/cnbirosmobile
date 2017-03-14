@@ -11,7 +11,6 @@ namespace cnbiros {
 class RobotinoOdometry : public cnbiros::core::Odometry, public rec::robotino::api2::Odometry {
 	public:
 		RobotinoOdometry(std::string hostname,
-						 ros::NodeHandle* node,
 						 std::string name = CNBIROS_ODOMETRY_NAME);
 		~RobotinoOdometry(void);
 

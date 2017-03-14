@@ -16,7 +16,7 @@ void callback_msg_float(const std_msgs::Float32& msg) {
 
 class DerivedInterface : public RosInterface {
 	public:
-		DerivedInterface(ros::NodeHandle* node) : RosInterface(node) {};
+		DerivedInterface(void){};
 		~DerivedInterface(void) {};
 
 		void callback_object_msg_string(const std_msgs::String& msg) {
@@ -39,9 +39,7 @@ int main (int argc, char** argv) {
 	
 	ros::init(argc, argv, "test_interface");
 
-	ros::NodeHandle node("~");
-
-	DerivedInterface iface_d(&node);
+	DerivedInterface iface_d;
 	iface_d.SetSubscriber("/test_topic", &DerivedInterface::callback_object_msg_string, &iface_d);
 	iface_d.SetSubscriber("/test_topic2", &DerivedInterface::callback_object_msg_float, &iface_d);
 	iface_d.SetSubscriber("/test_topic3", callback_msg_string);
@@ -53,10 +51,10 @@ int main (int argc, char** argv) {
 	ros::Rate r(1);
 	std_msgs::Float32 msg;
 
-	while(node.ok()) {
+	while(iface_d.ok()) {
 		
 		msg.data = 10.0f;
-		iface_d.Publish(msg); 
+		iface_d.Publish("/test_topic3", msg); 
 		ROS_DEBUG_THROTTLE(5, "[test] - Number of publishers for %s: %d\n", "/test_topic2", gsub->getNumPublishers());
 
 

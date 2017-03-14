@@ -23,8 +23,7 @@ namespace cnbiros {
 class RobotinoInfrared : public core::Sensor, public  rec::robotino::api2::DistanceSensorArray {
 
 	public:
-		RobotinoInfrared(ros::NodeHandle* node, 
-						 std::string hostname, 
+		RobotinoInfrared(std::string hostname, 
 						 std::string name = CNBIROS_INFRARED_NAME);
 		virtual ~RobotinoInfrared(void);
 
