@@ -8,7 +8,7 @@
 #include "Flags.hpp" 
 #include "RosInterface.hpp" 
 #include "GridMapTool.hpp"
-#include "cnbiros_services/GridMapReset.h"
+#include "cnbiros_services/Reset.h"
 
 namespace cnbiros { 
 	namespace core {
@@ -99,16 +99,23 @@ class Sensor : public RosInterface {
 		 */
 		virtual void onRunning(void) = 0;
 
+		/*! Method to retrieve the sensor's grid map
+		 * 
+		 * \param[out] grid 	pointer to the sensor gridmap
+		 *
+		 */
+		void GetGridMap(grid_map::GridMap* grid);
+
 	private: 
-		bool on_gridmap_reset_(cnbiros_services::GridMapReset::Request& req,
-				cnbiros_services::GridMapReset::Response& res);
+		bool on_service_reset_(cnbiros_services::Reset::Request& req,
+							   cnbiros_services::Reset::Response& res);
 
 	protected: 
-		grid_map::GridMap 		rosgrid_; 
 		std::string				sensor_layer_; 
 		std::string 			rostopic_pub_;
 
 	private: 
+		grid_map::GridMap 		rosgrid_; 
 		ros::ServiceServer 		rossrv_reset_;
 		
 };

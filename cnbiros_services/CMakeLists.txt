@@ -11,8 +11,8 @@ include_directories(${catkin_INCLUDE_DIRS} include)
 
 add_service_files(
   FILES
+  Reset.srv
   RosInterfaceState.srv
-  GridMapReset.srv
   OdometryReset.srv
   NavParameterSet.srv
   SetBaseVelocity.srv

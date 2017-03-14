@@ -20,10 +20,13 @@ KinectScan::KinectScan(std::string name) : Sensor(name) {
 KinectScan::~KinectScan(void) {};
 
 void KinectScan::roskinect_callback_(const sensor_msgs::LaserScan& msg) {
-
+	
 	float x, y, angle, radius;
 	float maxangle, minangle, maxrange, minrange, angleinc, size;
-	
+	grid_map::GridMap 	grid;
+
+	this->GetGridMap(&grid);
+
 	radius   = 0.01f;
 	angleinc = msg.angle_increment;
 	maxangle = msg.angle_max;
@@ -33,10 +36,8 @@ void KinectScan::roskinect_callback_(const sensor_msgs::LaserScan& msg) {
 	minrange = msg.range_min;
 	size  	 = (maxangle - minangle)/angleinc;
 
-	geometry_msgs::PointStamped base_kinect, base_link;
-	base_kinect.header.frame_id = this->GetChildFrame();
 
-	GridMapTool::Reset(this->rosgrid_, this->sensor_layer_);
+	GridMapTool::Reset(grid, this->sensor_layer_);
 	
 	for (auto i=0; i<size; i++) {
 		// Update angle for next iteration
@@ -54,12 +55,12 @@ void KinectScan::roskinect_callback_(const sensor_msgs::LaserScan& msg) {
 		grid_map::Position position(x, y);
 		
 		// Skip positions outside the grid range
-		if(this->rosgrid_.isInside(position) == false)
+		if(grid.isInside(position) == false)
 			continue;
 
 		// Fill the grid cell if ranges are between the min/max limits
 		if (msg.ranges[i] > minrange || msg.ranges[i] < maxrange) {
-			this->rosgrid_.atPosition(this->sensor_layer_, position) = 1.0f;
+			grid.atPosition(this->sensor_layer_, position) = 1.0f;
 		}
 
 	}
@@ -67,11 +68,14 @@ void KinectScan::roskinect_callback_(const sensor_msgs::LaserScan& msg) {
 
 
 void KinectScan::onRunning(void) {
-	
-	grid_map_msgs::GridMap msg;
-	
+
+	grid_map::GridMap 		grid;
+	grid_map_msgs::GridMap 	msg;
+
+	this->GetGridMap(&grid);
+
 	// Publish the grid map	
-	GridMapTool::ToMessage(this->rosgrid_, msg);
+	GridMapTool::ToMessage(grid, msg);
 	this->Publish(this->rostopic_pub_, msg);
 }
 

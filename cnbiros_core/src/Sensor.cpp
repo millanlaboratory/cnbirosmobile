@@ -15,8 +15,8 @@ Sensor::Sensor(std::string name) {
 
 
 	// Service for sensor gridmap reset
-	this->rossrv_reset_ = this->advertiseService("gridmap_reset", 
-											&Sensor::on_gridmap_reset_, this);
+	this->rossrv_reset_ = this->advertiseService("sensor_reset", 
+											&Sensor::on_service_reset_, this);
 	
 	// GridMap initialization
 	this->rosgrid_.add(this->GetName());
@@ -29,8 +29,13 @@ Sensor::Sensor(std::string name) {
 
 Sensor::~Sensor(void) {};
 
-bool Sensor::on_gridmap_reset_(cnbiros_services::GridMapReset::Request& req,
-							  cnbiros_services::GridMapReset::Response& res) {
+void Sensor::GetGridMap(grid_map::GridMap* grid) {
+	grid = &this->rosgrid_;
+}
+
+
+bool Sensor::on_service_reset_(cnbiros_services::Reset::Request& req,
+							   cnbiros_services::Reset::Response& res) {
 
 	grid_map_msgs::GridMap msg;
 	
