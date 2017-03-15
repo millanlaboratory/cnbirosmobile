@@ -80,7 +80,7 @@ class RosInterface : public ros::NodeHandle {
 		 *
 		 * \param 	name 	Name of the interface
 		 */
-		void SetName(std::string name);
+		void SetName(const std::string name);
 
 		/*! \brief Get interface name
 		 * \return 			The interface name
@@ -192,33 +192,37 @@ class RosInterface : public ros::NodeHandle {
 		 */
 		bool IsStopped(void);
 
-		/*! \brief Set the parent frame for the interface
-		 *
-		 * Set the parent frame for the interface for transformation purposes
-		 *
-		 * \param	frameid	Id of parent frame
-		 */
-		void SetParentFrame(std::string frameid);
+		///*! \brief Set the parent frame for the interface
+		// *
+		// * Set the parent frame for the interface for transformation purposes
+		// *
+		// * \param	frameid	Id of parent frame
+		// */
+		//void SetParentFrame(std::string frameid);
 
-		/*! \brief Set the child frame id for the interface
-		 *
-		 * Set the child frame id for the interface for transformation purposes
-		 * 
-		 * \param	frameid	Id of child frame
-		 */
-		void SetChildFrame(std::string frameid);
+		///*! \brief Set the child frame id for the interface
+		// *
+		// * Set the child frame id for the interface for transformation purposes
+		// * 
+		// * \param	frameid	Id of child frame
+		// */
+		//void SetChildFrame(std::string frameid);
 
-		/*! \brief Get parent frame id
-		 *
-		 * \return 				Parent frame id
-		 */
-		std::string GetParentFrame(void);
-		
-		/*! \brief Get child frame id
-		 * \return 				Child frame id
-		 */
-		std::string GetChildFrame(void);
-		
+		///*! \brief Get parent frame id
+		// *
+		// * \return 				Parent frame id
+		// */
+		//std::string GetParentFrame(void);
+		//
+		///*! \brief Get child frame id
+		// * \return 				Child frame id
+		// */
+		//std::string GetChildFrame(void);
+	
+
+		void SetFrame(const std::string frame);
+		std::string GetFrame(void);
+
 		protected:
 		/*! Callback to be executed while the interface is running
 		 * 
@@ -266,8 +270,9 @@ class RosInterface : public ros::NodeHandle {
 		ros::ServiceServer rossrv_state_;
 
 		//! Frame related members
-		std::string 	rosframe_child_;
-		std::string 	rosframe_parent_;
+		std::string rosframe_;
+		//std::string 	rosframe_child_;
+		//std::string 	rosframe_parent_;
 };
 
 

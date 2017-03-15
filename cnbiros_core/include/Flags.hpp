@@ -6,10 +6,9 @@
 #define CNBIROS_MESSAGES_BUFFER 		100					// Default size of message buffer
 
 // GridMap default definitions
-#define CNBIROS_GRIDMAP_XSIZE 		5.0f
-#define CNBIROS_GRIDMAP_YSIZE 		5.0f
-#define CNBIROS_GRIDMAP_RESOLUTION 	0.05f
-#define CNBIROS_GRIDMAP_FRAME 		"base_link"
+#define CNBIROS_SENSORGRID_X 		5.0f
+#define CNBIROS_SENSORGRID_Y 		5.0f
+#define CNBIROS_SENSORGRID_R 		0.05f
 
 // Kinectscan default definitions
 #define CNBIROS_KINECTSCAN_NAME 	"kinectscan"

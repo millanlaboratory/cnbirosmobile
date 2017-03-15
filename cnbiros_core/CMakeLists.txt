@@ -29,14 +29,16 @@ catkin_package(
 
 add_library(cnbiros_core 
 			src/RosInterface.cpp
-			src/GridMapTool.cpp
-			src/Motors.cpp
-			src/Odometry.cpp
+			src/SensorGrid.cpp
+			#src/GridMapTool.cpp
+			#src/Motors.cpp
+			#src/Odometry.cpp
 			src/Sensor.cpp
 			src/KinectScan.cpp
-			src/Fusion.cpp
-			src/Navigation.cpp
-			src/ForceField.cpp)
+			#src/Fusion.cpp
+			#src/Navigation.cpp
+			#src/ForceField.cpp
+			)
 target_link_libraries(cnbiros_core ${catkin_LIBRARIES} ${Eigen3_LIBRARY})
 
 # Kinectscan node

@@ -1,13 +1,15 @@
 #ifndef CNBIROS_CORE_SENSOR_HPP 
 #define CNBIROS_CORE_SENSOR_HPP
 
+#include <type_traits>
+
 #include <ros/ros.h> 
 #include <grid_map_ros/grid_map_ros.hpp> 
 #include <grid_map_msgs/GridMap.h>
 
 #include "Flags.hpp" 
 #include "RosInterface.hpp" 
-#include "GridMapTool.hpp"
+#include "SensorGrid.hpp"
 #include "cnbiros_services/Reset.h"
 
 namespace cnbiros { 
@@ -113,9 +115,9 @@ class Sensor : public RosInterface {
 	protected: 
 		std::string				sensor_layer_; 
 		std::string 			rostopic_pub_;
+		SensorGrid 				rosgrid_; 
 
 	private: 
-		grid_map::GridMap 		rosgrid_; 
 		ros::ServiceServer 		rossrv_reset_;
 		
 };

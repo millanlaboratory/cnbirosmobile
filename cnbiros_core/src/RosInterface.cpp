@@ -11,8 +11,9 @@ RosInterface::RosInterface(std::string ns) : NodeHandle(ns) {
 	this->is_stopped_ 		= false;
 	this->frequency_  		= CNBIROS_NODE_FREQUENCY;
 	this->rosrate_    		= new ros::Rate(this->frequency_);
-	this->rosframe_child_  	= "";
-	this->rosframe_parent_ 	= "";
+	this->rosframe_ 		= "";
+	//this->rosframe_child_  	= "";
+	//this->rosframe_parent_ 	= "";
 
 	// Initialize services
 	this->rossrv_state_ = this->advertiseService("rosinterface_state",
@@ -56,7 +57,7 @@ bool RosInterface::on_rosinterface_service_(cnbiros_services::RosInterfaceState:
 	return res.result;
 }
 
-void RosInterface::SetName(std::string name) {
+void RosInterface::SetName(const std::string name) {
 	this->name_ = name;
 }
 
@@ -138,22 +139,29 @@ void RosInterface::Run(void) {
 
 void RosInterface::onRunning(void) {}
 
-void RosInterface::SetParentFrame(std::string frameid) {
-	this->rosframe_parent_ = frameid;
+//void RosInterface::SetParentFrame(std::string frameid) {
+//	this->rosframe_parent_ = frameid;
+//}
+//
+//std::string RosInterface::GetParentFrame(void) {
+//	return this->rosframe_parent_;
+//}
+//
+//void RosInterface::SetChildFrame(std::string frameid) {
+//	this->rosframe_child_ = frameid;
+//}
+//
+//std::string RosInterface::GetChildFrame(void) {
+//	return this->rosframe_child_;
+//}
+
+void RosInterface::SetFrame(const std::string frame) {
+	this->rosframe_ = frame;
 }
 
-std::string RosInterface::GetParentFrame(void) {
-	return this->rosframe_parent_;
+std::string RosInterface::GetFrame(void) {
+	return this->rosframe_;
 }
-
-void RosInterface::SetChildFrame(std::string frameid) {
-	this->rosframe_child_ = frameid;
-}
-
-std::string RosInterface::GetChildFrame(void) {
-	return this->rosframe_child_;
-}
-
 
 	}
 }
