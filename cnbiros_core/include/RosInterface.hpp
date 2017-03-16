@@ -105,6 +105,9 @@ class RosInterface : public ros::NodeHandle {
 		 */
 		float GetFrequency(void);
 
+		template<class T>
+		void GetParameter(const std::string& name, T& value, const T& defvalue);
+
 		/*! \brief Get the interface subscriber on topic
 		 *
 		 * Returns a pointer of type ros::Subscriber related to required
@@ -275,6 +278,16 @@ class RosInterface : public ros::NodeHandle {
 		//std::string 	rosframe_parent_;
 };
 
+
+template<class T>
+void RosInterface::GetParameter(const std::string& key, T& value, const T& defvalue) {
+	if(this->getParam(key, value)) {
+		ROS_INFO_STREAM("Retrieved '"<<key<<"' parameter for "<<this->GetName());
+	} else {
+		ROS_WARN_STREAM("'"<<key<<"' parameter not found for "<<this->GetName()<<": using default.");
+		value = defvalue;
+	}
+}
 
 template<class M>
 void RosInterface::SetSubscriber(std::string topic, void(*fp)(M)) {

@@ -35,7 +35,7 @@ add_library(cnbiros_core
 			#src/Odometry.cpp
 			src/Sensor.cpp
 			src/KinectScan.cpp
-			#src/Fusion.cpp
+			src/Fusion.cpp
 			#src/Navigation.cpp
 			#src/ForceField.cpp
 			)
@@ -44,6 +44,10 @@ target_link_libraries(cnbiros_core ${catkin_LIBRARIES} ${Eigen3_LIBRARY})
 # Kinectscan node
 add_executable(kinectscan_node_base src/kinectscan_node_base.cpp)
 target_link_libraries(kinectscan_node_base cnbiros_core ${Eigen3_LIBRARY})
+
+# Fusion node
+add_executable(fusion_node_base src/fusion_node_base.cpp)
+target_link_libraries(fusion_node_base cnbiros_core ${Eigen3_LIBRARY})
 
 # Test ros interface
 add_executable(test_ros_interface test/test_ros_interface.cpp)

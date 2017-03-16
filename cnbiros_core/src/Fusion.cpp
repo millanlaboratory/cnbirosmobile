@@ -8,28 +8,48 @@ namespace cnbiros {
 
 Fusion::Fusion(std::string name) {
 
+	std::string frameid;
+	float rate;
+	float decay;
+	std::vector<std::string> sources;
+	const std::vector<std::string> defsources = {"/infrared", "/kinectscan"};
+
 	// Abstract fusion initialization
 	this->SetName(name);
 	this->rostopic_pub_ = "/" + this->GetName();
 	this->SetPublisher<grid_map_msgs::GridMap>(this->rostopic_pub_);
-	this->SetDecayTime(0.0f);
+
+	// Get parameter from server
+	this->GetParameter("rate", rate, CNBIROS_NODE_FREQUENCY);
+	this->GetParameter("frameid", frameid, std::string("base_link"));
+	this->GetParameter("decay", decay, 0.0f);
+	this->GetParameter("sources", sources, defsources);
+	this->SetFrame(frameid);
+	this->SetDecayTime(decay);
+	
+	// Add sources
+	for(auto it = sources.begin(); it != sources.end(); ++it) {
+		ROS_INFO("Added source for '%s': %s", this->GetName().c_str(), (*it).c_str());
+		this->AddSource(*it);
+	}
+
 
 	// Service for fusion gridmap reset
-	this->rossrv_reset_ = this->advertiseService("gridmap_reset", 
-											&Fusion::on_gridmap_reset_, this);
-	// GridMap initialization
-	this->rosgrid_.add(this->GetName());
-	this->fusion_layer_ = this->GetName();	
-	GridMapTool::SetGeometry(this->rosgrid_, CNBIROS_GRIDMAP_XSIZE, 
-							 CNBIROS_GRIDMAP_YSIZE, CNBIROS_GRIDMAP_RESOLUTION);
-	GridMapTool::SetFrameId(this->rosgrid_, CNBIROS_GRIDMAP_FRAME);
-	GridMapTool::Reset(this->rosgrid_, this->GetName());
+	this->rossrv_reset_ = this->advertiseService("fusion_reset", 
+											&Fusion::on_service_reset_, this);
+
+	// SensorGrid initialization
+	this->rosgrid_.SetGeometry(CNBIROS_SENSORGRID_X, CNBIROS_SENSORGRID_Y, 
+							   CNBIROS_SENSORGRID_R);
+	this->rosgrid_.AddLayer(this->GetName());
+	this->rosgrid_.SetFrame(frameid);
+	this->rosgrid_.Reset();
 }
 
 Fusion::~Fusion(void) {};
 
-bool Fusion::on_gridmap_reset_(cnbiros_services::GridMapReset::Request& req,
-							  cnbiros_services::GridMapReset::Response& res) {
+bool Fusion::on_service_reset_(cnbiros_services::Reset::Request& req,
+							   cnbiros_services::Reset::Response& res) {
 
 	grid_map_msgs::GridMap msg;
 	
@@ -38,8 +58,8 @@ bool Fusion::on_gridmap_reset_(cnbiros_services::GridMapReset::Request& req,
 		ROS_INFO("GridMap of %s requested to reset", this->GetName().c_str());
 		
 		if(this->IsStopped() == false) {
-			GridMapTool::Reset(this->rosgrid_);
-			GridMapTool::ToMessage(this->rosgrid_, msg);
+			this->rosgrid_.Reset();
+			msg = this->rosgrid_.ToMessage();
 			this->Publish(this->rostopic_pub_, msg);
 			res.result = true;
 		}
@@ -49,12 +69,13 @@ bool Fusion::on_gridmap_reset_(cnbiros_services::GridMapReset::Request& req,
 }
 
 void Fusion::AddSource(std::string topic) {
-	this->SetSubscriber(topic, &Fusion::rosgridmap_callback_, this);
+	this->SetSubscriber(topic, &Fusion::rosfusion_callback_, this);
 }
 
-void Fusion::rosgridmap_callback_(const grid_map_msgs::GridMap& msg) {
+void Fusion::rosfusion_callback_(const grid_map_msgs::GridMap& msg) {
+
 	std::vector<std::string> layers;
-	grid_map::GridMap grid;
+	SensorGrid grid;
 	float src_resolution, dst_resolution;
 
 	// Convert grid message to the grid object 
@@ -77,7 +98,7 @@ void Fusion::rosgridmap_callback_(const grid_map_msgs::GridMap& msg) {
 	}
 
 	// Replace NaN values (coming from possible resize of the incoming grid) 
-	GridMapTool::ReplaceNaN(this->rosgrid_, 0.0f);
+	this->rosgrid_.ReplaceNaN(0.0f);
 }
 
 void Fusion::SetDecayTime(float time) {
@@ -90,25 +111,25 @@ void Fusion::SetDecayTime(float time) {
 		this->decayrate_ = 1.0f/(frequency*time);
 }
 
-void Fusion::process_decay(grid_map::GridMap& map, std::string target, float decayrate) {
+void Fusion::process_decay(SensorGrid& grid, std::string target, float decayrate) {
 	
 	unsigned int nrows, ncols;
 	Eigen::MatrixXf mdecay;
 	
-	nrows = map[target].rows();
-	ncols = map[target].cols();
+	nrows = grid[target].rows();
+	ncols = grid[target].cols();
 
 	mdecay = Eigen::MatrixXf::Constant(nrows, ncols, decayrate);
 
-	map[target] = (map[target].array() > 0.0f).select(
-				   map[target]-mdecay , map[target]);
-	map[target] = (map[target].array() < 0.0f).select(
-				   map[target]+mdecay , map[target]);
+	grid[target] = (grid[target].array() > 0.0f).select(
+				   grid[target]-mdecay , grid[target]);
+	grid[target] = (grid[target].array() < 0.0f).select(
+				   grid[target]+mdecay , grid[target]);
 }
 
-void Fusion::process_fusion(grid_map::GridMap& map, std::string target) {
-	GridMapTool::SumLayers(map, target);
-	GridMapTool::SetLayerMinMax(map, target, -1.0f, 1.0f);
+void Fusion::process_fusion(SensorGrid& grid, std::string target) {
+	grid.Sum(target);
+	grid.SetMinMax(target, -1.0f, 1.0f);
 }
 
 
@@ -117,29 +138,29 @@ void Fusion::onRunning(void) {
 	grid_map_msgs::GridMap msg;
 	
 	// Process decay 
-	this->process_decay(this->rosgrid_, this->fusion_layer_, this->decayrate_);
+	this->process_decay(this->rosgrid_, this->GetName(), this->decayrate_);
 
 	// Fuse layers and limit the values between -1 and 1
-	this->process_fusion(this->rosgrid_, this->fusion_layer_);
+	this->process_fusion(this->rosgrid_, this->GetName());
 
 	// Publish the grid messeage
-	GridMapTool::ToMessage(this->rosgrid_, msg);
+	msg = this->rosgrid_.ToMessage();
 	this->Publish(this->rostopic_pub_, msg);
 }
 
 void Fusion::onStop(void) {
 	grid_map_msgs::GridMap msg;
 	
-	GridMapTool::Reset(this->rosgrid_);
-	GridMapTool::ToMessage(this->rosgrid_, msg);
+	this->rosgrid_.Reset();
+	msg = this->rosgrid_.ToMessage();
 	this->Publish(this->rostopic_pub_, msg);
 }
 
 void Fusion::onStart(void) {
 	grid_map_msgs::GridMap msg;
 	
-	GridMapTool::Reset(this->rosgrid_);
-	GridMapTool::ToMessage(this->rosgrid_, msg);
+	this->rosgrid_.Reset();
+	msg = this->rosgrid_.ToMessage();
 	this->Publish(this->rostopic_pub_, msg);
 }
 

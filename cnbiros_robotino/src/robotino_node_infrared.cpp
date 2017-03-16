@@ -14,9 +14,6 @@ int main(int argc, char** argv) {
 	RobotinoInfrared* infrared;
 	infrared = new RobotinoInfrared("192.168.1.3");
 	
-	// Initialization of sensor
-	infrared->SetFrequency(10.0f);
-
 	// Run loop
 	infrared->Run();
 		

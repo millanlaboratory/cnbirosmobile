@@ -8,19 +8,18 @@ namespace cnbiros {
 
 KinectScan::KinectScan(std::string name) : Sensor(name) {
 	
-	float radius = 0.0f;
+	float radius;
+	float rate;
 
 	// Initialization kinect subscriber
 	this->SetSubscriber(CNBIROS_KINECTSCAN_TOPIC, &KinectScan::roskinect_callback_, this);
 
-	// Get radius parameter from parameter server (if exists)
-	if(this->getParam("radius", radius)) {
-		ROS_INFO("Retrieved radius parameter for %s: %f", this->GetName().c_str(), radius);
-	} else {
-		ROS_WARN("Radius parameter not found for %s. Using default: 0.0f", this->GetName().c_str());
-	}
+	// Get parameter from server
+	this->GetParameter("radius", radius, 0.0f);
+	this->GetParameter("rate", rate, CNBIROS_NODE_FREQUENCY);
 
 	this->SetRadius(radius);
+	this->SetFrequency(rate);
 }
 
 KinectScan::~KinectScan(void) {};

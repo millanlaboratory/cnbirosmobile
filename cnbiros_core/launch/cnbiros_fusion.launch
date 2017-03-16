@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+
+<launch>
+	<node pkg="cnbiros_core" type="fusion_node_base" name="fusion_node_base" output="screen" >
+		<rosparam param="sources">[/sensor_infrared, /sensor_kinectscan, /sensor_sonar]</rosparam>
+		<rosparam param="decay">0.5</rosparam>
+	</node>
+</launch>

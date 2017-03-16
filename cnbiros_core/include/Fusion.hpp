@@ -10,8 +10,8 @@
 #include <grid_map_msgs/GridMap.h>
 
 #include "RosInterface.hpp"
-#include "GridMapTool.hpp"
-#include "cnbiros_services/GridMapReset.h"
+#include "SensorGrid.hpp"
+#include "cnbiros_services/Reset.h"
 
 namespace cnbiros {
 	namespace core {
@@ -141,7 +141,7 @@ class Fusion : public RosInterface {
 		 * \param map 		The grid map object to be fused
 		 * \param target	The name of the target layer on the grid map object
 		 */
-		virtual void process_fusion(grid_map::GridMap& map, std::string target);
+		virtual void process_fusion(SensorGrid& grid, std::string target);
 		
 		/*! Method to process the decay
 		 * 
@@ -151,18 +151,17 @@ class Fusion : public RosInterface {
 		 * \param target		The name of the target layer on the grid map object
 		 * \param decayrate	The decay rate
 		 */
-		virtual void process_decay(grid_map::GridMap& map, std::string target, float decayrate);	
+		virtual void process_decay(SensorGrid& grid, std::string target, float decayrate);	
 
 	private:
-		void rosgridmap_callback_(const grid_map_msgs::GridMap& msg);
-		bool on_gridmap_reset_(cnbiros_services::GridMapReset::Request& req,
-							  cnbiros_services::GridMapReset::Response& res);
+		void rosfusion_callback_(const grid_map_msgs::GridMap& msg);
+		bool on_service_reset_(cnbiros_services::Reset::Request& req,
+							   cnbiros_services::Reset::Response& res);
 
 	protected:
 		float 				decayrate_;
-		std::string 		fusion_layer_;
 		std::string 		rostopic_pub_;
-		grid_map::GridMap 	rosgrid_;
+		SensorGrid 			rosgrid_;
 
 	private:
 		ros::ServiceServer	rossrv_reset_;

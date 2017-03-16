@@ -9,7 +9,8 @@ namespace cnbiros {
 RobotinoInfrared::RobotinoInfrared(std::string hostname, 
 								   std::string name) : core::Sensor(name) {
 
-	float radius = CNBIROS_ROBOTINO_RADIUS;
+	float radius;
+	float rate;
 
 	// Default values
 	this->hostname_     = hostname;
@@ -23,15 +24,12 @@ RobotinoInfrared::RobotinoInfrared(std::string hostname,
 	// Create infrared sensor association
 	this->setComId(this->com_->id());
 
-	// Get radius parameter from parameter server (if exists)
-	if(this->getParam("radius", radius)) {
-		ROS_INFO("Retrieved radius parameter for %s: %f", this->GetName().c_str(), radius);
-	} else {
-		ROS_WARN("Radius parameter not found for %s. Using default: %f", this->GetName().c_str(), radius);
-	}
+	// Get parameter from server
+	this->GetParameter("radius", radius, CNBIROS_ROBOTINO_RADIUS);
+	this->GetParameter("rate", rate, CNBIROS_NODE_FREQUENCY);
 
 	this->SetRadius(radius);
-
+	this->SetFrequency(rate);
 }
 
 RobotinoInfrared::~RobotinoInfrared(void) {}
@@ -61,7 +59,6 @@ void RobotinoInfrared::onRunning(void) {
 	
 	grid_map_msgs::GridMap msg;
 
-	
 	// Process robotino infrared events (via api2 callback)
 	this->com_->processEvents();
 

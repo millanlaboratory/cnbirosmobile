@@ -13,9 +13,6 @@ int main(int argc, char** argv) {
 	KinectScan* scan;
 	scan = new KinectScan;
 
-	// Initialization of sensor
-	scan->SetFrequency(10.0f);
-
 	// Run loop
 	scan->Run();
 		
