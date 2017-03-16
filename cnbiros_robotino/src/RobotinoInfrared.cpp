@@ -9,6 +9,8 @@ namespace cnbiros {
 RobotinoInfrared::RobotinoInfrared(std::string hostname, 
 								   std::string name) : core::Sensor(name) {
 
+	float radius = CNBIROS_ROBOTINO_RADIUS;
+
 	// Default values
 	this->hostname_     = hostname;
 
@@ -20,26 +22,25 @@ RobotinoInfrared::RobotinoInfrared(std::string hostname,
 	
 	// Create infrared sensor association
 	this->setComId(this->com_->id());
-	
-	//// Initialization TF
-	//this->SetParentFrame("base_link");
-	//this->SetChildFrame("base_infrared");
+
+	// Get radius parameter from parameter server (if exists)
+	if(this->getParam("radius", radius)) {
+		ROS_INFO("Retrieved radius parameter for %s: %f", this->GetName().c_str(), radius);
+	} else {
+		ROS_WARN("Radius parameter not found for %s. Using default: %f", this->GetName().c_str(), radius);
+	}
+
+	this->SetRadius(radius);
 
 }
 
 RobotinoInfrared::~RobotinoInfrared(void) {}
 
+void RobotinoInfrared::SetRadius(float radius) {
+	this->radius_ = radius;
+}
+
 void RobotinoInfrared::distancesChangedEvent(const float* distances, unsigned int size) {
-
-	//float x, y, angle, angleinc, radius;
-	//float maxdistance, mindistance;
-
-	//angleinc    = CNBIROS_ROBOTINO_INFRARED_ANGLE;
-	//radius 		= CNBIROS_ROBOTINO_RADIUS;
-	//maxdistance = CNBIROS_ROBOTINO_INFRARED_MAXDISTANCE;
-	//mindistance = CNBIROS_ROBOTINO_INFRARED_MINDISTANCE;
-
-	//core::GridMapTool::Reset(this->rosgrid_, this->sensor_layer_);
 
 	sensor_msgs::LaserScan msg;
 
@@ -51,35 +52,9 @@ void RobotinoInfrared::distancesChangedEvent(const float* distances, unsigned in
 	msg.range_max 		= CNBIROS_ROBOTINO_INFRARED_MAXDISTANCE;
 	msg.ranges    		= std::vector<float>(distances, distances + size);
 
-	this->rosgrid_.Reset(this->GetName());
-	this->rosgrid_.Update(this->sensor_layer_, msg);
-	//// Iterate along infrared sensors
-	//for(auto i=0; i<size; i++) {
-	//	
-	//	// Update angle for next iteration
-	//	angle = angleinc*i;
-	//	
-	//	// Get cartesian cohordinates
-	//	x = (distances[i]+radius)*cos(angle);
-	//	y = (distances[i]+radius)*sin(angle);
-	//
-	//	// Convert x,y cohordinates in position
-	//	grid_map::Position position(x, y);
-	//	
-	//	// Skip positions outside the grid range
-	//	if(this->rosgrid_.isInside(position) == false)
-	//		continue;
-	//	
-	//	// Fill the grid cell if ranges are between the min/max limits
-	//	if (distances[i] > mindistance || distances[i] < maxdistance) {
-	//		this->rosgrid_.atPosition(this->sensor_layer_, position) = 1.0f;
-	//	}
 
-	//	// Fill with 0.0 above the max limit (not down by the API)
-	//	if (distances[i] >= maxdistance)
-	//		this->rosgrid_.atPosition(this->sensor_layer_, position) = 0.0f;
-	//	
-	//}
+	this->rosgrid_.Reset(this->GetName());
+	this->rosgrid_.Update(this->GetName(), msg, this->radius_);
 }
 
 void RobotinoInfrared::onRunning(void) {

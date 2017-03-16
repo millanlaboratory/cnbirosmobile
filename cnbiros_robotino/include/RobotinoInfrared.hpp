@@ -31,9 +31,12 @@ class RobotinoInfrared : public core::Sensor, public  rec::robotino::api2::Dista
 
 		void onRunning(void);
 
+		void SetRadius(float radius);
+
 	private:
 		std::string hostname_;
 		RobotinoCom* com_;
+		float radius_;
 
 };
 

@@ -3,6 +3,7 @@
 
 #include <grid_map_ros/grid_map_ros.hpp>
 #include <sensor_msgs/LaserScan.h>
+#include <tf/transform_listener.h>
 
 namespace cnbiros {
 	namespace core {
@@ -37,10 +38,13 @@ class SensorGrid : public grid_map::GridMap {
 		bool SetMinMax(const std::string& layer, float minimum, float maximum);
 
 
-		void Update(const std::string& layer, sensor_msgs::LaserScan& msg);
+		void Update(const std::string& layer, sensor_msgs::LaserScan& msg, float radius);
 		void Update(const std::string& layer, grid_map::Matrix& data);
 
+		//bool Transform(const std::string& layer, const std::string& parent);
 
+	private:
+		//tf::TransformListener 	rostf_listener_;
 };
 
 	}

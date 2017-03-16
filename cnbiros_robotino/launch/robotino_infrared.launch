@@ -1,0 +1,6 @@
+<launch>
+
+	<!-- Robotino infrared node -->
+	<node name="robotino_node_infrared" pkg="cnbiros_robotino" type="robotino_node_infrared" output="screen" />
+
+</launch>

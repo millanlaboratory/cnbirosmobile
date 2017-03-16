@@ -107,7 +107,6 @@ bool SensorGrid::ReplaceNaN(const std::string& layer, float value) {
 	}
 
 	return result;
-
 }
 
 bool SensorGrid::ReplaceNaN(float value) {
@@ -151,7 +150,7 @@ bool SensorGrid::SetMinMax(const std::string& layer, float minimum, float maximu
 	return this->SetMin(layer, minimum) & this->SetMax(layer, maximum);
 }
 
-void SensorGrid::Update(const std::string& layer, sensor_msgs::LaserScan& msg) {
+void SensorGrid::Update(const std::string& layer, sensor_msgs::LaserScan& msg, float radius) {
 
 	float angle, x, y;
 	std::vector<float>::iterator itr;
@@ -164,15 +163,15 @@ void SensorGrid::Update(const std::string& layer, sensor_msgs::LaserScan& msg) {
 	}
 
 	iti = msg.intensities.begin();
-
+	
 	for (itr = msg.ranges.begin(); itr != msg.ranges.end(); ++itr) {
 					
 		// Skip ranges with inf value
 		if(std::isinf(*itr) == false) {
 			
 			// Get cartesian cohordinates -> To be added: position of the kinect
-			x = (*itr)*cos(angle);
-			y = (*itr)*sin(angle);
+			x = (*itr + radius)*cos(angle);
+			y = (*itr + radius)*sin(angle);
 
 			grid_map::Position position(x, y);
 
@@ -180,12 +179,15 @@ void SensorGrid::Update(const std::string& layer, sensor_msgs::LaserScan& msg) {
 			if(this->isInside(position)) {
 					
 				// Fill the grid cell if ranges are between the min/max limits
-				if ((*itr) > msg.range_min || (*itr) < msg.range_max) {
+				if ( ((*itr) > msg.range_min) & ((*itr) < msg.range_max)) {
 					this->atPosition(layer, position) = *iti;
+				} else {
+					this->atPosition(layer, position) = 0.0f;
 				}
+
 			}
 		}
-
+		
 		angle += msg.angle_increment;
 		iti++;
 	}
@@ -193,6 +195,36 @@ void SensorGrid::Update(const std::string& layer, sensor_msgs::LaserScan& msg) {
 
 void SensorGrid::Update(const std::string& layer, grid_map::Matrix& data) {
 }
+
+//bool SensorGrid::Transform(const std::string& layer, const std::string& parent) {
+//
+//	grid_map::Matrix& data = this->get(layer);
+//	grid_map::Position position;
+//	bool result = true;
+//	tf::StampedTransform transform;
+//
+//	for(grid_map::GridMapIterator it(*this); !it.isPastEnd(); ++it) {
+//		const grid_map::Index index(*it);
+//		
+//		if(data(index(0), index(1)) != 0) {
+//		
+//			try {
+//				this->rostf_listener_.lookupTransform(this->GetFrame(), parent, ros::Time(0), transform);
+//			} catch (tf::TransformException &ex) {
+//				ROS_WARN_THROTTLE(10, "%s", ex.what());
+//				result = false;
+//				break;
+//			}
+//
+//
+//			// do something
+//       }
+//
+//	}
+//
+//	return result;
+//
+//}
 
 
 	}

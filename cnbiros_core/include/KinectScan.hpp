@@ -55,6 +55,8 @@ class KinectScan : public Sensor {
 		//! \brief Destructor
 		~KinectScan(void);
 
+		void SetRadius(float value);
+
 		/*! \brief Implementation of the callback during running
 		 *
 		 * It implements the conversion between the sensor_msgs::LaserScan
@@ -65,6 +67,9 @@ class KinectScan : public Sensor {
 
 	private:
 		void roskinect_callback_(const sensor_msgs::LaserScan& msg);
+
+	private:
+		float radius_;
 
 };
 

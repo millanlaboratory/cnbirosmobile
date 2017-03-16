@@ -113,7 +113,6 @@ class Sensor : public RosInterface {
 							   cnbiros_services::Reset::Response& res);
 
 	protected: 
-		std::string				sensor_layer_; 
 		std::string 			rostopic_pub_;
 		SensorGrid 				rosgrid_; 
 
