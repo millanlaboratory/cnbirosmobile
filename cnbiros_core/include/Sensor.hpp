@@ -101,13 +101,6 @@ class Sensor : public RosInterface {
 		 */
 		virtual void onRunning(void) = 0;
 
-		/*! Method to retrieve the sensor's grid map
-		 * 
-		 * \param[out] grid 	pointer to the sensor gridmap
-		 *
-		 */
-		void GetGridMap(grid_map::GridMap* grid);
-
 	private: 
 		bool on_service_reset_(cnbiros_services::Reset::Request& req,
 							   cnbiros_services::Reset::Response& res);
