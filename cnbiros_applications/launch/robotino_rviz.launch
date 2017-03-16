@@ -1,0 +1,18 @@
+<launch>
+
+	<!-- Robotino infrared node -->
+	<node name="robotino_node_infrared" pkg="cnbiros_robotino" type="robotino_node_infrared" output="screen" />
+	
+	<!-- Kinect scan -->
+	<include file="$(find cnbiros_core)/launch/cnbiros_kinectscan.launch" />
+
+	<!-- Fusion node -->
+	<node pkg="cnbiros_core" type="fusion_node_base" name="fusion_node_base" output="screen" >
+		<rosparam param="sources">[/sensor_infrared, /sensor_kinectscan, /input_bci]</rosparam>
+		<rosparam param="decay">0.5</rosparam>
+	</node>	
+
+	<!-- Launch rviz -->
+	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find cnbiros_robotino)/rviz/grid_map.rviz" />
+
+</launch>
