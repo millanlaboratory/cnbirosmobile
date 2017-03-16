@@ -23,11 +23,12 @@ Fusion::Fusion(std::string name) {
 	this->GetParameter("rate", rate, CNBIROS_NODE_FREQUENCY);
 	this->GetParameter("frameid", frameid, std::string("base_link"));
 	this->GetParameter("decay", decay, 0.0f);
-	this->GetParameter("sources", sources, defsources);
 	this->SetFrame(frameid);
 	this->SetDecayTime(decay);
+	this->SetFrequency(rate);
 	
 	// Add sources
+	this->GetParameter("sources", sources, defsources);
 	for(auto it = sources.begin(); it != sources.end(); ++it) {
 		ROS_INFO("Added source for '%s': %s", this->GetName().c_str(), (*it).c_str());
 		this->AddSource(*it);
