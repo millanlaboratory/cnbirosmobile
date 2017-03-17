@@ -1,0 +1,10 @@
+<launch>
+
+	<!-- Robotino motors node -->
+	<node name="robotino_node_motors" pkg="cnbiros_robotino" type="robotino_node_motors" output="screen" />
+
+	<!-- Robotino infrared node -->
+	<node name="robotino_node_infrared" pkg="cnbiros_robotino" type="robotino_node_infrared" output="screen" />
+
+
+</launch>

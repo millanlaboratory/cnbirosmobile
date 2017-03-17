@@ -1,25 +1,21 @@
-#ifndef CNBIROS_CORE_KINECTSCAN_CPP
-#define CNBIROS_CORE_KINECTSCAN_CPP
+#ifndef CNBIROS_COMMON_KINECTSCAN_CPP
+#define CNBIROS_COMMON_KINECTSCAN_CPP
 
 #include "KinectScan.hpp"
 
 namespace cnbiros {
-	namespace core {
+	namespace common {
 
 KinectScan::KinectScan(std::string name) : Sensor(name) {
 	
 	float radius;
-	float rate;
 
 	// Initialization kinect subscriber
-	this->SetSubscriber(CNBIROS_KINECTSCAN_TOPIC, &KinectScan::roskinect_callback_, this);
+	this->SetSubscriber("/camera/scan", &KinectScan::roskinect_callback_, this);
 
 	// Get parameter from server
 	this->GetParameter("radius", radius, 0.0f);
-	this->GetParameter("rate", rate, CNBIROS_NODE_FREQUENCY);
-
 	this->SetRadius(radius);
-	this->SetFrequency(rate);
 }
 
 KinectScan::~KinectScan(void) {};

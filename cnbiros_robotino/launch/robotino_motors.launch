@@ -1,0 +1,6 @@
+<launch>
+
+	<!-- Robotino motors node -->
+	<node name="robotino_node_motors" pkg="cnbiros_robotino" type="robotino_node_motors" output="screen" />
+
+</launch>

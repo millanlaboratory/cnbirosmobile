@@ -10,12 +10,14 @@ RobotinoMotors:: RobotinoMotors(std::string hostname, std::string name) : core::
 
 	// Default values
 	this->hostname_     = hostname;
-	this->SetName("base");
 	
 	// Initialize motor velocities
-	this->vx_ = 0.0f;
-	this->vy_ = 0.0f;
-	this->vo_ = 0.0f;
+	this->rostwist_msg_.linear.x  = 0.0f;
+	this->rostwist_msg_.linear.y  = 0.0f;
+	this->rostwist_msg_.linear.z  = 0.0f;
+	this->rostwist_msg_.angular.x = 0.0f;
+	this->rostwist_msg_.angular.y = 0.0f;
+	this->rostwist_msg_.angular.z = 0.0f;
 
 	// Connection to the base
 	ROS_INFO("Robotino %s tries to connect to the base (%s)...", 
@@ -32,7 +34,9 @@ RobotinoMotors::~RobotinoMotors(void) {}
 
 void RobotinoMotors::onRunning(void) {
 	
-	this->omnidrive_.setVelocity(this->vx_, this->vy_, this->vo_);	
+	this->omnidrive_.setVelocity(this->rostwist_msg_.linear.x,
+								 this->rostwist_msg_.linear.y,
+								 this->rostwist_msg_.angular.z);	
 	this->com_->processEvents();
 }
 

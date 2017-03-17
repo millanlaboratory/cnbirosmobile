@@ -13,9 +13,6 @@ class ForceField : public Navigation {
 		ForceField(std::string name=CNBIROS_FORCEFIELD_NAME);
 		~ForceField(void);
 
-		void SetGridLayer(std::string layer);
-		std::string GetGridLayer(void);
-
 		void onRunning(void);
 
 	protected:
@@ -27,6 +24,10 @@ class ForceField : public Navigation {
 		float compute_distance_(float x, float y);
 		float compute_lambda_(float distance, float beta1, float beta2);
 		float compute_sigma_(float distance, float obstruction);
+
+
+	private:
+		std::string 	gridlayer_;
 
 
 };

@@ -1,0 +1,26 @@
+<launch>
+
+	<!-- Robotino stack -->
+	<include file="$(find cnbiros_robotino)/launch/robotino_stack.launch" />
+	
+	<!-- Kinect scan -->
+	<include file="$(find cnbiros_common)/launch/cnbiros_kinectscan.launch" />
+
+	<!-- Fusion node -->
+	<node pkg="cnbiros_core" type="fusion_node_base" name="fusion_node_base" output="screen" >
+		<rosparam param="sources">[/sensor_infrared, /sensor_kinectscan, /input_bci]</rosparam>
+		<rosparam param="decay">0.5</rosparam>
+	</node>	
+
+	<!-- Forcefield node -->
+	<node pkg="cnbiros_core" type="forcefield_node_base" name="forcefield_node_base" output="screen" >
+		<rosparam param="sources">[/fusion]</rosparam>
+		<rosparam param="obstruction">0.4</rosparam>
+		<rosparam param="spatialdecay">0.5</rosparam>
+		<rosparam param="gridlayer">fusion</rosparam>
+	</node>
+
+	<!-- Launch rviz -->
+	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find cnbiros_robotino)/rviz/grid_map.rviz" />
+
+</launch>

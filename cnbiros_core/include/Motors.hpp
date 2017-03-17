@@ -7,7 +7,7 @@
 
 #include "Flags.hpp"
 #include "RosInterface.hpp"
-#include "cnbiros_services/SetBaseVelocity.h"
+#include "cnbiros_services/SetTwist.h"
 
 namespace cnbiros {
 	namespace core {
@@ -17,21 +17,17 @@ class Motors : public RosInterface {
 		Motors(std::string name);
 		virtual ~Motors(void);
 
-
 	protected:
-		virtual void rosvelocity_callback(const geometry_msgs::Twist& msg);
+		virtual void rostwist_callback_(const geometry_msgs::Twist& msg);
 
 	private:
-		bool on_set_velocity_(cnbiros_services::SetBaseVelocity::Request& req,
-							  cnbiros_services::SetBaseVelocity::Response& res);
+		bool on_service_settwist_(cnbiros_services::SetTwist::Request& req,
+							      cnbiros_services::SetTwist::Response& res);
 	protected:
-		float vx_;
-		float vy_;
-		float vz_;
-		float vo_;
+		geometry_msgs::Twist 	rostwist_msg_;
 
 	private:
-		ros::ServiceServer 	rossrv_velocity_;
+		ros::ServiceServer 	rossrv_twist_;
 
 };
 

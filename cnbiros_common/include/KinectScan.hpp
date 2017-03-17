@@ -1,5 +1,5 @@
-#ifndef CNBIROS_CORE_KINECTSCAN_HPP
-#define CNBIROS_CORE_KINECTSCAN_HPP
+#ifndef CNBIROS_COMMON_KINECTSCAN_HPP
+#define CNBIROS_COMMON_KINECTSCAN_HPP
 
 #include <sensor_msgs/LaserScan.h>
 
@@ -7,7 +7,7 @@
 #include "Sensor.hpp"
 
 namespace cnbiros {
-	namespace core {
+	namespace common {
 
 //* KinectScan class
 /**
@@ -36,7 +36,7 @@ namespace cnbiros {
  * <b>Actions:</b> \n 
  * <i>NOT IMPLEMENTED YET</i>
  */
-class KinectScan : public Sensor {
+class KinectScan : public core::Sensor {
 
 	public:
 
@@ -50,7 +50,7 @@ class KinectScan : public Sensor {
 		 * \param node 	Pointer to the ROS node handler 
 		 * \param name 	Name of the sensor
 		 */
-		KinectScan(std::string name = CNBIROS_KINECTSCAN_NAME);
+		KinectScan(std::string name = "kinectscan");
 		
 		//! \brief Destructor
 		~KinectScan(void);

@@ -11,9 +11,9 @@
 namespace cnbiros {
 	namespace robotino {
 
-class RobotinoMotors : public core::Motors{
+class RobotinoMotors : public core::Motors {
 	public:	
-		RobotinoMotors(std::string hostname, std::string name = CNBIROS_ROBOTBASE_NAME);
+		RobotinoMotors(std::string hostname, std::string name = CNBIROS_MOTORS_NAME);
 		~RobotinoMotors(void);
 	
 	private:

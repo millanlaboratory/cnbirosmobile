@@ -7,7 +7,7 @@ using namespace cnbiros::robotino;
 int main(int argc, char** argv) {
 
 	// ROS initialization
-	ros::init(argc, argv, "robotino_node_base");
+	ros::init(argc, argv, "robotino_node_motors");
 	
 	// Create robotino instances
 	RobotinoMotors* robotino;

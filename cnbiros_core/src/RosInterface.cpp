@@ -6,14 +6,16 @@
 namespace cnbiros {
 	namespace core {
 
-RosInterface::RosInterface(std::string ns) : NodeHandle(ns) {
-	this->name_    	  		= "rosinterface";
-	this->is_stopped_ 		= false;
-	this->frequency_  		= CNBIROS_NODE_FREQUENCY;
-	this->rosrate_    		= new ros::Rate(this->frequency_);
-	this->rosframe_ 		= "";
-	//this->rosframe_child_  	= "";
-	//this->rosframe_parent_ 	= "";
+RosInterface::RosInterface(std::string name, std::string ns) : NodeHandle(ns) {
+
+	// Initialize interface
+	this->rosname_ 	  = name;
+	this->is_stopped_ = false;
+	
+	// Getting parameters from server (if they exist)
+	this->GetParameter("frequency", this->rosfrequency_, CNBIROS_NODE_FREQUENCY);
+	this->GetParameter("frameid", this->rosframe_, std::string("base_link")); 
+	this->rosrate_    = new ros::Rate(this->rosfrequency_);
 
 	// Initialize services
 	this->rossrv_state_ = this->advertiseService("rosinterface_state",
@@ -58,21 +60,21 @@ bool RosInterface::on_rosinterface_service_(cnbiros_services::RosInterfaceState:
 }
 
 void RosInterface::SetName(const std::string name) {
-	this->name_ = name;
+	this->rosname_ = name;
 }
 
 std::string RosInterface::GetName(void) {
-	return this->name_;
+	return this->rosname_;
 }
 
 void RosInterface::SetFrequency(float frequency) {
 	delete this->rosrate_;
-	this->frequency_ = frequency;
+	this->rosfrequency_ = frequency;
 	this->rosrate_   = new ros::Rate(frequency);
 }
 
 float RosInterface::GetFrequency(void) {
-	return this->frequency_;
+	return this->rosfrequency_;
 }
 
 ros::Subscriber* RosInterface::GetSubscriber(std::string topic) {
@@ -136,24 +138,6 @@ void RosInterface::Run(void) {
 
 	ros::spin();
 }
-
-void RosInterface::onRunning(void) {}
-
-//void RosInterface::SetParentFrame(std::string frameid) {
-//	this->rosframe_parent_ = frameid;
-//}
-//
-//std::string RosInterface::GetParentFrame(void) {
-//	return this->rosframe_parent_;
-//}
-//
-//void RosInterface::SetChildFrame(std::string frameid) {
-//	this->rosframe_child_ = frameid;
-//}
-//
-//std::string RosInterface::GetChildFrame(void) {
-//	return this->rosframe_child_;
-//}
 
 void RosInterface::SetFrame(const std::string frame) {
 	this->rosframe_ = frame;

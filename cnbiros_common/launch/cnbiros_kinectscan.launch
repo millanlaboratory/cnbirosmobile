@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <launch>
-
+	
     <arg name="camera" default="camera" />
 
     <!-- start sensor-->
@@ -36,5 +36,10 @@
         </rosparam>
 
     </node>
+
+    <node pkg="cnbiros_common" type="kinectscan_node_base" name="kinectscan_node_base" output="screen" >
+	<param name="radius" value="0.16" />
+    </node>
+	
 
 </launch>

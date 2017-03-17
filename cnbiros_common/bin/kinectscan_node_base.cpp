@@ -2,7 +2,7 @@
 
 #include "KinectScan.hpp"
 
-using namespace cnbiros::core;
+using namespace cnbiros::common;
 
 int main(int argc, char** argv) {
 

@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<launch>
+	<node pkg="cnbiros_core" type="forcefield_node_base" name="forcefield_node_base" output="screen" >
+		<rosparam param="sources">[/fusion]</rosparam>
+		<rosparam param="obstruction">0.4</rosparam>
+		<rosparam param="spatialdecay">0.5</rosparam>
+		<rosparam param="gridlayer">fusion</rosparam>
+	</node>
+</launch>

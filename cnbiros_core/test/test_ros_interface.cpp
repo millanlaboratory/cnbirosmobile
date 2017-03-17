@@ -16,7 +16,7 @@ void callback_msg_float(const std_msgs::Float32& msg) {
 
 class DerivedInterface : public RosInterface {
 	public:
-		DerivedInterface(void){};
+		DerivedInterface(std::string name) : RosInterface(name) {};
 		~DerivedInterface(void) {};
 
 		void callback_object_msg_string(const std_msgs::String& msg) {
@@ -39,7 +39,7 @@ int main (int argc, char** argv) {
 	
 	ros::init(argc, argv, "test_interface");
 
-	DerivedInterface iface_d;
+	DerivedInterface iface_d("derived_interface");
 	iface_d.SetSubscriber("/test_topic", &DerivedInterface::callback_object_msg_string, &iface_d);
 	iface_d.SetSubscriber("/test_topic2", &DerivedInterface::callback_object_msg_float, &iface_d);
 	iface_d.SetSubscriber("/test_topic3", callback_msg_string);

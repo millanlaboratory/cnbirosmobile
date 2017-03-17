@@ -6,36 +6,29 @@
 namespace cnbiros {
 	namespace core {
 
-Motors::Motors(std::string name) {
+Motors::Motors(std::string name) : RosInterface(name) {
 
 	// Abstract sensor initialization
-	this->SetName(name);
-	this->SetSubscriber(CNBIROS_ROBOTBASE_TOPIC, &Motors::rosvelocity_callback, this);
+	this->SetSubscriber(CNBIROS_MOTORS_TOPIC, &Motors::rostwist_callback_, this);
 
 	// Service for velocity set
-	this->rossrv_velocity_ = this->advertiseService("velocity_set", 
-											&Motors::on_set_velocity_, this);
+	this->rossrv_twist_ = this->advertiseService("set_twist", 
+										&Motors::on_service_settwist_, this);
 }
 
 Motors::~Motors(void) {}
 
-void Motors::rosvelocity_callback(const geometry_msgs::Twist& msg) {
-	this->vx_ = msg.linear.x;
-	this->vy_ = msg.linear.y;
-	this->vz_ = msg.linear.z;
-	this->vo_ = msg.angular.z;
+void Motors::rostwist_callback_(const geometry_msgs::Twist& msg) {
+
+	this->rostwist_msg_ = msg;
 }
 
-bool Motors::on_set_velocity_(cnbiros_services::SetBaseVelocity::Request& req,
-							 	cnbiros_services::SetBaseVelocity::Response& res) {
+bool Motors::on_service_settwist_(cnbiros_services::SetTwist::Request&  req,
+							  	  cnbiros_services::SetTwist::Response& res) {
 	
 	res.result = true;
-
-	this->vx_ = req.vx;
-	this->vy_ = req.vy;
-	this->vz_ = req.vz;
-	this->vo_ = req.vo;
-
+	this->rostwist_msg_.linear  = req.linear;
+	this->rostwist_msg_.angular = req.angular;
 	return res.result;
 }
 

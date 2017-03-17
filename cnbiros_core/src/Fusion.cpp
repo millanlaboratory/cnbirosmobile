@@ -6,26 +6,19 @@
 namespace cnbiros {
 	namespace core {
 
-Fusion::Fusion(std::string name) {
+Fusion::Fusion(std::string name) : RosInterface(name) {
 
-	std::string frameid;
-	float rate;
 	float decay;
 	std::vector<std::string> sources;
 	const std::vector<std::string> defsources = {"/infrared", "/kinectscan"};
 
 	// Abstract fusion initialization
-	this->SetName(name);
 	this->rostopic_pub_ = "/" + this->GetName();
 	this->SetPublisher<grid_map_msgs::GridMap>(this->rostopic_pub_);
 
 	// Get parameter from server
-	this->GetParameter("rate", rate, CNBIROS_NODE_FREQUENCY);
-	this->GetParameter("frameid", frameid, std::string("base_link"));
 	this->GetParameter("decay", decay, 0.0f);
-	this->SetFrame(frameid);
 	this->SetDecayTime(decay);
-	this->SetFrequency(rate);
 	
 	// Add sources
 	this->GetParameter("sources", sources, defsources);
@@ -33,7 +26,6 @@ Fusion::Fusion(std::string name) {
 		ROS_INFO("Added source for '%s': %s", this->GetName().c_str(), (*it).c_str());
 		this->AddSource(*it);
 	}
-
 
 	// Service for fusion gridmap reset
 	this->rossrv_reset_ = this->advertiseService("fusion_reset", 
@@ -43,7 +35,7 @@ Fusion::Fusion(std::string name) {
 	this->rosgrid_.SetGeometry(CNBIROS_SENSORGRID_X, CNBIROS_SENSORGRID_Y, 
 							   CNBIROS_SENSORGRID_R);
 	this->rosgrid_.AddLayer(this->GetName());
-	this->rosgrid_.SetFrame(frameid);
+	this->rosgrid_.SetFrame(this->GetFrame());
 	this->rosgrid_.Reset();
 }
 
@@ -81,7 +73,7 @@ void Fusion::rosfusion_callback_(const grid_map_msgs::GridMap& msg) {
 
 	// Convert grid message to the grid object 
 	if(grid_map::GridMapRosConverter::fromMessage(msg, grid) == false)
-		ROS_WARN("Cannot convert message to grid");
+		ROS_WARN("%s cannot convert message to sensor grid", this->GetName().c_str());
 
 	// Get the current grid resolution
 	src_resolution = grid.getResolution();

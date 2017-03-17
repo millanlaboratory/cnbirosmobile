@@ -8,29 +8,27 @@ namespace cnbiros {
 
 ForceField::ForceField(std::string name) : Navigation(name) {
 
-	this->SetParameter("obstruction", 	CNBIROS_FORCEFIELD_OBSTRUCTION, true);
-	this->SetParameter("spatialdecay", 	CNBIROS_FORCEFIELD_SPATIALDECAY, true);
+	float obstruction, spatialdecay;
+	std::string gridlayer;
 
-	// GridMap Layer initialization
-	this->SetGridLayer(CNBIROS_FORCEFIELD_GRIDLAYER);
+	// Get parameter from server
+	this->GetParameter("obstruction",  obstruction,  CNBIROS_FORCEFIELD_OBSTRUCTION);
+	this->GetParameter("spatialdecay", spatialdecay, CNBIROS_FORCEFIELD_SPATIALDECAY);
+	this->GetParameter("gridlayer",    gridlayer, std::string("fusion"));
 	
-	// GridMap initialization
-	this->rosgrid_.add(this->GetGridLayer());
-	GridMapTool::SetGeometry(this->rosgrid_, CNBIROS_GRIDMAP_XSIZE, 
-							 CNBIROS_GRIDMAP_YSIZE, CNBIROS_GRIDMAP_RESOLUTION);
-	GridMapTool::SetFrameId(this->rosgrid_, CNBIROS_GRIDMAP_FRAME);
-	GridMapTool::Reset(this->rosgrid_, this->GetGridLayer());
+	this->SetNavigationParameter("obstruction",  obstruction,  true);
+	this->SetNavigationParameter("spatialdecay", spatialdecay, true);
+	this->gridlayer_ = gridlayer;
+
+	// SensorGrid initialization
+	this->rosgrid_.SetGeometry(CNBIROS_SENSORGRID_X, CNBIROS_SENSORGRID_Y, 
+							   CNBIROS_SENSORGRID_R);
+	//this->rosgrid_.AddLayer(this->gridlayer_);
+	this->rosgrid_.SetFrame(this->GetFrame());
+	this->rosgrid_.Reset();
 }
 
 ForceField::~ForceField(void) {};
-
-void ForceField::SetGridLayer(std::string layer) {
-	this->grid_layer_ = layer;
-}
-
-std::string ForceField::GetGridLayer(void) {
-	return this->grid_layer_;
-}
 
 float ForceField::compute_angle_(float x, float y) {
 	return -(std::atan2(y, x) - M_PI/2.0f);
@@ -57,18 +55,20 @@ bool ForceField::AngularVelocity(geometry_msgs::Twist& msg) {
 	float obstruction, spatialdecay;
 	float fobs = 0.0f;
 
-	this->GetParameter("obstruction",  obstruction);
-	this->GetParameter("spatialdecay", spatialdecay);
+	this->GetNavigationParameter("obstruction",  obstruction);
+	this->GetNavigationParameter("spatialdecay", spatialdecay);
 
-
-	if(GridMapTool::Exists(this->rosgrid_, this->grid_layer_) == false)
+	if(this->rosgrid_.Exists(this->gridlayer_) == false)
 		return false;
 
-	grid_map::Matrix& data = this->rosgrid_[this->grid_layer_];	
+	grid_map::Matrix& data = this->rosgrid_[this->gridlayer_];	
 
 	for(grid_map::GridMapIterator it(this->rosgrid_); !it.isPastEnd(); ++it) {
 
 		cIndex = grid_map::Index(*it);
+
+		if(data(cIndex(0), cIndex(1)) == 0)
+			continue;
 
 		// get current position
 		this->rosgrid_.getPosition(cIndex, cPosition);
@@ -81,7 +81,7 @@ bool ForceField::AngularVelocity(geometry_msgs::Twist& msg) {
 		x = -cPosition.y();
 		y =  cPosition.x();
 		strength = data(cIndex(0), cIndex(1));
-
+		
 		// compute angular velocity based on attractors/repellors
 		angle    = this->compute_angle_(x, y);
 		distance = this->compute_distance_(x, y);

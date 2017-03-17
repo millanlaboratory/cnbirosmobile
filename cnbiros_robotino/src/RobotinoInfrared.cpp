@@ -10,7 +10,6 @@ RobotinoInfrared::RobotinoInfrared(std::string hostname,
 								   std::string name) : core::Sensor(name) {
 
 	float radius;
-	float rate;
 
 	// Default values
 	this->hostname_     = hostname;
@@ -26,10 +25,7 @@ RobotinoInfrared::RobotinoInfrared(std::string hostname,
 
 	// Get parameter from server
 	this->GetParameter("radius", radius, CNBIROS_ROBOTINO_RADIUS);
-	this->GetParameter("rate", rate, CNBIROS_NODE_FREQUENCY);
-
 	this->SetRadius(radius);
-	this->SetFrequency(rate);
 }
 
 RobotinoInfrared::~RobotinoInfrared(void) {}

@@ -10,7 +10,7 @@
 
 #include "Flags.hpp"
 #include "RosInterface.hpp"
-#include "GridMapTool.hpp"
+#include "SensorGrid.hpp"
 #include "cnbiros_services/NavParameterSet.h"
 
 namespace cnbiros {
@@ -24,27 +24,26 @@ class Navigation : public RosInterface {
 
 		void AddSource(std::string topic);
 		
-		bool SetParameter(std::string name, float value, bool create = false);
-		bool GetParameter(std::string name, float& value);
+		bool SetNavigationParameter(std::string name, float value, bool create = false);
+		bool GetNavigationParameter(std::string name, float& value);
 		void DumpParameters(void);
 
 	protected:
 		virtual void onStop(void);
 		virtual void onStart(void);
 		virtual void onRunning(void) = 0;
-		virtual void rosgridmap_callback_(const grid_map_msgs::GridMap& msg);
+		virtual void rosnavigation_callback_(const grid_map_msgs::GridMap& msg);
 
 	private:
-		bool on_parameter_set_(cnbiros_services::NavParameterSet::Request& req,
+		bool on_service_setparameter_(cnbiros_services::NavParameterSet::Request& req,
 							   cnbiros_services::NavParameterSet::Response& res);
 
 	protected:
 		std::map<std::string, float> 	nav_params_;
-		ros::ServiceServer  			rossrv_param_;
+		ros::ServiceServer  			rossrv_parameter_;
 
-		std::string 			grid_layer_;
 		std::string 			rostopic_pub_;
-		grid_map::GridMap 		rosgrid_;
+		SensorGrid 				rosgrid_;
 };
 
 

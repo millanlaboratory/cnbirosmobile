@@ -31,31 +31,22 @@ catkin_package(
 )
 
 add_library(cnbiros_robotino 
-			#src/RobotinoMotors.cpp
+			src/RobotinoMotors.cpp
 			src/RobotinoCom.cpp
 			#src/RobotinoOdometry.cpp
 			src/RobotinoInfrared.cpp)
 target_link_libraries(cnbiros_robotino ${catkin_LIBRARIES} cnbiros_core ${REC_ROBOTINO_API2_LIBRARY} ${Eigen3_LIBRARY} )
 
-# Robotino node
-#add_executable(robotino_node_base src/robotino_node_base.cpp)
-#target_link_libraries(robotino_node_base cnbiros_robotino ${Eigen3_LIBRARY})
-#
+# Robotino motors
+add_executable(robotino_node_motors bin/robotino_node_motors.cpp)
+target_link_libraries(robotino_node_motors cnbiros_robotino ${Eigen3_LIBRARY})
+
+# Infrared node
+add_executable(robotino_node_infrared bin/robotino_node_infrared.cpp)
+target_link_libraries(robotino_node_infrared cnbiros_robotino ${Eigen3_LIBRARY})
+
 ## Odometry node
 #add_executable(robotino_node_odometry src/robotino_node_odometry.cpp)
 #target_link_libraries(robotino_node_odometry cnbiros_robotino ${Eigen3_LIBRARY})
-
-# Infrared node
-add_executable(robotino_node_infrared src/robotino_node_infrared.cpp)
-target_link_libraries(robotino_node_infrared cnbiros_robotino ${Eigen3_LIBRARY})
-
-# Fusion node
-#add_executable(robotino_node_fusion src/robotino_node_fusion.cpp)
-#target_link_libraries(robotino_node_fusion cnbiros_robotino ${Eigen3_LIBRARY})
-#
-## Navigation node
-#add_executable(robotino_node_navigation src/robotino_node_navigation.cpp)
-#target_link_libraries(robotino_node_navigation cnbiros_robotino ${Eigen3_LIBRARY})
-
 
 

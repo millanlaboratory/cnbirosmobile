@@ -6,19 +6,12 @@
 namespace cnbiros {
 	namespace core {
 
-Sensor::Sensor(std::string name) {
-
-	std::string frameid;
+Sensor::Sensor(std::string name) : RosInterface(name) {
 
 	// Abstract sensor initialization
-	this->SetName(name);
 	this->rostopic_pub_ = "/sensor_" + this->GetName();
 	this->SetPublisher<grid_map_msgs::GridMap>(this->rostopic_pub_);
 	
-	// Get parameter from server
-	this->GetParameter("frameid", frameid, std::string("base_link"));
-	this->SetFrame(frameid);
-
 	// Service for sensor gridmap reset
 	this->rossrv_reset_ = this->advertiseService("sensor_reset", 
 											&Sensor::on_service_reset_, this);
@@ -27,7 +20,7 @@ Sensor::Sensor(std::string name) {
 	this->rosgrid_.SetGeometry(CNBIROS_SENSORGRID_X, CNBIROS_SENSORGRID_Y, 
 							   CNBIROS_SENSORGRID_R);
 	this->rosgrid_.AddLayer(this->GetName());
-	this->rosgrid_.SetFrame(frameid);
+	this->rosgrid_.SetFrame(this->GetFrame());
 	this->rosgrid_.Reset();
 }
 

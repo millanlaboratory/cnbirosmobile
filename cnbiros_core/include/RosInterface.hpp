@@ -68,7 +68,7 @@ class RosInterface : public ros::NodeHandle {
 	public:
 		/*! \brief Constructor
 		 */
-		RosInterface(std::string ns="~");
+		RosInterface(std::string name, std::string ns="~");
 
 		//! \brief Destructor
 		virtual ~RosInterface(void);
@@ -261,8 +261,8 @@ class RosInterface : public ros::NodeHandle {
 
 	private:
 		//! Generic interface members
-		std::string 	name_;
-		float 			frequency_;
+		std::string 	rosname_;
+		float 			rosfrequency_;
 		bool 			is_stopped_;
 		
 		ros::Rate* 								rosrate_; 						

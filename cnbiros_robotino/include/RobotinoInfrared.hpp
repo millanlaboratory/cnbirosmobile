@@ -24,7 +24,7 @@ class RobotinoInfrared : public core::Sensor, public  rec::robotino::api2::Dista
 
 	public:
 		RobotinoInfrared(std::string hostname, 
-						 std::string name = CNBIROS_INFRARED_NAME);
+						 std::string name = "infrared");
 		virtual ~RobotinoInfrared(void);
 
 		void distancesChangedEvent(const float* distances, unsigned int size);
