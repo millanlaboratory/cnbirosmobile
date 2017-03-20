@@ -4,7 +4,7 @@
 #include <ros/ros.h>
 #include <cnbiloop/ClTobiId.hpp>
 
-#include "cnbiros_messages/TobiId.h"
+#include "cnbiros_bci/TobiId.h"
 #include "RosInterface.hpp"
 
 namespace cnbiros {
@@ -13,26 +13,24 @@ namespace cnbiros {
 class TobiId : public core::RosInterface {
 	
 	public:
-		TobiId(unsigned int mode);
+		TobiId(void);
 		virtual ~TobiId(void);
 	
-		bool Attach(std::string pipe, float wait = 10.0f);
-		void Detach(void);
-		bool IsAttached(void);
+		void Attach(std::string pipe);
+		void Attach(std::string pipe, std::string topic);
+		void Detach(std::string pipe);
 
-		void SetMessage(std::string description, unsigned int family);
-
-		void ConvertToIdMessage(cnbiros_messages::TobiId* rosmsg, IDMessage* idm);
-		void ConvertFromIdMessage(IDMessage* idm, cnbiros_messages::TobiId* rosmsg);
+		IDMessage ConvertTo(const cnbiros_bci::TobiId& rosmsg);
+		cnbiros_bci::TobiId ConvertFrom(const IDMessage& idm);
 
 		void onRunning(void);
-	protected:
-		virtual void on_tobiid_received_(const cnbiros_messages::TobiId& msg);
+	private:
+		virtual void on_message_received_(const cnbiros_bci::TobiId& msg);
 
-	protected:
-		ClTobiId* 			tobiid_;
-		IDMessage*			idm_;
-		IDSerializerRapid* 	ids_;
+	private:
+		std::map<std::string, ClTobiId*> 	tobiid_get_;
+		std::map<std::string, ClTobiId*> 	tobiid_set_;
+		std::map<std::string, std::string> 	tobiid_table_;
 
 
 };

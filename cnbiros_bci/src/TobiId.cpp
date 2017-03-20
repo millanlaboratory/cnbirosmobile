@@ -6,101 +6,151 @@
 namespace cnbiros {
 	namespace bci {
 
-TobiId::TobiId(ros::NodeHandle* node, unsigned int mode) : core::RosInterface(node) {
-	this->SetName("tobiid");
-
-	this->tobiid_ = new ClTobiId(mode);
-	this->idm_ 	  = new IDMessage;
-	this->ids_ 	  = new IDSerializerRapid(this->idm_);
-
-	this->SetMessage("bci", IDMessage::FamilyBiosig);
-	this->idm_->SetEvent(0);
-
-	this->SetSubscriber("/tobiid_ros2bci", &TobiId::on_tobiid_received_, this);
-	this->SetPublisher<cnbiros_messages::TobiId>("/tobiid_bci2ros");
+TobiId::TobiId(void) : RosInterface("tobiid") {
+	this->SetPublisher<cnbiros_bci::TobiId>("/tobiid");
 }
 
 TobiId::~TobiId(void) {
-	this->Detach();
-	delete this->tobiid_;
 }
 
-bool TobiId::Attach(std::string pipe, float wait) {
+void TobiId::Attach(std::string pipe) {
+	
+	std::map<std::string, ClTobiId*>::iterator it;
 
-	ros::Time begin, current;
-	ros::Rate rate(1);
+	// Check if a ClTobiId is already attached to this pipe, and in case, delete it.
+	it = this->tobiid_get_.find(pipe);
+	if(it != this->tobiid_get_.end()) {
+		it->second->Detach();
+		delete it->second;
+		this->tobiid_get_.erase(it);
 
-	begin = ros::Time::now();
-	while(this->IsAttached() == false) {
-		
-		this->tobiid_->Attach(pipe);
-		
-		current = ros::Time::now();	
-		if (current.toSec() >= wait) {
-			break;
+		ROS_INFO("%s is already attached to %s as GetOnly. The old connection is replaced", 
+				this->GetName().c_str(), pipe.c_str());
+	}
+
+	// Create a new ClTobiId and attach to the given pipe
+	this->tobiid_get_[pipe] = new ClTobiId(ClTobiId::GetOnly);
+
+	while(this->tobiid_get_[pipe]->IsAttached() == false) {
+		this->tobiid_get_[pipe]->Attach(pipe);
+		ROS_WARN_THROTTLE(5.0f, "%s waits for attaching to %s", this->GetName().c_str(), pipe.c_str());
+		ros::Rate(1.0f).sleep();
+	}
+
+	ROS_INFO("%s attached to %s as GetOnly", this->GetName().c_str(), pipe.c_str());
+}
+
+void TobiId::Attach(std::string pipe, std::string topic) {
+
+	std::map<std::string, ClTobiId*>::iterator it;
+	
+	// Check if a ClTobiId is already attached to this pipe, and in case, delete it.
+	it = this->tobiid_set_.find(pipe);
+	if(it != this->tobiid_set_.end()) {
+		it->second->Detach();
+		delete it->second;
+		this->tobiid_set_.erase(it);
+
+		ROS_INFO("%s is already attached to %s as SetOnly. The old connection is replaced", 
+				this->GetName().c_str(), pipe.c_str());
+	}
+
+	this->tobiid_set_[pipe] = new ClTobiId(ClTobiId::SetOnly);
+	
+	while(this->tobiid_set_[pipe]->IsAttached() == false) {
+		this->tobiid_set_[pipe]->Attach(pipe);
+		ROS_WARN_THROTTLE(5.0f, "%s waits for attaching to %s", this->GetName().c_str(), pipe.c_str());
+		ros::Rate(1.0f).sleep();
+	}
+
+	ROS_INFO("%s attached to %s as SetOnly", this->GetName().c_str(), pipe.c_str());
+
+	this->tobiid_table_[pipe] = topic;
+	this->SetSubscriber(topic, &TobiId::on_message_received_, this);
+}
+
+void TobiId::Detach(std::string pipe) {
+
+	std::map<std::string, ClTobiId*>::iterator its;
+	std::map<std::string, ClTobiId*>::iterator itg;
+
+	its = this->tobiid_set_.find(pipe);
+
+	if(its != this->tobiid_set_.end()) {
+		if(its->second->IsAttached()) {
+			its->second->Detach();
+			this->tobiid_set_.erase(its);
+			ROS_INFO("%s detached from %s (SetOnly)", this->GetName().c_str(), pipe.c_str());
 		}
-		rate.sleep();
-	}
+	} 	
 
-	if(this->IsAttached()) {
-		ROS_INFO("%s attached to %s", this->GetName().c_str(), pipe.c_str());
+	itg = this->tobiid_get_.find(pipe);
+
+	if(itg != this->tobiid_get_.end()) {
+		if(itg->second->IsAttached()) {
+			itg->second->Detach();
+			this->tobiid_get_.erase(itg);
+			ROS_INFO("%s detached from %s (GetOnly)", this->GetName().c_str(), pipe.c_str());
+		}
+	} 
+}
+
+void TobiId::on_message_received_(const cnbiros_bci::TobiId& msg) {
+
+	IDMessage idm;
+	std::map<std::string, ClTobiId*>::iterator it;
+	int fidx = TCBlock::BlockIdxUnset;
+
+	it = this->tobiid_set_.find(msg.pipe);
+
+	if (it != this->tobiid_set_.end()) {
+		idm = this->ConvertTo(msg);	
+		IDSerializerRapid ids(&idm);
+		it->second->SetMessage(&ids, TCBlock::BlockIdxUnset, &fidx); 	
 	} else {
-		ROS_ERROR("%s cannot attach to %s", this->GetName().c_str(), pipe.c_str());
+		ROS_WARN("Message received for pipe \'%s\'. However such a pipe is not registered", msg.pipe.c_str());
 	}
-
-	return this->IsAttached();
 }
 
-void TobiId::Detach(void) {
-	if(this->IsAttached())
-		this->tobiid_->Detach();
-}
 
-bool TobiId::IsAttached(void) {
-	return this->tobiid_->IsAttached();
-}
-
-void TobiId::SetMessage(std::string description, unsigned int family) {
-	this->idm_->SetDescription(description);
-	this->idm_->SetFamilyType(family);
-}
-
-void TobiId::on_tobiid_received_(const cnbiros_messages::TobiId& rosmsg) {
+IDMessage TobiId::ConvertTo(const cnbiros_bci::TobiId& msg) {
 	
-	cnbiros_messages::TobiId msg = rosmsg;
+	IDMessage idm;
 
-	this->ConvertToIdMessage(&msg, this->idm_);
-	
-	if(this->tobiid_->SetMessage(this->ids_))
-		ROS_INFO("New message sent to bci");
+	idm.SetFamilyType(msg.family);
+	idm.SetDescription(msg.description);
+	idm.SetEvent(msg.event);
+	idm.SetBlockIdx();
+
+	return idm;
 }
 
-void TobiId::ConvertToIdMessage(cnbiros_messages::TobiId* rosmsg, IDMessage* idm) {
+cnbiros_bci::TobiId TobiId::ConvertFrom(const IDMessage& idm) {
 
-	idm->SetFamilyType(rosmsg->family);
-	idm->SetDescription(rosmsg->description);
-	idm->SetEvent(rosmsg->event);
-	idm->SetBlockIdx();
-}
+	cnbiros_bci::TobiId msg;
 
-void TobiId::ConvertFromIdMessage(IDMessage* idm, cnbiros_messages::TobiId* rosmsg) {
-	rosmsg->header.stamp = ros::Time::now();
-	rosmsg->frame 		 = idm->GetBlockIdx();
-	rosmsg->family 		 = idm->GetFamily();
-	rosmsg->description  = idm->GetDescription();
-	rosmsg->event 		 = idm->GetEvent();
+	msg.header.stamp = ros::Time::now();
+	msg.family 		 = idm.GetFamilyType();
+	msg.description  = idm.GetDescription();
+	msg.event 		 = idm.GetEvent();
+
+	return msg;
 }
 
 void TobiId::onRunning(void) {
 
-	cnbiros_messages::TobiId rosmsg;
+	IDMessage idm;
+	IDSerializerRapid ids(&idm);
+	std::map<std::string, ClTobiId*>::iterator it;
+	cnbiros_bci::TobiId msg;
 
+	for (it = this->tobiid_get_.begin(); it != this->tobiid_get_.end(); ++it) {
 
-	if(this->tobiid_->GetMessage(this->ids_) == true) {
-	
-		ROS_INFO("New ID message received from bci");
-		this->ConvertFromIdMessage(this->idm_, &rosmsg);
-		this->Publish(rosmsg);
+		if(it->second->GetMessage(&ids) == true) {
+			msg = this->ConvertFrom(idm);
+			msg.pipe = it->first;
+			this->Publish("/tobiid", msg);
+		}
 	}
 
 
