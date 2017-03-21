@@ -37,7 +37,8 @@ catkin_package(
 add_library(cnbiros_bci 
 			src/CnbiInterface.cpp
 			src/TobiId.cpp
-			src/TobiIc.cpp)
+			src/TobiIc.cpp
+			src/TobiIcTools.cpp)
 target_link_libraries(cnbiros_bci ${catkin_LIBRARIES} 
 					  cnbiros_core tobicore tobiid tobiic cnbiloop cnbicore)
 
@@ -53,6 +54,10 @@ target_link_libraries(tobiic cnbiros_bci)
 
 add_executable(tobiic_sender examples/tobiic_sender.cpp)
 target_link_libraries(tobiic_sender cnbiros_bci)
+
+# cl_ticsender -> To be moved to cnbitk
+add_executable(cl_ticsender src/cl_ticsender.cpp)
+target_link_libraries(cl_ticsender cnbiros_bci)
 
 ## TobiId node
 #add_executable(tobiid_node_base src/tobiid_node_base.cpp)

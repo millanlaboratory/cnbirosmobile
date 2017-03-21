@@ -22,14 +22,14 @@ class RosSender : public cnbiros::core::RosInterface {
 			this->classifier1.description = "Description classifier 1";
 			this->classifier1.vtype = 0;
 			this->classifier1.ltype = 0;
-			this->classifier1.IcClasses.push_back(this->class1);
-			this->classifier1.IcClasses.push_back(this->class2);
+			this->classifier1.classes.push_back(this->class1);
+			this->classifier1.classes.push_back(this->class2);
 			
 			this->classifier2.name = "classifier2";
 			this->classifier2.description = "Description classifier 2";
 			this->classifier2.vtype = 0;
 			this->classifier2.ltype = 0;
-			this->classifier2.IcClasses.push_back(this->class3);
+			this->classifier2.classes.push_back(this->class3);
 		}
 
 		~RosSender(void) {};
@@ -40,23 +40,23 @@ class RosSender : public cnbiros::core::RosInterface {
 			cnbiros_bci::TobiIc 	msg;
 			msg.pipe = "/ctrl1";
 			
-			this->classifier1.IcClasses.clear();
-			this->classifier2.IcClasses.clear();
+			this->classifier1.classes.clear();
+			this->classifier2.classes.clear();
 
 			this->class1.value = this->class1.value + 0.1f;
 			this->class2.value = this->class2.value - 0.1f;
 			this->class3.value = 1.0f;
 
-			this->classifier1.IcClasses.clear();
-			this->classifier1.IcClasses.push_back(this->class1);
-			this->classifier1.IcClasses.push_back(this->class2);
+			this->classifier1.classes.clear();
+			this->classifier1.classes.push_back(this->class1);
+			this->classifier1.classes.push_back(this->class2);
 			
-			this->classifier2.IcClasses.clear();
-			this->classifier2.IcClasses.push_back(this->class3);
+			this->classifier2.classes.clear();
+			this->classifier2.classes.push_back(this->class3);
 
-			msg.IcClassifiers.clear();
-			msg.IcClassifiers.push_back(this->classifier1);
-			msg.IcClassifiers.push_back(this->classifier2);
+			msg.classifiers.clear();
+			msg.classifiers.push_back(this->classifier1);
+			msg.classifiers.push_back(this->classifier2);
 
 			this->Publish("/test", msg);
 		}

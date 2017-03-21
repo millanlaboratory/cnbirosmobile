@@ -5,8 +5,9 @@
 #include <cnbiloop/ClTobiIc.hpp>
 #include <tobiic/ICClassifier.hpp>
 
-#include "cnbiros_bci/TobiIc.h"
 #include "RosInterface.hpp"
+#include "TobiIcTools.hpp"
+#include "cnbiros_bci/TobiIc.h"
 
 namespace cnbiros {
 	namespace bci {

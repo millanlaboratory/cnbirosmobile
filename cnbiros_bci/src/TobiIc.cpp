@@ -96,71 +96,68 @@ void TobiIc::Detach(std::string pipe) {
 }
 
 void TobiIc::on_message_received_(const cnbiros_bci::TobiIc& msg) {
-
+	
 	ICMessage icm;
+	ICSerializerRapid* ics;
+	TobiIcTools* ictools;
 	std::map<std::string, ClTobiIc*>::iterator it;
 
 	it = this->tobiic_set_.find(msg.pipe);
 	
 	if (it != this->tobiic_set_.end()) {
-		this->icclassifiers_.clear();
-		this->icclasses_.clear();
-		printf("TobiIc message received\n");	
-		this->ConvertTo(&icm, msg);
-		icm.Dump();
-		printf("Conversion done\n");	
-		ICSerializerRapid ics(&icm);
-		printf("Serialization done\n");	
-		it->second->SetMessage(&ics);
-		
-		printf("Set message done\n");	
-		//this->icclassifiers_.clear();
-		//this->icclassifiers_.clear();
 
-	} else {
-		ROS_WARN("Message received for pipe \'%s\'. However such a pipe is not registered", msg.pipe.c_str());
+		ictools = new TobiIcTools(msg);
+
+		ictools->GetMessage(&icm);
+		
+		ics = new ICSerializerRapid(&icm);
+
+		it->second->SetMessage(ics);
 	}
+
+	delete ics;
+	delete ictools;
 }
 
 void TobiIc::ConvertTo(ICMessage* icm, const cnbiros_bci::TobiIc& msg) {
 	
-	std::vector<cnbiros_bci::TobiIcClassifier>::const_iterator itclf;
-	std::vector<cnbiros_bci::TobiIcClass>::const_iterator itcls;
+	//std::vector<cnbiros_bci::TobiIcClassifier>::const_iterator itclf;
+	//std::vector<cnbiros_bci::TobiIcClass>::const_iterator itcls;
 
-	std::vector<ICClassifier> icclassifiers;
+	//std::vector<ICClassifier> icclassifiers;
 
-	ICClass k1("0x300", 0.60f);
-	//ICClassifier c("c1", "test", 0, 0);
-	//c.classes.Add(&k1);
-	//icm->classifiers.Add(&c);
-	for(itclf = msg.IcClassifiers.begin(); itclf != msg.IcClassifiers.end(); ++itclf) {
-		ICClassifier c((*itclf).name, (*itclf).description, (*itclf).vtype, (*itclf).ltype);
-		icclassifiers.push_back(c);
+	//ICClass k1("0x300", 0.60f);
+	////ICClassifier c("c1", "test", 0, 0);
+	////c.classes.Add(&k1);
+	////icm->classifiers.Add(&c);
+	//for(itclf = msg.IcClassifiers.begin(); itclf != msg.IcClassifiers.end(); ++itclf) {
+	//	ICClassifier c((*itclf).name, (*itclf).description, (*itclf).vtype, (*itclf).ltype);
+	//	icclassifiers.push_back(c);
 
-		auto u = &icclassifiers.back();
-		u->classes.Add(&k1);
-		for(itcls = (*itclf).IcClasses.begin(); itcls != (*itclf).IcClasses.end(); ++itcls) {
-			this->icclasses_.push_back(ICClass((*itcls).label, (*itcls).value));
-			auto i = &(*(this->icclasses_.end()-1));
-			u->classes.Add(i);
-		}
+	//	auto u = &icclassifiers.back();
+	//	u->classes.Add(&k1);
+	//	for(itcls = (*itclf).IcClasses.begin(); itcls != (*itclf).IcClasses.end(); ++itcls) {
+	//		this->icclasses_.push_back(ICClass((*itcls).label, (*itcls).value));
+	//		auto i = &(*(this->icclasses_.end()-1));
+	//		u->classes.Add(i);
+	//	}
 
-	}
-	for(auto i = icclassifiers.begin(); i != icclassifiers.end(); ++i) {
-		printf("%s: %s (%d, %d)\n", (*i).GetName().c_str(), (*i).GetDescription().c_str(), 
-									(*i).GetValueType(), (*i).GetLabelType());
+	//}
+	//for(auto i = icclassifiers.begin(); i != icclassifiers.end(); ++i) {
+	//	printf("%s: %s (%d, %d)\n", (*i).GetName().c_str(), (*i).GetDescription().c_str(), 
+	//								(*i).GetValueType(), (*i).GetLabelType());
 
-		icm->classifiers.Add(&(*i));
-	}
+	//	icm->classifiers.Add(&(*i));
+	//}
 
-	printf("In Message:\n");
-	for(auto u = icm->classifiers.Begin(); u != icm->classifiers.End(); ++u) {
-		printf("%s:\n", u->second->GetName().c_str());
-	}
-	icm->SetBlockIdx(1);
-	icm->Dump();
-	printf("after dump\n");
-	//return icm;
+	//printf("In Message:\n");
+	//for(auto u = icm->classifiers.Begin(); u != icm->classifiers.End(); ++u) {
+	//	printf("%s:\n", u->second->GetName().c_str());
+	//}
+	//icm->SetBlockIdx(1);
+	//icm->Dump();
+	//printf("after dump\n");
+	////return icm;
 }
 
 /*
@@ -179,19 +176,35 @@ cnbiros_bci::TobiId TobiId::ConvertFrom(const IDMessage& idm) {
 */
 void TobiIc::onRunning(void) {
 
-	//IDMessage idm;
-	//IDSerializerRapid ids(&idm);
-	//std::map<std::string, ClTobiId*>::iterator it;
-	//cnbiros_bci::TobiId msg;
+	ICMessage icm;
+	ICSerializerRapid ics(&icm);
+	std::map<std::string, ClTobiIc*>::iterator it;
+	cnbiros_bci::TobiIc msg;
+	TobiIcTools* ictools;
 
-	//for (it = this->tobiid_get_.begin(); it != this->tobiid_get_.end(); ++it) {
+	for (it = this->tobiic_get_.begin(); it != this->tobiic_get_.end(); ++it) {
 
-	//	if(it->second->GetMessage(&ids) == true) {
-	//		msg = this->ConvertFrom(idm);
-	//		msg.pipe = it->first;
-	//		this->Publish("/tobiid", msg);
-	//	}
-	//}
+		if(it->second->GetMessage(&ics) == ClTobiIc::HasMessage) {
+			ROS_INFO("Message received from %s: ", it->first.c_str());
+			ictools = new TobiIcTools(icm);
+			ictools->GetMessage(msg);
+
+
+			for(auto c = msg.classifiers.begin(); c != msg.classifiers.end(); ++c) {
+				printf("classifier: %s\n", (*c).name.c_str());
+				
+				for(auto i = (*c).classes.begin(); i != (*c).classes.end(); ++i) { 
+					printf("|- label: %s, value: %f\n", (*i).label.c_str(), (*i).value);
+				}
+			}
+
+
+
+
+			msg.pipe = it->first;
+			this->Publish("/tobiic", msg);
+		}
+	}
 
 
 }

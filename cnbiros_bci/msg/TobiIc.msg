@@ -3,4 +3,4 @@ string 	pipe
 string 	version
 uint32 	frame
 
-TobiIcClassifier[] IcClassifiers
+TobiIcClassifier[] classifiers 
