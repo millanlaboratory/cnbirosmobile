@@ -11,6 +11,8 @@ using namespace cnbiros::bci;
 int main(int argc, char** argv) {
 
 	std::string address = "127.0.0.1:8123";
+	std::string rpipe   = "/ctrl0";
+	std::string wpipe   = "/ctrl1";
 
 	// ROS initialization
 	ros::init(argc, argv, "tobiic_node_example");
@@ -27,10 +29,12 @@ int main(int argc, char** argv) {
 	TiCProxy tobiic;
 
 	// Attach as GetOnly
-	tobiic.Attach("/ctrl0");
+	if(tobiic.Attach(TiCProxy::AsReader, rpipe))
+		ROS_INFO("%s attached to %s as reader", tobiic.GetName().c_str(), rpipe.c_str());
 
 	// Attach as SetOnly on /dev on topic /test
-	tobiic.Attach("/ctrl1", "/test");
+	tobiic.Attach(TiCProxy::AsWriter, wpipe, "/test");
+		ROS_INFO("%s attached to %s as writer", tobiic.GetName().c_str(), wpipe.c_str());
 
 
 	tobiic.Run();
