@@ -11,10 +11,10 @@ include_directories(${catkin_INCLUDE_DIRS} include)
 
 add_message_files(
   FILES
-  TobiId.msg
-  TobiIcClass.msg
-  TobiIcClassifier.msg
-  TobiIc.msg
+  TiDMessage.msg
+  TiCClass.msg
+  TiCClassifier.msg
+  TiCMessage.msg
 )
 
 generate_messages(
@@ -36,8 +36,8 @@ catkin_package(
 
 add_library(cnbiros_bci 
 			src/CnbiInterface.cpp
-			src/TobiId.cpp
-			src/TobiIc.cpp
+			src/TiDProxy.cpp
+			src/TiCProxy.cpp
 			src/TobiIcTools.cpp)
 target_link_libraries(cnbiros_bci ${catkin_LIBRARIES} 
 					  cnbiros_core tobicore tobiid tobiic cnbiloop cnbicore)

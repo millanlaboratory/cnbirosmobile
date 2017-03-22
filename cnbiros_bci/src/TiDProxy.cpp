@@ -1,19 +1,19 @@
-#ifndef CNBIROS_BCI_TOBIID_CPP
-#define CNBIROS_BCI_TOBIID_CPP
+#ifndef CNBIROS_BCI_TIDPROXY_CPP
+#define CNBIROS_BCI_TIDPROXY_CPP
 
-#include "TobiId.hpp"
+#include "TiDProxy.hpp"
 
 namespace cnbiros {
 	namespace bci {
 
-TobiId::TobiId(void) : RosInterface("tobiid") {
-	this->SetPublisher<cnbiros_bci::TobiId>("/tobiid");
+TiDProxy::TiDProxy(std::string name) : RosInterface(name) {
+	this->SetPublisher<cnbiros_bci::TiDMessage>("/" + this->GetName());
 }
 
-TobiId::~TobiId(void) {
+TiDProxy::~TiDProxy(void) {
 }
 
-void TobiId::Attach(std::string pipe) {
+void TiDProxy::Attach(std::string pipe) {
 	
 	std::map<std::string, ClTobiId*>::iterator it;
 
@@ -40,7 +40,7 @@ void TobiId::Attach(std::string pipe) {
 	ROS_INFO("%s attached to %s as GetOnly", this->GetName().c_str(), pipe.c_str());
 }
 
-void TobiId::Attach(std::string pipe, std::string topic) {
+void TiDProxy::Attach(std::string pipe, std::string topic) {
 
 	std::map<std::string, ClTobiId*>::iterator it;
 	
@@ -66,10 +66,10 @@ void TobiId::Attach(std::string pipe, std::string topic) {
 	ROS_INFO("%s attached to %s as SetOnly", this->GetName().c_str(), pipe.c_str());
 
 	this->tobiid_table_[pipe] = topic;
-	this->SetSubscriber(topic, &TobiId::on_message_received_, this);
+	this->SetSubscriber(topic, &TiDProxy::on_message_received_, this);
 }
 
-void TobiId::Detach(std::string pipe) {
+void TiDProxy::Detach(std::string pipe) {
 
 	std::map<std::string, ClTobiId*>::iterator its;
 	std::map<std::string, ClTobiId*>::iterator itg;
@@ -95,7 +95,7 @@ void TobiId::Detach(std::string pipe) {
 	} 
 }
 
-void TobiId::on_message_received_(const cnbiros_bci::TobiId& msg) {
+void TiDProxy::on_message_received_(const cnbiros_bci::TiDMessage& msg) {
 
 	IDMessage idm;
 	std::map<std::string, ClTobiId*>::iterator it;
@@ -113,7 +113,7 @@ void TobiId::on_message_received_(const cnbiros_bci::TobiId& msg) {
 }
 
 
-IDMessage TobiId::ConvertTo(const cnbiros_bci::TobiId& msg) {
+IDMessage TiDProxy::ConvertTo(const cnbiros_bci::TiDMessage& msg) {
 	
 	IDMessage idm;
 
@@ -125,9 +125,9 @@ IDMessage TobiId::ConvertTo(const cnbiros_bci::TobiId& msg) {
 	return idm;
 }
 
-cnbiros_bci::TobiId TobiId::ConvertFrom(const IDMessage& idm) {
+cnbiros_bci::TiDMessage TiDProxy::ConvertFrom(const IDMessage& idm) {
 
-	cnbiros_bci::TobiId msg;
+	cnbiros_bci::TiDMessage msg;
 
 	msg.header.stamp = ros::Time::now();
 	msg.family 		 = idm.GetFamilyType();
@@ -137,19 +137,19 @@ cnbiros_bci::TobiId TobiId::ConvertFrom(const IDMessage& idm) {
 	return msg;
 }
 
-void TobiId::onRunning(void) {
+void TiDProxy::onRunning(void) {
 
 	IDMessage idm;
 	IDSerializerRapid ids(&idm);
 	std::map<std::string, ClTobiId*>::iterator it;
-	cnbiros_bci::TobiId msg;
+	cnbiros_bci::TiDMessage msg;
 
 	for (it = this->tobiid_get_.begin(); it != this->tobiid_get_.end(); ++it) {
 
 		if(it->second->GetMessage(&ids) == true) {
 			msg = this->ConvertFrom(idm);
 			msg.pipe = it->first;
-			this->Publish("/tobiid", msg);
+			this->Publish("/" + this->GetName(), msg);
 		}
 	}
 

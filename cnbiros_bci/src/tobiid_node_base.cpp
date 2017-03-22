@@ -2,7 +2,7 @@
 #include <cnbiloop/ClLoop.hpp>
 #include <cnbiloop/ClTobiId.hpp>
 
-#include "TobiId.hpp"
+#include "TiDProxy.hpp"
 
 using namespace cnbiros::bci;
 
@@ -26,7 +26,7 @@ int main(int argc, char** argv) {
 	ros::NodeHandle node("~");
 
 	// Create interface instance
-	TobiId* id;
+	TiDProxy* id;
 	id = new TobiId(&node, ClTobiId::GetOnly);
 
 	// Initialization of interface

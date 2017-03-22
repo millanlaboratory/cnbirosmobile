@@ -7,6 +7,7 @@ void usage(void) {
 	printf("  -a       address of nameserver in ip:port format\n");
 	printf("  -p       TCP port (9500 default)\n");
 	printf("  -n       TCP client name (/ctrl0 default)\n");
+	printf("  -d       Dump message sent\n");
 	printf("  -h       display this help and exit\n");
 }
 
@@ -22,7 +23,7 @@ int main(int argc, char* argv[]) {
 	CcAddress nameserver;
 	bool locking = false, dump = false;
 	
-	while((opt = getopt(argc, argv, "a:p:n:h")) != -1) {
+	while((opt = getopt(argc, argv, "a:p:n:hd")) != -1) {
 		if(opt == 'p')
 			optport.assign(optarg);
 		else if(opt == 'n')
@@ -63,8 +64,6 @@ int main(int argc, char* argv[]) {
 	icm.classifiers.Add(&c1);
 	icm.classifiers.Add(&c2);
 
-	icm.Dump();
-	printf("a\n");	
 	ClTobiIc ic(ClTobiIc::SetOnly);
 	std::string absolute, relative;
 	bool attached;
@@ -89,6 +88,7 @@ int main(int argc, char* argv[]) {
 
 	CcTimeValue start;
 	CcTime::Tic(&start);
+
 	while(true) {
 		icm.SetBlockIdx(block++);
 
@@ -101,12 +101,16 @@ int main(int argc, char* argv[]) {
 		icm.SetValue("classifier2", "0x303", value2);
 		icm.SetValue("classifier2", "0x304", 1 - value2);
 		
-		CcTime::Sleep(50.0f);
 
 		if(ic.SetMessage(&ics) == ClTobiIc::Detached) {
 			CcLogFatal("Tobi Ic detached");
 			break;
 		}
+		
+		if(dump == true)
+			icm.Dump();
+		
+		CcTime::Sleep(50.0f);
 
 		if(CcCore::receivedSIGAny.Get()) 
 			break;

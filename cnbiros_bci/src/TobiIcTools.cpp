@@ -6,10 +6,10 @@
 namespace cnbiros {
 	namespace bci {
 
-TobiIcTools::TobiIcTools(const cnbiros_bci::TobiIc& msg) {
+TobiIcTools::TobiIcTools(const cnbiros_bci::TiCMessage& msg) {
 	
-	std::vector<cnbiros_bci::TobiIcClassifier>::const_iterator itclf;
-	std::vector<cnbiros_bci::TobiIcClass>::const_iterator itcls;
+	std::vector<cnbiros_bci::TiCClassifier>::const_iterator itclf;
+	std::vector<cnbiros_bci::TiCClass>::const_iterator itcls;
 	ICClassifier* clf;
 	ICClass*	  cls;
 
@@ -41,35 +41,37 @@ TobiIcTools::TobiIcTools(const ICMessage& icm) {
 	ICClassifierConstIter itclf;
 	ICSetClassConstIter itcls;
 
-	std::vector<cnbiros_bci::TobiIcClassifier> vclf;
+	std::vector<cnbiros_bci::TiCClassifier> vclf;
 	for(itclf = icm.classifiers.Begin(); itclf != icm.classifiers.End(); ++itclf) {
 		
-		cnbiros_bci::TobiIcClassifier cclf;
-		std::vector<cnbiros_bci::TobiIcClass> vcls;
+		cnbiros_bci::TiCClassifier cclf;
+		std::vector<cnbiros_bci::TiCClass> vcls;
 		
 		for(itcls = itclf->second->classes.Begin(); itcls != itclf->second->classes.End(); ++itcls) {
-			cnbiros_bci::TobiIcClass ccls;
+			cnbiros_bci::TiCClass ccls;
 			ccls.label = itcls->second->GetLabel();
 			ccls.value = itcls->second->GetValue();
 			vcls.emplace(vcls.end(), ccls); 
 		}
 	
 
-		cclf.name    = itclf->first;	
+		cclf.name    	 = itclf->first;	
+		cclf.description = itclf->second->GetDescription(); 
+		cclf.vtype  	 = itclf->second->GetValueType();
+		cclf.ltype 		 = itclf->second->GetLabelType();
 		cclf.classes = vcls;
 
 		vclf.emplace(vclf.end(), cclf);
 		
 	}
-	
-	
+
+	this->rosmsg_.frame = icm.GetBlockIdx();	
 	this->rosmsg_.classifiers = vclf;
-	
 }
 
 TobiIcTools::~TobiIcTools(void) {}
 
-bool TobiIcTools::GetMessage(ICMessage* icm) {
+bool TobiIcTools::GetMessage(ICMessage& icm) {
 
 	std::unordered_map<std::string, ICClassifier>::iterator itclf;	
 	std::unordered_map<std::string, std::vector<ICClass>>::iterator itclv;	
@@ -89,19 +91,11 @@ bool TobiIcTools::GetMessage(ICMessage* icm) {
 			}
 		}
 		// Add current classifier reference to the ICMessage
-		icm->classifiers.Add(&(itclf->second));
+		icm.classifiers.Add(&(itclf->second));
 	}
 }
 
-bool TobiIcTools::GetMessage(cnbiros_bci::TobiIc& msg) {
-
-	//for(auto c = this->rosmsg_.classifiers.begin(); c != this->rosmsg_.classifiers.end(); ++c) {
-	//	printf("classifier: %s\n", (*c).name.c_str());
-	//	
-	//	for(auto i = (*c).classes.begin(); i != (*c).classes.end(); ++i) { 
-	//		printf("|- label: %s, value: %f\n", (*i).label.c_str(), (*i).value);
-	//	}
-	//}
+bool TobiIcTools::GetMessage(cnbiros_bci::TiCMessage& msg) {
 	msg = this->rosmsg_;
 }
 

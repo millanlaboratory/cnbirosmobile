@@ -2,8 +2,8 @@
 
 #include "RosInterface.hpp"
 #include "CnbiInterface.hpp"
-#include "TobiIc.hpp"
-#include "cnbiros_bci/TobiIc.h"
+#include "TiCProxy.hpp"
+#include "cnbiros_bci/TiCMessage.h"
 
 
 using namespace cnbiros::bci;
@@ -23,8 +23,8 @@ int main(int argc, char** argv) {
 	// Cnbi Loop connection (blocking)
 	interface.Connect(true);
 
-	// TobiId initialization
-	TobiIc tobiic;
+	// TiCProxy initialization
+	TiCProxy tobiic;
 
 	// Attach as GetOnly
 	tobiic.Attach("/ctrl0");

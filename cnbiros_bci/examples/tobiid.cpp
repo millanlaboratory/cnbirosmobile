@@ -1,7 +1,7 @@
 #include <ros/ros.h>
 
 #include "CnbiInterface.hpp"
-#include "TobiId.hpp"
+#include "TiDProxy.hpp"
 
 
 using namespace cnbiros::bci;
@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
 	interface.Connect(true);
 
 	// TobiId initialization
-	TobiId tobiid;
+	TiDProxy tobiid;
 
 	// Attach as GetOnly
 	tobiid.Attach("/bus");

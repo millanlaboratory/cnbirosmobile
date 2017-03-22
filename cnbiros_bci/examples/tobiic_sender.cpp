@@ -2,13 +2,13 @@
 
 #include "RosInterface.hpp"
 #include "CnbiInterface.hpp"
-#include "TobiIc.hpp"
-#include "cnbiros_bci/TobiIc.h"
+#include "TiCProxy.hpp"
+#include "cnbiros_bci/TiCMessage.h"
 
 class RosSender : public cnbiros::core::RosInterface {
 	public:
 		RosSender(void) : cnbiros::core::RosInterface("rossender_tobiic") {
-			this->SetPublisher<cnbiros_bci::TobiIc>("/test");
+			this->SetPublisher<cnbiros_bci::TiCMessage>("/test");
 
 			this->class1.label = "class_test1";
 			this->class2.label = "class_test2";
@@ -37,7 +37,7 @@ class RosSender : public cnbiros::core::RosInterface {
 
 		void onRunning(void) {
 			
-			cnbiros_bci::TobiIc 	msg;
+			cnbiros_bci::TiCMessage 	msg;
 			msg.pipe = "/ctrl1";
 			
 			this->classifier1.classes.clear();
@@ -63,11 +63,11 @@ class RosSender : public cnbiros::core::RosInterface {
 
 	private:
 
-		cnbiros_bci::TobiIcClassifier classifier1;
-		cnbiros_bci::TobiIcClassifier classifier2;
-		cnbiros_bci::TobiIcClass 	  class1;
-		cnbiros_bci::TobiIcClass 	  class2;
-		cnbiros_bci::TobiIcClass 	  class3;
+		cnbiros_bci::TiCClassifier classifier1;
+		cnbiros_bci::TiCClassifier classifier2;
+		cnbiros_bci::TiCClass 	   class1;
+		cnbiros_bci::TiCClass 	   class2;
+		cnbiros_bci::TiCClass 	   class3;
 
 };
 
