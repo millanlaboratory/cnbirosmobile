@@ -10,7 +10,12 @@ CnbiInterface::CnbiInterface(const CcAddress address) {
 
 	// Initialize the loop
 	this->cnbiaddress_ = address;
-	ClLoop::Configure(address);
+
+	if(address.empty() == false) {
+		ClLoop::Configure(address);
+	} else {
+		ClLoop::Configure();
+	}
 }
 
 CnbiInterface::~CnbiInterface(void) {
@@ -29,6 +34,10 @@ bool CnbiInterface::Connect(bool wait) {
 
 void CnbiInterface::Disconnect(void) {
 	ClLoop::Disconnect();
+}
+
+std::string CnbiInterface::GetAddress(void) {
+	return this->cnbiaddress_;
 }
 
 	}

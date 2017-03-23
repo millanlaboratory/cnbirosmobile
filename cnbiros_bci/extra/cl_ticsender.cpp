@@ -15,7 +15,7 @@ float sinewave(double time, double frequency) {
 	return sin((2*M_PI)*time*frequency/1000.0f);
 }
 
-
+//! \todo To clean and review
 int main(int argc, char* argv[]) {
 	int opt;
 	std::string optname("/ctrl0");

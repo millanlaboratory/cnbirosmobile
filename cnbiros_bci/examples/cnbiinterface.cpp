@@ -4,6 +4,7 @@
 
 using namespace cnbiros::bci;
 
+//! \todo To clean and review
 int main(int argc, char** argv) {
 
 	std::string address = "127.0.0.1:8123";

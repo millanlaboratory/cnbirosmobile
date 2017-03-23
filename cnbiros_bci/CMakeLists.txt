@@ -64,16 +64,5 @@ add_executable(tobiic_sender examples/tobiic_sender.cpp)
 target_link_libraries(tobiic_sender cnbiros_bci)
 
 # cl_ticsender -> To be moved to cnbitk
-add_executable(cl_ticsender src/cl_ticsender.cpp)
+add_executable(cl_ticsender extra/cl_ticsender.cpp)
 target_link_libraries(cl_ticsender cnbiros_bci)
-
-## TobiId node
-#add_executable(tobiid_node_base src/tobiid_node_base.cpp)
-#target_link_libraries(tobiid_node_base 	cnbiros_bci cnbiros_core tobicore 
-#										tobiid 
-#										cnbiloop 
-#										cnbicore)
-#
-## BCI Input node
-#add_executable(bci_node_base src/bci_node_base.cpp)
-#target_link_libraries(bci_node_base cnbiros_bci ${Eigen3_LIBRARY})

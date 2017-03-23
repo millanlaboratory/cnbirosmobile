@@ -71,6 +71,7 @@ class RosSender : public cnbiros::core::RosInterface {
 
 };
 
+//! \todo To clean and review
 int main(int argc, char** argv) {
 
 
