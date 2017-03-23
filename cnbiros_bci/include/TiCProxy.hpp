@@ -34,6 +34,7 @@ class TiCProxy : public core::RosInterface {
 	public:
 		const static unsigned int AsReader = 0;
 		const static unsigned int AsWriter = 1;
+
 	private:
 		std::map<std::string, ClTobiIc*> 	ic_map_;
 		std::map<std::string, std::string>	pt_map_;

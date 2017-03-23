@@ -28,7 +28,7 @@ int main(int argc, char** argv) {
 	// TiCProxy initialization
 	TiCProxy tobiic;
 
-	// Attach as GetOnly
+	// Attach as Reader
 	if(tobiic.Attach(TiCProxy::AsReader, rpipe))
 		ROS_INFO("%s attached to %s as reader", tobiic.GetName().c_str(), rpipe.c_str());
 

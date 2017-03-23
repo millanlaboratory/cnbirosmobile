@@ -4,8 +4,9 @@
 #include <ros/ros.h>
 #include <cnbiloop/ClTobiId.hpp>
 
-#include "cnbiros_bci/TiDMessage.h"
 #include "RosInterface.hpp"
+#include "TobiIdTools.hpp"
+#include "cnbiros_bci/TiDMessage.h"
 
 namespace cnbiros {
 	namespace bci {
@@ -16,21 +17,28 @@ class TiDProxy : public core::RosInterface {
 		TiDProxy(std::string name = "tidproxy");
 		virtual ~TiDProxy(void);
 	
-		void Attach(std::string pipe);
-		void Attach(std::string pipe, std::string topic);
-		void Detach(std::string pipe);
+		bool Attach(unsigned int mode, std::string pipe, std::string topic = "");
+		bool Detach(std::string pipe);
 
-		IDMessage ConvertTo(const cnbiros_bci::TiDMessage& rosmsg);
-		cnbiros_bci::TiDMessage ConvertFrom(const IDMessage& idm);
-
+		bool IsAttached(std::string pipe);
+		bool IsWriter(std::string pipe);
+		bool IsReader(std::string pipe);
+		bool IsReaderWriter(std::string pipe);
+		
+	private:
 		void onRunning(void);
-	private:
-		virtual void on_message_received_(const cnbiros_bci::TiDMessage& msg);
+		void onReceived(const cnbiros_bci::TiDMessage& msg);
+
+	public:
+		const static unsigned int AsReader = 0;
+		const static unsigned int AsWriter = 1;
+		const static unsigned int AsReaderWriter = 2;
 
 	private:
-		std::map<std::string, ClTobiId*> 	tobiid_get_;
-		std::map<std::string, ClTobiId*> 	tobiid_set_;
-		std::map<std::string, std::string> 	tobiid_table_;
+		std::map<std::string, ClTobiId*> 	id_map_;
+		std::map<std::string, std::string>	pt_map_;
+		std::map<std::string, unsigned int> pm_map_;
+
 
 
 };

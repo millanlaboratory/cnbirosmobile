@@ -38,13 +38,17 @@ add_library(cnbiros_bci
 			src/CnbiInterface.cpp
 			src/TiDProxy.cpp
 			src/TiCProxy.cpp
-			src/TobiIcTools.cpp)
+			src/TobiIcTools.cpp
+			src/TobiIdTools.cpp)
 target_link_libraries(cnbiros_bci ${catkin_LIBRARIES} 
 					  cnbiros_core tobicore tobiid tobiic cnbiloop cnbicore)
 
 # Main executables for TiC and TiD
 add_executable(tobi_interface_c src/tobi_interface_c.cpp)
 target_link_libraries(tobi_interface_c cnbiros_bci)
+
+add_executable(tobi_interface_d src/tobi_interface_d.cpp)
+target_link_libraries(tobi_interface_d cnbiros_bci)
 
 # Examples
 add_executable(cnbiinterface examples/cnbiinterface.cpp)

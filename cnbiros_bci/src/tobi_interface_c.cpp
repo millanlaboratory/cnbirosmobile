@@ -2,7 +2,6 @@
 
 #include "CnbiInterface.hpp"
 #include "TiCProxy.hpp"
-#include "cnbiros_bci/TiCMessage.h"
 
 #define CNBIROS_BCI_TIC_READING		"/ctrl10"
 #define CNBIROS_BCI_TIC_WRITING 	"/ctrl11"

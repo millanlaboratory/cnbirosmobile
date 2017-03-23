@@ -8,7 +8,7 @@
 class RosSender : public cnbiros::core::RosInterface {
 	public:
 		RosSender(void) : cnbiros::core::RosInterface("rossender_tobiic") {
-			this->SetPublisher<cnbiros_bci::TiCMessage>("/test");
+			this->SetPublisher<cnbiros_bci::TiCMessage>("/tic_to_cnbiloop0");
 
 			this->class1.label = "class_test1";
 			this->class2.label = "class_test2";
@@ -38,7 +38,7 @@ class RosSender : public cnbiros::core::RosInterface {
 		void onRunning(void) {
 			
 			cnbiros_bci::TiCMessage 	msg;
-			msg.pipe = "/ctrl1";
+			msg.pipe = "/ctrl13";
 			
 			this->classifier1.classes.clear();
 			this->classifier2.classes.clear();
@@ -58,7 +58,7 @@ class RosSender : public cnbiros::core::RosInterface {
 			msg.classifiers.push_back(this->classifier1);
 			msg.classifiers.push_back(this->classifier2);
 
-			this->Publish("/test", msg);
+			this->Publish("/tic_to_cnbiloop0", msg);
 		}
 
 	private:
