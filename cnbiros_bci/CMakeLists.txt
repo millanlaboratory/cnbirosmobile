@@ -42,6 +42,10 @@ add_library(cnbiros_bci
 target_link_libraries(cnbiros_bci ${catkin_LIBRARIES} 
 					  cnbiros_core tobicore tobiid tobiic cnbiloop cnbicore)
 
+# Main executables for TiC and TiD
+add_executable(tobi_interface_c src/tobi_interface_c.cpp)
+target_link_libraries(tobi_interface_c cnbiros_bci)
+
 # Examples
 add_executable(cnbiinterface examples/cnbiinterface.cpp)
 target_link_libraries(cnbiinterface cnbiros_bci)
