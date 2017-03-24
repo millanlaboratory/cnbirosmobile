@@ -11,6 +11,12 @@ TiCProxy::TiCProxy(std::string name) : RosInterface(name) {
 }
 
 TiCProxy::~TiCProxy(void) {
+
+	// Destruction of the map and its own pointers
+	for(auto it = this->ic_map_.begin(); it != this->ic_map_.end(); ++it) {
+		delete it->second;
+		this->ic_map_.erase(it);
+	}
 }
 
 bool TiCProxy::Attach(unsigned int mode, std::string pipe, std::string topic) {

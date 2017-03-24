@@ -11,6 +11,12 @@ TiDProxy::TiDProxy(std::string name) : RosInterface(name) {
 }
 
 TiDProxy::~TiDProxy(void) {
+
+	// Destruction of the map and its own pointers
+	for(auto it = this->id_map_.begin(); it != this->id_map_.end(); ++it) {
+		delete it->second;
+		this->id_map_.erase(it);
+	}
 }
 
 bool TiDProxy::Attach(unsigned int mode, std::string pipe, std::string topic) {

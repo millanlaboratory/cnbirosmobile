@@ -151,7 +151,7 @@ class TiCProxy : public core::RosInterface {
 	private:
 		void onRunning(void);
 		void onReceived(const cnbiros_bci::TiCMessage& msg);
-
+	
 	public:
 		//! \brief AsReader modality for a connection (aka, ClTobiIc::GetOnly)
 		const static unsigned int AsReader = 0;
