@@ -1,8 +1,8 @@
 #include <ros/ros.h>
 
-#include "RosInterface.hpp"
-#include "CnbiInterface.hpp"
-#include "TiCProxy.hpp"
+#include "cnbiros_core/RosInterface.hpp"
+#include "cnbiros_bci/CnbiInterface.hpp"
+#include "cnbiros_bci/TiCProxy.hpp"
 #include "cnbiros_bci/TiCMessage.h"
 
 class RosSender : public cnbiros::core::RosInterface {

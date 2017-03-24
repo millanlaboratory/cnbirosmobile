@@ -1,7 +1,7 @@
 #ifndef CNBIROS_BCI_TIDPROXY_CPP
 #define CNBIROS_BCI_TIDPROXY_CPP
 
-#include "TiDProxy.hpp"
+#include "cnbiros_bci/TiDProxy.hpp"
 
 namespace cnbiros {
 	namespace bci {

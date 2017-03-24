@@ -1,7 +1,7 @@
 #ifndef CNBIROS_CORE_FUSION_CPP
 #define CNBIROS_CORE_FUSION_CPP
 
-#include "Fusion.hpp"
+#include "cnbiros_core/Fusion.hpp"
 
 namespace cnbiros {
 	namespace core {

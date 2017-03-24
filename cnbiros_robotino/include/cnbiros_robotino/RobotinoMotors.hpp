@@ -4,8 +4,8 @@
 #include <rec/robotino/api2/OmniDrive.h>
 #include <rec/robotino/api2/Odometry.h>
 
-#include "Motors.hpp"
-#include "RobotinoCom.hpp"
+#include "cnbiros_core/Motors.hpp"
+#include "cnbiros_robotino/RobotinoCom.hpp"
 #include "cnbiros_messages/RobotOdometry.h"
 
 namespace cnbiros {

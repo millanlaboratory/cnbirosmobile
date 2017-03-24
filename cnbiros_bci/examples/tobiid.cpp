@@ -1,7 +1,7 @@
 #include <ros/ros.h>
 
-#include "CnbiInterface.hpp"
-#include "TiDProxy.hpp"
+#include "cnbiros_bci/CnbiInterface.hpp"
+#include "cnbiros_bci/TiDProxy.hpp"
 
 using namespace cnbiros::bci;
 

@@ -1,7 +1,7 @@
 #ifndef CNBIROS_CORE_NAVIGATION_CPP
 #define CNBIROS_CORE_NAVIGATION_CPP
 
-#include "Navigation.hpp"
+#include "cnbiros_core/Navigation.hpp"
 
 namespace cnbiros {
 	namespace core {

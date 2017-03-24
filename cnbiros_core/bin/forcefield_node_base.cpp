@@ -1,5 +1,5 @@
 #include <ros/ros.h>
-#include "ForceField.hpp"
+#include "cnbiros_core/ForceField.hpp"
 
 using namespace cnbiros::core;
 

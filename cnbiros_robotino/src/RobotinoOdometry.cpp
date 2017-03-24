@@ -1,7 +1,7 @@
 #ifndef CNBIROS_ROBOTINO_ODOMETRY_CPP
 #define CNBIROS_ROBOTINO_ODOMETRY_CPP
 
-#include "RobotinoOdometry.hpp"
+#include "cnbiros_robotino/RobotinoOdometry.hpp"
 
 namespace cnbiros {
 	namespace robotino {

@@ -6,8 +6,8 @@
 #include <tobiic/ICClassifier.hpp>
 #include <cnbicore/CcProxy.hpp>
 
-#include "RosInterface.hpp"
-#include "TobiIcTools.hpp"
+#include "cnbiros_core/RosInterface.hpp"
+#include "cnbiros_bci/TobiIcTools.hpp"
 #include "cnbiros_bci/TiCMessage.h"
 
 namespace cnbiros {

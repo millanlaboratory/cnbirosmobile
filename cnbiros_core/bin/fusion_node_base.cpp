@@ -1,5 +1,5 @@
 #include <ros/ros.h>
-#include "Fusion.hpp"
+#include "cnbiros_core/Fusion.hpp"
 
 using namespace cnbiros::core;
 

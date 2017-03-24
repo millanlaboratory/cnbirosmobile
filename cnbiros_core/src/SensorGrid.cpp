@@ -1,7 +1,7 @@
 #ifndef CNBIROS_CORE_SENSORGRID_CPP
 #define CNBIROS_CORE_SENSORGRID_CPP
 
-#include "SensorGrid.hpp"
+#include "cnbiros_core/SensorGrid.hpp"
 
 namespace cnbiros {
 	namespace core {

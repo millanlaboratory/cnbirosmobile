@@ -1,6 +1,6 @@
 #include <ros/ros.h>
 
-#include "CnbiInterface.hpp"
+#include "cnbiros_bci/CnbiInterface.hpp"
 
 using namespace cnbiros::bci;
 

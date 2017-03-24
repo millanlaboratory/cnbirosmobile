@@ -9,8 +9,8 @@
 #include <grid_map_ros/grid_map_ros.hpp>
 #include <grid_map_msgs/GridMap.h>
 
-#include "RosInterface.hpp"
-#include "SensorGrid.hpp"
+#include "cnbiros_core/RosInterface.hpp"
+#include "cnbiros_core/SensorGrid.hpp"
 #include "cnbiros_services/Reset.h"
 
 namespace cnbiros {

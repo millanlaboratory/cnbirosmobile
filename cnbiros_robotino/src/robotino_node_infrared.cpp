@@ -1,9 +1,6 @@
 #include <ros/ros.h>
 
-#include "RobotinoInfrared.hpp"
-
-using namespace cnbiros::core;
-using namespace cnbiros::robotino;
+#include "cnbiros_robotino/Infrared.hpp"
 
 int main(int argc, char** argv) {
 
@@ -11,12 +8,12 @@ int main(int argc, char** argv) {
 	ros::init(argc, argv, "robotino_node_infrared");
 	
 	// Create sensor instance
-	RobotinoInfrared* infrared;
-	infrared = new RobotinoInfrared("192.168.1.3");
+	cnbiros::robotino::Infrared* infrared;
+	infrared = new cnbiros::robotino::Infrared("192.168.1.3");
 	
 	// Run loop
 	infrared->Run();
-		
+	
 	delete infrared;
 
 	return 0;

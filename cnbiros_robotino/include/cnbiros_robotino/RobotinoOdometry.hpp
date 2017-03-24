@@ -2,8 +2,8 @@
 #define CNBIROS_ROBOTINO_ODOMETRY_HPP
 
 #include <rec/robotino/api2/Odometry.h>
-#include "Odometry.hpp"
-#include "RobotinoCom.hpp"
+#include "cnbiros_core/Odometry.hpp"
+#include "cnbiros_robotino/RobotinoCom.hpp"
 
 namespace cnbiros {
 	namespace robotino {

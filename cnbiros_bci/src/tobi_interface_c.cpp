@@ -1,7 +1,7 @@
 #include <ros/ros.h>
 
-#include "CnbiInterface.hpp"
-#include "TiCProxy.hpp"
+#include "cnbiros_bci/CnbiInterface.hpp"
+#include "cnbiros_bci/TiCProxy.hpp"
 
 #define CNBIROS_BCI_TIC_READING		"/ctrl10"
 #define CNBIROS_BCI_TIC_WRITING 	"/ctrl11"

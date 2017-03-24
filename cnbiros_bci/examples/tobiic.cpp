@@ -1,8 +1,7 @@
 #include <ros/ros.h>
 
-#include "RosInterface.hpp"
-#include "CnbiInterface.hpp"
-#include "TiCProxy.hpp"
+#include "cnbiros_bci/CnbiInterface.hpp"
+#include "cnbiros_bci/TiCProxy.hpp"
 #include "cnbiros_bci/TiCMessage.h"
 
 using namespace cnbiros::bci;

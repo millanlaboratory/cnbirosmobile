@@ -1,7 +1,7 @@
 #ifndef CNBIROS_BCI_CNBIINTERFACE_CPP
 #define CNBIROS_BCI_CNBIINTERFACE_CPP
 
-#include "CnbiInterface.hpp"
+#include "cnbiros_bci/CnbiInterface.hpp"
 
 namespace cnbiros {
 	namespace bci {

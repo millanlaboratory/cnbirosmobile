@@ -30,7 +30,7 @@ catkin_package(
 add_library(cnbiros_core 
 			src/RosInterface.cpp
 			src/SensorGrid.cpp
-			src/Motors.cpp
+			src/Motor.cpp
 			#src/Odometry.cpp
 			src/Sensor.cpp
 			src/Fusion.cpp

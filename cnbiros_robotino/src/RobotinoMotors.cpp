@@ -1,7 +1,7 @@
 #ifndef CNBIROS_ROBOTINO_MOTORS_CPP
 #define CNBIROS_ROBOTINO_MOTORS_CPP
 
-#include "RobotinoMotors.hpp"
+#include "cnbiros_robotino/RobotinoMotors.hpp"
 
 namespace cnbiros {
 	namespace robotino {

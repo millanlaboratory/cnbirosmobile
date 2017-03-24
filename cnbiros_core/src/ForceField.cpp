@@ -1,7 +1,7 @@
 #ifndef CNBIROS_CORE_FORCEFIELD_CPP
 #define CNBIROS_CORE_FORCEFIELD_CPP
 
-#include "ForceField.hpp"
+#include "cnbiros_core/ForceField.hpp"
 
 namespace cnbiros {
 	namespace core {

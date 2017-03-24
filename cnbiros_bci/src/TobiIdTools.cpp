@@ -1,7 +1,7 @@
 #ifndef CNBIROS_BCI_TOBIID_TOOLS_CPP
 #define CNBIROS_BCI_TOBIID_TOOLS_CPP
 
-#include "TobiIdTools.hpp"
+#include "cnbiros_bci/TobiIdTools.hpp"
 
 namespace cnbiros {
 	namespace bci {

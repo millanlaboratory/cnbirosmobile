@@ -1,8 +1,8 @@
 #ifndef CNBIROS_CORE_FORCEFIELD_HPP
 #define CNBIROS_CORE_FORCEFIELD_HPP
 
-#include "Flags.hpp"
-#include "Navigation.hpp"
+#include "cnbiros_core/Flags.hpp"
+#include "cnbiros_core/Navigation.hpp"
 
 namespace cnbiros {
 	namespace core {

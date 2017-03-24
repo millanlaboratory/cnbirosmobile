@@ -234,7 +234,7 @@ class RosInterface : public ros::NodeHandle {
 		 *
 		 * \sa Run()
 		 */
-		virtual void onRunning(void) = 0;
+		virtual void onRunning(void) {};
 
 		/*! Callback to be executed when the interface stops
 		 * 

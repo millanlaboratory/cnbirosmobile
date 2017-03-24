@@ -1,7 +1,7 @@
 #ifndef CNBIROS_CORE_ROSINTERFACE_CPP
 #define CNBIROS_CORE_ROSINTERFACE_CPP
 
-#include "RosInterface.hpp"
+#include "cnbiros_core/RosInterface.hpp"
 
 namespace cnbiros {
 	namespace core {

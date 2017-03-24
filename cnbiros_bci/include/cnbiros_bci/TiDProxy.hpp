@@ -4,8 +4,8 @@
 #include <ros/ros.h>
 #include <cnbiloop/ClTobiId.hpp>
 
-#include "RosInterface.hpp"
-#include "TobiIdTools.hpp"
+#include "cnbiros_core/RosInterface.hpp"
+#include "cnbiros_bci/TobiIdTools.hpp"
 #include "cnbiros_bci/TiDMessage.h"
 
 namespace cnbiros {

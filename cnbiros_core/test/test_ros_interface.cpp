@@ -2,7 +2,7 @@
 #include <ros/console.h>
 #include <std_msgs/String.h>
 #include <std_msgs/Float32.h>
-#include "RosInterface.hpp"
+#include "cnbiros_core/RosInterface.hpp"
 
 using namespace cnbiros::core;
 

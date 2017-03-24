@@ -6,8 +6,8 @@
 #include <tf/transform_broadcaster.h>
 #include <nav_msgs/Odometry.h>
 
-#include "Flags.hpp"
-#include "RosInterface.hpp"
+#include "cnbiros_core/Flags.hpp"
+#include "cnbiros_core/RosInterface.hpp"
 #include "cnbiros_services/OdometryReset.h"
 
 namespace cnbiros {
