@@ -28,7 +28,6 @@ void Motor::SetVelocity(const geometry_msgs::Twist& twist) {
 								 this->motor_twist_.angular.z);
 }
 
-
 void Motor::onRunning(void) {
 
 	this->SetVelocity(this->motor_twist_);

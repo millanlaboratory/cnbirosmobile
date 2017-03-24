@@ -1,6 +1,7 @@
 <launch>
-
 	<!-- Robotino motor node -->
-	<node name="robotino_node_motor" pkg="cnbiros_robotino" type="robotino_node_motor" output="screen" />
-
+	<group ns="robotino">
+		<node name="robotino_node_motor" pkg="cnbiros_robotino" type="robotino_node_motor" output="screen" />
+		<param name="hostname" value="192.168.1.3" />
+	</group>
 </launch>
