@@ -21,8 +21,7 @@ class Infrared : public core::Sensor<sensor_msgs::PointCloud>,
 				 public rec::robotino::api2::DistanceSensorArray {
 
 	public:
-		Infrared(std::string hostname, 
-						 std::string name = "infrared");
+		Infrared(std::string hostname, std::string name = "infrared");
 		virtual ~Infrared(void);
 
 		void distancesChangedEvent(const float* ranges, unsigned int size);

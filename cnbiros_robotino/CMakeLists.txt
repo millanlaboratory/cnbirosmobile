@@ -26,15 +26,18 @@ catkin_package(
 )
 
 add_library(cnbiros_robotino 
-			#src/RobotinoMotors.cpp
+			src/Motor.cpp
 			src/Communication.cpp
 			#src/RobotinoOdometry.cpp
 			src/Infrared.cpp)
-target_link_libraries(cnbiros_robotino ${catkin_LIBRARIES} cnbiros_core ${REC_ROBOTINO_API2_LIBRARY})
+target_link_libraries(cnbiros_robotino 
+					  cnbiros_core 
+					  ${catkin_LIBRARIES} 
+					  ${REC_ROBOTINO_API2_LIBRARY})
 
 # Robotino motors
-#add_executable(robotino_node_motors bin/robotino_node_motors.cpp)
-#target_link_libraries(robotino_node_motors cnbiros_robotino ${Eigen3_LIBRARY})
+add_executable(robotino_node_motor src/robotino_node_motor.cpp)
+target_link_libraries(robotino_node_motor cnbiros_robotino)
 
 # Infrared node
 add_executable(robotino_node_infrared src/robotino_node_infrared.cpp)

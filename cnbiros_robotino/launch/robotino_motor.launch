@@ -3,8 +3,4 @@
 	<!-- Robotino motor node -->
 	<node name="robotino_node_motor" pkg="cnbiros_robotino" type="robotino_node_motor" output="screen" />
 
-	<!-- Robotino infrared node -->
-	<node name="robotino_node_infrared" pkg="cnbiros_robotino" type="robotino_node_infrared" output="screen" />
-
-
 </launch>
