@@ -19,7 +19,6 @@ Motor::Motor(std::string name) : RosInterface(name) {
 Motor::~Motor(void) {}
 
 void Motor::onReceived(const geometry_msgs::Twist& msg) {
-
 	this->motor_twist_ = msg;
 	this->SetVelocity(msg);
 }
@@ -29,6 +28,24 @@ void Motor::GetVelocity(geometry_msgs::Twist& twist) {
 	twist.angular = this->motor_twist_.angular;
 }
 
+void Motor::Reset(void) {
+	this->motor_twist_.linear.x  = 0.0f;
+	this->motor_twist_.linear.y  = 0.0f;
+	this->motor_twist_.linear.z  = 0.0f;
+	this->motor_twist_.angular.x = 0.0f;
+	this->motor_twist_.angular.y = 0.0f;
+	this->motor_twist_.angular.z = 0.0f;
+}
+
+void Motor::onStart(void) {
+	this->Reset();
+	this->SetVelocity(this->motor_twist_);
+}
+
+void Motor::onStop(void) {
+	this->Reset();
+	this->SetVelocity(this->motor_twist_);
+}
 
 bool Motor::on_service_settwist_(cnbiros_services::SetTwist::Request&  req,
 							  	 cnbiros_services::SetTwist::Response& res) {
@@ -36,10 +53,10 @@ bool Motor::on_service_settwist_(cnbiros_services::SetTwist::Request&  req,
 	res.result = true;
 	this->motor_twist_.linear  = req.linear;
 	this->motor_twist_.angular = req.angular;
+	this->SetVelocity(this->motor_twist_);
+	
 	return res.result;
 }
-
-
 	}
 }
 

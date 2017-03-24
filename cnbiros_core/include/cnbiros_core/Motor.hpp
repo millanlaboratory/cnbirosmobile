@@ -20,8 +20,11 @@ class Motor : public RosInterface {
 		void GetVelocity(geometry_msgs::Twist& twist);
 		virtual void SetVelocity(const geometry_msgs::Twist& twist) = 0;
 
+		void Reset(void);
 	protected:
 		void onReceived(const geometry_msgs::Twist& msg);
+		virtual void onStop(void);
+		virtual void onStart(void);
 		virtual void onRunning(void) {};
 
 	private:
