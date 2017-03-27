@@ -28,7 +28,7 @@ catkin_package(
 add_library(cnbiros_robotino 
 			src/Motor.cpp
 			src/Communication.cpp
-			#src/RobotinoOdometry.cpp
+			src/Odometry.cpp
 			src/Infrared.cpp)
 target_link_libraries(cnbiros_robotino 
 					  cnbiros_core 
@@ -44,7 +44,7 @@ add_executable(robotino_node_infrared src/robotino_node_infrared.cpp)
 target_link_libraries(robotino_node_infrared cnbiros_robotino)
 
 ## Odometry node
-#add_executable(robotino_node_odometry src/robotino_node_odometry.cpp)
-#target_link_libraries(robotino_node_odometry cnbiros_robotino ${Eigen3_LIBRARY})
+add_executable(robotino_node_odometry src/robotino_node_odometry.cpp)
+target_link_libraries(robotino_node_odometry cnbiros_robotino ${Eigen3_LIBRARY})
 
 

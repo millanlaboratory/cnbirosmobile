@@ -5,9 +5,9 @@
 #include <ros/ros.h>
 #include <geometry_msgs/Twist.h>
 
-#include "cnbiros_core/Flags.hpp"
 #include "cnbiros_core/RosInterface.hpp"
 #include "cnbiros_services/SetTwist.h"
+#include "cnbiros_services/Reset.h"
 
 namespace cnbiros {
 	namespace core {
@@ -28,13 +28,17 @@ class Motor : public RosInterface {
 		virtual void onRunning(void) {};
 
 	private:
-		bool on_service_settwist_(cnbiros_services::SetTwist::Request& req,
-							      cnbiros_services::SetTwist::Response& res);
+		bool on_service_set_(cnbiros_services::SetTwist::Request& req,
+							 cnbiros_services::SetTwist::Response& res);
+		bool on_service_reset_(cnbiros_services::Reset::Request& req,
+							   cnbiros_services::Reset::Response& res);
 	protected:
+		std::string 			topic_;
 		geometry_msgs::Twist	motor_twist_;
 
 	private:
-		ros::ServiceServer 	srv_twist_;
+		ros::ServiceServer 	srv_set_;
+		ros::ServiceServer 	srv_reset_;
 
 };
 

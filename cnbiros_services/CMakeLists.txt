@@ -2,7 +2,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 cmake_minimum_required(VERSION 2.8.3)
 project(cnbiros_services)
 
-find_package(catkin REQUIRED COMPONENTS std_msgs geometry_msgs message_generation roscpp)
+find_package(catkin REQUIRED COMPONENTS std_msgs geometry_msgs nav_msgs message_generation roscpp)
 
 
 SET(CMAKE_BUILD_TYPE RelWithDebInfo)
@@ -13,8 +13,8 @@ add_service_files(
   FILES
   Reset.srv
   SetTwist.srv
+  SetOdometry.srv
   RosInterfaceState.srv
-  OdometryReset.srv
   NavParameterSet.srv
 )
 
@@ -22,6 +22,7 @@ generate_messages(
    DEPENDENCIES
    std_msgs
    geometry_msgs
+   nav_msgs
 )
 
 catkin_package(

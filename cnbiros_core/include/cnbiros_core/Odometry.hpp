@@ -6,9 +6,9 @@
 #include <tf/transform_broadcaster.h>
 #include <nav_msgs/Odometry.h>
 
-#include "cnbiros_core/Flags.hpp"
 #include "cnbiros_core/RosInterface.hpp"
-#include "cnbiros_services/OdometryReset.h"
+#include "cnbiros_services/SetOdometry.h"
+#include "cnbiros_services/Reset.h"
 
 namespace cnbiros {
 	namespace core {
@@ -58,6 +58,10 @@ class Odometry : public RosInterface {
 		//! \brief Destructor
 		virtual ~Odometry(void);
 
+		void GetOdometry(nav_msgs::Odometry& odom);
+		virtual void SetOdometry(const nav_msgs::Odometry& odom) = 0;
+		void Reset(void);
+
 	protected:
 		
 		/*! Callback to be executed while the odometry is running
@@ -67,40 +71,24 @@ class Odometry : public RosInterface {
 		 *
 		 * \sa RosInterface::Run()
 		 */
-		virtual void onRunning(void) = 0;
+		virtual void onRunning(void) {};
+	
+		virtual void onStop(void);
+		virtual void onStart(void);
 		
-		/*! Callback to be executed when the reset service is required 
-		 * 
-		 * This callback is hardware specific. Thus, it must be implemented in
-		 * the derived classes
-		 *
-		 */
-		virtual void onReset(void) = 0;
-
-		/*! Reset to 0 the odometry message
-		 * 
-		 */
-		void reset_message(void);
-		
-		/*! Set the odometry message
-		 *
-		 * Given the required x, y, z, omega (orientation) positions and vx, vy,
-		 * vz, vomega (angular) velocities and the current sequence number, this
-		 * method fill the odometry message accordingly.
-		 * 
-		 */
-		void set_message(float x, float y, float z, float omega,
-						 float vx, float vy, float vz, float vomega, 
-						 unsigned int sequence);
-
 	private:
-		 virtual bool on_odometry_reset_(cnbiros_services::OdometryReset::Request& req,
-										 cnbiros_services::OdometryReset::Response& res);
-
+		virtual bool on_service_set_(cnbiros_services::SetOdometry::Request& req,
+								     cnbiros_services::SetOdometry::Response& res);
+		virtual bool on_service_reset_(cnbiros_services::Reset::Request& req,
+										cnbiros_services::Reset::Response& res);
+		
 	protected:
-		nav_msgs::Odometry 	rosodom_msg_;
-		ros::ServiceServer	rossrv_reset_;
-		std::string 		rostopic_pub_;
+		std::string 		topic_;
+		nav_msgs::Odometry 	odometry_data_;
+	
+	private:
+		ros::ServiceServer	srv_set_;
+		ros::ServiceServer	srv_reset_;
 };
 
 

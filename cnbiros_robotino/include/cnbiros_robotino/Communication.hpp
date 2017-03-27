@@ -8,7 +8,7 @@ namespace cnbiros {
 	namespace robotino {
 
 class Communication : public rec::robotino::api2::Com {
-
+	
 	public:
 		Communication(std::string owner);
 		~Communication(void);

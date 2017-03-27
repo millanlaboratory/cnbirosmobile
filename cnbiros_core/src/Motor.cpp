@@ -9,10 +9,12 @@ namespace cnbiros {
 Motor::Motor(std::string name) : RosInterface(name) {
 
 	// Abstract sensor initialization
-	this->SetSubscriber("/cmd_vel", &Motor::onReceived, this);
+	this->topic_ = "/cmd_vel";
+	this->SetSubscriber(this->topic_, &Motor::onReceived, this);
 
-	// Service for velocity set
-	this->srv_twist_ = this->advertiseService("set_twist", &Motor::on_service_settwist_, this);
+	// Services for velocity set/reset
+	this->srv_set_   = this->advertiseService("set_twist", &Motor::on_service_set_, this);
+	this->srv_reset_ = this->advertiseService("reset_twist", &Motor::on_service_reset_, this);
 
 }
 
@@ -35,26 +37,37 @@ void Motor::Reset(void) {
 	this->motor_twist_.angular.x = 0.0f;
 	this->motor_twist_.angular.y = 0.0f;
 	this->motor_twist_.angular.z = 0.0f;
+	this->SetVelocity(this->motor_twist_);
 }
 
 void Motor::onStart(void) {
 	this->Reset();
-	this->SetVelocity(this->motor_twist_);
 }
 
 void Motor::onStop(void) {
 	this->Reset();
-	this->SetVelocity(this->motor_twist_);
 }
 
-bool Motor::on_service_settwist_(cnbiros_services::SetTwist::Request&  req,
-							  	 cnbiros_services::SetTwist::Response& res) {
+
+bool Motor::on_service_set_(cnbiros_services::SetTwist::Request&  req,
+							cnbiros_services::SetTwist::Response& res) {
 	
 	res.result = true;
 	this->motor_twist_.linear  = req.linear;
 	this->motor_twist_.angular = req.angular;
 	this->SetVelocity(this->motor_twist_);
+	this->Publish(this->topic_, this->motor_twist_);
 	
+	return res.result;
+}
+
+bool Motor::on_service_reset_(cnbiros_services::Reset::Request& req,
+							  cnbiros_services::Reset::Response& res) {
+
+	res.result = true;
+	this->Reset();
+	this->Publish(this->topic_, this->motor_twist_);
+
 	return res.result;
 }
 	}

@@ -31,7 +31,7 @@ add_library(cnbiros_core
 			src/RosInterface.cpp
 			src/SensorGrid.cpp
 			src/Motor.cpp
-			#src/Odometry.cpp
+			src/Odometry.cpp
 			src/Sensor.cpp
 			src/Fusion.cpp
 			src/Navigation.cpp
