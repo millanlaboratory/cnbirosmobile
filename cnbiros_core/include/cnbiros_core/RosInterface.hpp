@@ -15,51 +15,51 @@ enum RosInterfaceState{Start, Stop, Resume};
 
 //* RosInterface class
 /**
+ * \brief Interface to ROS ecosystem. It wraps some common ros methods. It is
+ * the base class for most of the cnbiros_mobile library.
+ *
  * RosInterface represents the base class to interface with ROS.  It wraps some
  * common ros methods and hides their complexity (i.e., subscribe and advertise
- * topics). It is an abstract class, so it can be instanciated only as derived
- * class with explicitly implementation of the callback method onRunning().
+ * topics). It is directly derived derived from ros::NodeHandle, thus it shares
+ * all its public and protected methods/members.
  * 
- * <b>Behaviour:</b> \n 
- * Once instantiated, a derived class of RosInterface starts an internal loop
- * that spins on the given ROS node. The class automatically spins on all ROS
- * subscribers (spinOnce() method). The internal loop runs until the node is
- * running (e.g., ros::shutdown is not called) or until it is stopped by the
- * Stop() method.  While the interface is running, specific operations can be
- * defined in the onRunning() virtual method. In addition, the class has an
- * internatl TF broadcaster to broadcast automatically transformations (if it
- * is is defined).
+ * \par General description:
+ * RosInterface can be used in two different way: on one hand can be
+ * instanciated and used as a ros::NodeHandle class with the advantages of
+ * several methods that hide some complexity of ros. On the other, it can be
+ * derived in a new class and methods such as onRunning() can be implemented. In
+ * this case, by calling the method Run(), the interface automatically spins
+ * until the node is ros::ok(). In the loop, all the ros callbacks, services and
+ * the derived method onRunning() are called at each iteration.
+ * In this case, specific operations can be defined in the method onRunning() of
+ * derived class.
  *
- * <b>Basic methods and members:</b> \n
- * <ul>
- * <li>SetName() and GetName(): 
+ * \par Basic methods and members:
+ * - SetName() and GetName(): 
  * An important attribute of the class is its #name_.  This attribute is used to
  * automatically advertise and subscribe topics in its derived classes (and
  * possibly services)
- * <li>SetFrequency() and GetFrequency(): 
+ * - SetFrequency() and GetFrequency(): 
  * These methods are used to set and get the spinning node frequency.
- * <li>SetSubscriber() and GetSubscriber(): 
+ * - SetSubscriber() and GetSubscriber(): 
  * These methods are used to add a new subscriber to the class and to define the
  * related callback. By assumption a RosInterface might have many subscriber
- * <li>SetPublisher(): 
- * This method creates a publisher for the interface. By assumption a
- * RosInterface might have only one publisher (additional publisher might be add
- * manually in the derived classes) 
- * <li>Run(), Stop(), Resume(): 
+ * - SetPublisher() and GetPublisher(): 
+ * These methods are used to add/get a new publisher to the interface.
+ * - Run(), Stop(), Resume(): 
  * These methods control the internal loop of the RosInterface()
- * <li>onRunning(), onStop(), onStart(): 
+ * - onRunning(), onStop(), onStart(): 
  * These callbacks can be implemented in the derived classes and they are
  * executed while the interface is running, once it stops or once it starts,
  * respectively
- * </ul>
  *
- * <b>Services:</b> \n
+ * \par Services:
  * By default, a RosInterface implements a standard ROS service to control the
  * state of the interface. By means of this service is possible to Start, Stop
  * and Resume the internal loop of the interface. The service is accessible via
  * ROS methods on <i>~/rosinterface_state</i>.
  *
- * <b>Actions:</b> \n
+ * \par Actions:
  * <i>NOT IMPLEMENTED YET</i>
  */
 
@@ -67,6 +67,10 @@ class RosInterface : public ros::NodeHandle {
 
 	public:
 		/*! \brief Constructor
+		 *
+		 * \param name 	Name of the interface
+		 * \param ns 	Namespace of the node [default: "~"]
+		 *
 		 */
 		RosInterface(std::string name, std::string ns="~");
 
@@ -104,9 +108,6 @@ class RosInterface : public ros::NodeHandle {
 		 * \return The interface frequency
 		 */
 		float GetFrequency(void);
-
-		template<class T>
-		void GetParameter(const std::string& name, T& value, const T& defvalue);
 
 		/*! \brief Get the interface subscriber on topic
 		 *
@@ -195,35 +196,14 @@ class RosInterface : public ros::NodeHandle {
 		 */
 		bool IsStopped(void);
 
-		///*! \brief Set the parent frame for the interface
-		// *
-		// * Set the parent frame for the interface for transformation purposes
-		// *
-		// * \param	frameid	Id of parent frame
-		// */
-		//void SetParentFrame(std::string frameid);
-
-		///*! \brief Set the child frame id for the interface
-		// *
-		// * Set the child frame id for the interface for transformation purposes
-		// * 
-		// * \param	frameid	Id of child frame
-		// */
-		//void SetChildFrame(std::string frameid);
-
-		///*! \brief Get parent frame id
-		// *
-		// * \return 				Parent frame id
-		// */
-		//std::string GetParentFrame(void);
-		//
-		///*! \brief Get child frame id
-		// * \return 				Child frame id
-		// */
-		//std::string GetChildFrame(void);
-	
-
+		/*! \brief Set the frameid for the interface
+		 */
 		void SetFrame(const std::string frame);
+		
+		/*! \brief Get the frameid of the interface
+		 *
+		 * \return 		frame id of the interface
+		 */
 		std::string GetFrame(void);
 
 		protected:
@@ -274,20 +254,7 @@ class RosInterface : public ros::NodeHandle {
 
 		//! Frame related members
 		std::string rosframe_;
-		//std::string 	rosframe_child_;
-		//std::string 	rosframe_parent_;
 };
-
-
-template<class T>
-void RosInterface::GetParameter(const std::string& key, T& value, const T& defvalue) {
-	if(this->getParam(key, value)) {
-		ROS_INFO_STREAM("Retrieved '"<<key<<"' parameter for "<<this->GetName());
-	} else {
-		ROS_WARN_STREAM("'"<<key<<"' parameter not found for "<<this->GetName()<<": using default.");
-		value = defvalue;
-	}
-}
 
 template<class M>
 void RosInterface::SetSubscriber(std::string topic, void(*fp)(M)) {

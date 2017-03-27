@@ -15,30 +15,33 @@ namespace cnbiros {
 
 //* Odometry class
 /**
+ * \brief Odometry class is the base class to interact with robot odometry.
+ *
  * Odometry() class represents the base class for any kind of odometry developed
- * in the cnbiros_mobile framework. It is a pure abstract class directly derived
- * from RosInterface(). It provides attributes and it implements methods common
- * to different types of odometries. In particular, it has a nav_msgs::Odometry
- * (#rosodom_msg_) and methods to set/reset such a message. 
+ * in the cnbiros_mobile framework.
+ *
+ * \par General description:
+ * The basic behavior of the Odometry() class is to read the odometry from the
+ * robot encoder and publish it in the given topic ("/odom"). If a different
+ * publishing topic is required, please consider ros remap tool instead of
+ * changing manually the topic name.
  * 
- * <b>Behaviour</b> \n
- * The behaviour of the class depends on the implementation of the onRunning()
- * callback.
- * 
- * <b>Basic methods and members:</b> \n 
- * Same methods and members as RosInterface(). In addition:
- * <ul>
- * <li> onReset(): virtual method to be implemented in the derived classes to
- * reset the odometry of the device.
- * </ul>
- * 
- * <b>Services:</b> \n 
- * Same services as RosInterface(). In addition, it implements a ROS service to
- * reset its own odometry message. The service is accesible via ROS methods on
- * <i>~/odometry_reset</i>
- * 
- * <b>Actions:</b> \n 
- * <i>NOT IMPLEMENTED YET</i>
+ * \par Basic methods and members:
+ * - GetOdometry(), SetOdometry(): 
+ * These two methods are used to get and set the odometry od the robot,
+ * respectively. In particular, SetOdometry() is a pure abstract method specific
+ * for each hardware and to be implemented in a derived class.
+ * - Reset():
+ * This methos resets the current odometry of the robot.
+ * - onStop(), onStart():
+ * Callbacks called when the class is required to stop/start.
+ * - onRunning():
+ * Main callback called when the class is running.
+ 
+ * \par Services:
+ * By default, the Odometry() class implements two service to set a given odometry
+ * or to reset (to 0) the current one. The services are accessible via ROS
+ * methods on <i>set_odometry</i> and <i>reset_odometry</i>, respectively.
  *
  */
 
@@ -47,33 +50,45 @@ class Odometry : public RosInterface {
 	public:
 		/*! \brief Constructor
 		 *
-		 * Constructor with pointer to ROS node handler and the name of the
-		 * odometry
-		 *
-		 * \param node 	Pointer to the ROS node handler 
-		 * \param name 	Name of the odometry
+		 * \param name 	Name of the class
 		 */
 		Odometry(std::string name);
 		
 		//! \brief Destructor
 		virtual ~Odometry(void);
 
+		/*! \brief Get the current odometry
+		 *
+		 * \param[out] odom 	Reference to an odometry message
+		 */
 		void GetOdometry(nav_msgs::Odometry& odom);
+
+		/*! \brief Pure virtual function to set the odometry
+		 * 
+		 * \param odom 	Reference to the odometry to be set
+		 */
 		virtual void SetOdometry(const nav_msgs::Odometry& odom) = 0;
+		
+		/*! \brief Reset the current odometry to 0
+		 */
 		void Reset(void);
 
 	protected:
 		
-		/*! Callback to be executed while the odometry is running
-		 * 
-		 * This callback is called at every iteration of the odometry. Can be
-		 * instanciated and defined in the derived class.  
-		 *
-		 * \sa RosInterface::Run()
+		/*! \brief Empty virtual callback executed when the interface is running
 		 */
 		virtual void onRunning(void) {};
 	
+		/*! \brief Callback when the interface stops
+		 * 
+		 * By default, the odometry is set to 0.
+		 */
 		virtual void onStop(void);
+		
+		/*! \brief Callback when the interface starts
+		 * 
+		 * By default, the odometry is set to 0.
+		 */
 		virtual void onStart(void);
 		
 	private:

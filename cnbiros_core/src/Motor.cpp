@@ -41,10 +41,12 @@ void Motor::Reset(void) {
 }
 
 void Motor::onStart(void) {
+	ROS_INFO("%s has been required to start", this->GetName().c_str());
 	this->Reset();
 }
 
 void Motor::onStop(void) {
+	ROS_INFO("%s has been required to stop", this->GetName().c_str());
 	this->Reset();
 }
 

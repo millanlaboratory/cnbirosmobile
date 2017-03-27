@@ -9,13 +9,11 @@ namespace cnbiros {
 RosInterface::RosInterface(std::string name, std::string ns) : NodeHandle(ns) {
 
 	// Initialize interface
-	this->rosname_ 	  = name;
-	this->is_stopped_ = false;
-	
-	// Getting parameters from server (if they exist)
-	this->GetParameter("frequency", this->rosfrequency_, CNBIROS_NODE_FREQUENCY);
-	this->GetParameter("frameid", this->rosframe_, std::string("base_link")); 
-	this->rosrate_    = new ros::Rate(this->rosfrequency_);
+	this->rosname_ 	    = name;
+	this->is_stopped_   = false;
+	this->rosfrequency_ = 10;
+	this->rosrate_      = new ros::Rate(this->rosfrequency_);
+	this->rosframe_     = "base_link";
 
 	// Initialize services
 	this->rossrv_state_ = this->advertiseService("rosinterface_state",
