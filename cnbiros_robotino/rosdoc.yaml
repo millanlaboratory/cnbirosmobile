@@ -1,5 +1,5 @@
  - builder: doxygen
    name: CNBI Ros BCI API
-   output_dir: c++
+   output_dir: cnbiros_robotino
    file_patterns: '*.c *.cpp *.h *.hpp'
    exclude_patterns: '*/working/*'

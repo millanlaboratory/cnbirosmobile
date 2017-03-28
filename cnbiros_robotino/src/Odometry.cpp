@@ -6,21 +6,33 @@
 namespace cnbiros {
 	namespace robotino {
 
-Odometry::Odometry(std::string hostname, 
-								   std::string name) :
-								   cnbiros::core::Odometry(name) {
+Odometry::Odometry(std::string name) : cnbiros::core::Odometry(name) {
 
 	// Connection to the robot
 	this->com_ = new Communication(this->GetName());
-	this->com_->Connect(hostname);
-
-	// Create odometry association
-	this->setComId(this->com_->id());
 }
 
 Odometry::~Odometry(void) {
 	this->com_->Disconnect();
 	delete this->com_;
+}
+
+bool Odometry::Connect(std::string hostname, bool blocking) {
+
+	do {
+		try {
+			this->com_->Connect(hostname);
+		} catch (rec::robotino::api2::RobotinoException &e) {};
+
+		ros::Duration(1.0f).sleep();
+	} while((this->com_->IsConnected() == false) && (blocking == true));
+
+	// If connected associate to comid
+	if(this->com_->IsConnected()) {
+		this->setComId(this->com_->id());
+	}
+
+	return this->com_->IsConnected();
 }
 
 void Odometry::SetOdometry(const nav_msgs::Odometry& odom) {

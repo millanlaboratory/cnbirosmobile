@@ -6,20 +6,34 @@
 namespace cnbiros {
 	namespace robotino {
 
-Infrared::Infrared(std::string hostname, std::string name) 
+Infrared::Infrared(std::string name) 
 					: core::Sensor<sensor_msgs::PointCloud>(name) {
 
 	// Connection to the robot
 	this->com_ = new Communication(this->GetName());
-	this->com_->Connect(hostname);
-	
-	// Create infrared sensor association
-	this->setComId(this->com_->id());
 }
 
 Infrared::~Infrared(void) {
 	this->com_->Disconnect();
 	delete this->com_;
+}
+
+bool Infrared::Connect(std::string hostname, bool blocking) {
+
+	do {
+		try {
+			this->com_->Connect(hostname);
+		} catch (rec::robotino::api2::RobotinoException &e) {};
+
+		ros::Duration(1.0f).sleep();
+	} while((this->com_->IsConnected() == false) && (blocking == true));
+
+	// If connected associate to comid
+	if(this->com_->IsConnected()) {
+		this->setComId(this->com_->id());
+	}
+
+	return this->com_->IsConnected();
 }
 
 void Infrared::distancesChangedEvent(const float* ranges, unsigned int size) {

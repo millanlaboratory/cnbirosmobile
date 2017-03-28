@@ -24,7 +24,8 @@ void Communication::SetAddress(std::string address) {
 	this->setAddress(address.c_str());
 }
 
-void Communication::Connect(std::string address, bool reconnect) {
+
+void Communication::Connect(std::string address) {
 
 	// Disconnect if already connected
 	this->Disconnect();
@@ -33,7 +34,7 @@ void Communication::Connect(std::string address, bool reconnect) {
 	this->SetAddress(address);
 
 	// Set connection reconnection
-	this->setAutoReconnectEnabled(reconnect);
+	this->setAutoReconnectEnabled(true);
 
 	// Blocking function
 	ROS_INFO("robotino %s tries to connected to %s", this->owner_.c_str(), this->GetAddress().c_str());
