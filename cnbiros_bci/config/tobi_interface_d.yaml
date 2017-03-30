@@ -1,6 +1,0 @@
-# Address of the CNBI Loop
-address: "127.0.0.1:8123"
-# Pipe to be attached 
-pipes:   ["/dev", "/bus"]
-# Topics to subscribe to (NOTICE: one entry for each provided pipe)
-topics:  ["/tid_ros2dev", "/tid_ros2bus"] 

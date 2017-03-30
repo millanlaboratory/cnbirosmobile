@@ -1,6 +1,13 @@
 <launch>
-	<!-- Repellors node -->
+	<!-- Arguments declaration -->
+	<arg name="decay"  default="0.0"/>
+	<arg name="topics" default="[]"/>
+	<arg name="types"  default="[]"/>
+
 	<group ns="forcefield">
+		<rosparam param="decay"  subst_value="True">$(arg decay)</rosparam>
+		<rosparam param="topics" subst_value="True">$(arg topics)</rosparam>
+		<rosparam param="types"  subst_value="True">$(arg types)</rosparam>
 		<node name="forcefield_node_repellors" pkg="cnbiros_forcefield" type="forcefield_node_repellors" output="screen" />
 	</group>
 </launch>

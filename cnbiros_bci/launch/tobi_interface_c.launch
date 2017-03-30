@@ -1,9 +1,17 @@
 <launch>
 
-	<arg name="config" default="$(find cnbiros_bci)/config/tobi_interface_c.yaml" />
+	<!-- Arguments declaration -->
+	<arg name="address"      default="127.0.0.1:8123"/>
+	<arg name="read_pipes"   default="[/ctrl10]"/>
+	<arg name="write_pipes"  default="[]"/>
+	<arg name="topics"  	 default="[]"/>
 
 	<group ns="tobiic">
-		<rosparam command="load" file="$(arg config)" />
+		<rosparam param="address"     subst_value="True">$(arg address)</rosparam>
+		<rosparam param="read_pipes"  subst_value="True">$(arg read_pipes)</rosparam>
+		<rosparam param="write_pipes" subst_value="True">$(arg write_pipes)</rosparam>
+		<rosparam param="topics"      subst_value="True">$(arg topics)</rosparam>
+
 		<node pkg="cnbiros_bci" type="tobi_interface_c" name="tobi_interface_c" output="screen" />
 	</group>
 </launch>

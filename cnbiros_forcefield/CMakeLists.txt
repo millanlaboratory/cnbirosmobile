@@ -29,8 +29,8 @@ target_link_libraries(cnbiros_forcefield
 					  ${catkin_LIBRARIES})
 
 # Attractors node
-add_executable(forcefield_node_attractors src/forcefield_node_attractors.cpp)
-target_link_libraries(forcefield_node_attractors cnbiros_forcefield)
+#add_executable(forcefield_node_attractors src/forcefield_node_attractors.cpp)
+#target_link_libraries(forcefield_node_attractors cnbiros_forcefield)
 
 add_executable(forcefield_node_repellors src/forcefield_node_repellors.cpp)
 target_link_libraries(forcefield_node_repellors cnbiros_forcefield)
