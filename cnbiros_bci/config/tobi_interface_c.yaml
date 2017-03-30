@@ -1,0 +1,8 @@
+# Address of the CNBI Loop
+address: "127.0.0.1:8123"
+# Pipe to be attached as GetOnly (AsReader)
+read_pipes:   ["/ctrl10"]
+# Pipe to be attached as SetOnly (AsWriter) 
+write_pipes:   []
+# Topics to subscribe to (NOTICE: one entry for each provided write_pipe)
+topics:  [] 

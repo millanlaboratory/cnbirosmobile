@@ -6,16 +6,16 @@
 namespace cnbiros {
 	namespace bci {
 
+CnbiInterface::CnbiInterface(void) {
+	this->cnbiaddress_ = "127.0.0.1:8123";
+	ClLoop::Configure(this->cnbiaddress_);
+}
+
 CnbiInterface::CnbiInterface(const CcAddress address) {
 
 	// Initialize the loop
 	this->cnbiaddress_ = address;
-
-	if(address.empty() == false) {
-		ClLoop::Configure(address);
-	} else {
-		ClLoop::Configure();
-	}
+	ClLoop::Configure(address);
 }
 
 CnbiInterface::~CnbiInterface(void) {

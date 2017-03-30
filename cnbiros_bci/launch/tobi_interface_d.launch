@@ -1,10 +1,10 @@
 <launch>
 
-	<!-- Interface D -->
-	<node pkg="cnbiros_bci" type="tobi_interface_d" name="tobi_interface_d" output="screen" >
-		<rosparam param="cnbiloop">127.0.0.1:8123</rosparam>
-		<rosparam param="pipes">[/bus, /dev]</rosparam>
-		<rosparam param="subtopics">[/tid_ros2bus, /tid_ros2dev]</rosparam>
-	</node>	
+	<arg name="config" default="$(find cnbiros_bci)/config/tobi_interface_d.yaml" />
+
+	<group ns="tobiid">
+		<rosparam command="load" file="$(arg config)" />
+		<node pkg="cnbiros_bci" type="tobi_interface_d" name="tobi_interface_d" output="screen" />
+	</group>
 
 </launch>

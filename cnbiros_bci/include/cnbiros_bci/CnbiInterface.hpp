@@ -30,7 +30,15 @@ class CnbiInterface {
 		 *
 		 * \param 	address 	Address of the loop [default: ""]
 		 */
-		CnbiInterface(const CcAddress address = "");
+		CnbiInterface(const CcAddress address);
+		
+		/*! \brief Constructor
+		 *
+		 * Instanciate the class and configure the CNBI Loop
+		 * to the default address (from $HOME/.cnbiloop).
+		 *
+		 */
+		CnbiInterface(void);
 
 		//! \brief Destructor
 		~CnbiInterface(void);
