@@ -27,7 +27,7 @@
  */ 
 int main(int argc, char** argv) {
 
-	std::string hostname = "192.168.1.3";
+	std::string hostname;
 
 	// ROS initialization
 	ros::init(argc, argv, "robotino_node_motor");
@@ -39,8 +39,8 @@ int main(int argc, char** argv) {
 	motor = new cnbiros::robotino::Motor();
 	
 	// Get parameters from the server
-	hostname = motor->param("hostname", hostname);
-	
+	motor->getParam("hostname", hostname);
+
 	// Connect to the robot
 	motor->Connect(hostname);
 	

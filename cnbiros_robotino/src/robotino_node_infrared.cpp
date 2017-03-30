@@ -26,7 +26,7 @@
  */ 
 int main(int argc, char** argv) {
 
-	std::string hostname = "192.168.1.3";
+	std::string hostname;
 	
 	// ROS initialization
 	ros::init(argc, argv, "robotino_node_infrared");
@@ -38,7 +38,7 @@ int main(int argc, char** argv) {
 	infrared = new cnbiros::robotino::Infrared();
 	
 	// Get parameters from the server
-	hostname = infrared->param("hostname", hostname);
+	infrared->getParam("hostname", hostname);
 
 	// Connect to the robot
 	infrared->Connect(hostname);

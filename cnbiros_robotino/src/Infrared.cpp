@@ -38,8 +38,9 @@ bool Infrared::Connect(std::string hostname, bool blocking) {
 
 void Infrared::distancesChangedEvent(const float* ranges, unsigned int size) {
 
-	float x, y, z;
+	//float x, y, z;
 	float angle_inc, range_min, range_max, height, base_radius;
+	geometry_msgs::Point32 point;
 
 	angle_inc   = CNBIROS_ROBOTINO_INFRARED_ANGLE_INC;
 	range_max   = CNBIROS_ROBOTINO_INFRARED_RANGE_MAX;
@@ -49,22 +50,18 @@ void Infrared::distancesChangedEvent(const float* ranges, unsigned int size) {
 	// Build the PointCloud msg
 	this->sensor_data_.header.stamp = ros::Time::now();
 	this->sensor_data_.header.frame_id = "base_link";
-	this->sensor_data_.points.resize(size);
+	this->sensor_data_.points.clear();
 
 	// Fill the point cloud by iterating the input vector of distance. Checking
 	// if the distance are inside the min-max range of the infrared sensors.
 	// Otherwise set the value to 0 (not done by the robotino::api2)
 	for(auto i = 0; i < size; ++i) {
-		x = 0, y = 0, z = 0;	
-		if(ranges[i] < range_max) {
-			x = (ranges[i] + base_radius) * cos(angle_inc * i);
-			y = (ranges[i] + base_radius) * sin(angle_inc * i);
-			z = height;
+		if(ranges[i] > 0.0f && ranges[i] < range_max) {
+			point.x = (ranges[i] + base_radius) * cos(angle_inc * i);
+			point.y = (ranges[i] + base_radius) * sin(angle_inc * i);
+			point.z = height;
+			this->sensor_data_.points.push_back(point);
 		} 
-		
-		this->sensor_data_.points[i].x = x;
-		this->sensor_data_.points[i].y = y;
-		this->sensor_data_.points[i].z = z;
 	}
 
 	this->Publish(this->rostopic_, this->sensor_data_);

@@ -27,7 +27,7 @@
  */ 
 int main(int argc, char** argv) {
 
-	std::string hostname = "192.168.1.3";
+	std::string hostname;
 
 	// ROS initialization
 	ros::init(argc, argv, "robotino_node_odometry");
@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
 	odometry = new cnbiros::robotino::Odometry();
 
 	// Get parameters from the server
-	hostname = odometry->param("hostname", hostname);
+	odometry->getParam("hostname", hostname);
 
 	// Connect to the robot
 	odometry->Connect(hostname);
