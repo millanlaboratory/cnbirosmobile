@@ -33,7 +33,7 @@ add_library(cnbiros_core
 			src/Motor.cpp
 			src/Odometry.cpp
 			src/Sensor.cpp
-			#src/Fusion.cpp
+			src/Fusion.cpp
 			#src/Navigation.cpp
 			#src/ForceField.cpp
 			)
@@ -42,7 +42,7 @@ target_link_libraries(cnbiros_core ${catkin_LIBRARIES} ${Eigen3_LIBRARY})
 # Fusion node
 #add_executable(fusion_node_base bin/fusion_node_base.cpp)
 #target_link_libraries(fusion_node_base cnbiros_core ${Eigen3_LIBRARY})
-#
+
 ## Forcefield node
 #add_executable(forcefield_node_base bin/forcefield_node_base.cpp)
 #target_link_libraries(forcefield_node_base cnbiros_core ${Eigen3_LIBRARY})
