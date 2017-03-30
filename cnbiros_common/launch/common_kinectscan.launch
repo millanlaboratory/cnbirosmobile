@@ -37,9 +37,4 @@
 
     </node>
 
-    <node pkg="cnbiros_common" type="kinectscan_node_base" name="kinectscan_node_base" output="screen" >
-	<param name="radius" value="0.16" />
-    </node>
-	
-
 </launch>
