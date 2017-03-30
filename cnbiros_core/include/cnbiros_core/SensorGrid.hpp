@@ -39,6 +39,8 @@ class SensorGrid : public grid_map::GridMap {
 
 
 		void Update(const std::string& layer, sensor_msgs::LaserScan& msg, float radius);
+		void Update(const std::string& layer, sensor_msgs::PointCloud& msg);
+		void Update(const std::string& layer, geometry_msgs::Point32& msg);
 		void Update(const std::string& layer, grid_map::Matrix& data);
 
 		//bool Transform(const std::string& layer, const std::string& parent);

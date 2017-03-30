@@ -72,7 +72,7 @@ class RosInterface : public ros::NodeHandle {
 		 * \param ns 	Namespace of the node [default: "~"]
 		 *
 		 */
-		RosInterface(std::string name, std::string ns="~");
+		RosInterface(std::string name, std::string ns="");
 
 		//! \brief Destructor
 		virtual ~RosInterface(void);
@@ -129,7 +129,7 @@ class RosInterface : public ros::NodeHandle {
 		 *  				arrives on the subscribed topic
 		 */
 		template<class M>
-		void SetSubscriber(std::string topic, void(*fp)(M));
+		void SetSubscriber(const std::string topic, void(*fp)(M));
 		
 		/*! \brief Set a new interface subscriber on topic
 		 * 	
@@ -144,8 +144,10 @@ class RosInterface : public ros::NodeHandle {
 		 *					istantiated
 		 */
 		template<class M, class T>
-		void SetSubscriber(std::string topic, void(T::*fp)(M), T* obj);
+		void SetSubscriber(const std::string topic, void(T::*fp)(M), T* obj);
 
+		template<class M>
+		void SetSubscriber(const std::string topic, const boost::function< void(const boost::shared_ptr<M const>&)> &callback);
 
 		ros::Publisher* GetPublisher(std::string topic);
 
@@ -239,6 +241,8 @@ class RosInterface : public ros::NodeHandle {
 		bool on_rosinterface_service_(cnbiros_services::RosInterfaceState::Request &req,
 									  cnbiros_services::RosInterfaceState::Response &res);
 
+	protected:
+		std::map<std::string, ros::Subscriber> 	rossubs_;
 	private:
 		//! Generic interface members
 		std::string 	rosname_;
@@ -247,7 +251,6 @@ class RosInterface : public ros::NodeHandle {
 		
 		ros::Rate* 								rosrate_; 						
 		std::map<std::string, ros::Publisher> 	rospubs_;
-		std::map<std::string, ros::Subscriber> 	rossubs_;
 
 		//! Services related members
 		ros::ServiceServer rossrv_state_;
@@ -257,13 +260,18 @@ class RosInterface : public ros::NodeHandle {
 };
 
 template<class M>
-void RosInterface::SetSubscriber(std::string topic, void(*fp)(M)) {
-	this->rossubs_[topic] = this->subscribe(topic, CNBIROS_MESSAGES_BUFFER, fp);
+void RosInterface::SetSubscriber(const std::string topic, void(*fp)(M)) {
+	this->rossubs_[topic] = this->subscribe<M>(topic, CNBIROS_MESSAGES_BUFFER, fp);
 }
 
 template<class M, class T>
-void RosInterface::SetSubscriber(std::string topic, void(T::*fp)(M), T* obj) {
-	this->rossubs_[topic] = this->subscribe(topic, CNBIROS_MESSAGES_BUFFER, fp, obj);
+void RosInterface::SetSubscriber(const std::string topic, void(T::*fp)(M), T* obj) {
+	this->rossubs_[topic] = this->subscribe<M>(topic, CNBIROS_MESSAGES_BUFFER, fp, obj);
+}
+
+template<class M>
+void RosInterface::SetSubscriber(const std::string topic, const boost::function< void(const boost::shared_ptr<M const>&)> &callback) {
+	this->rossubs_[topic] = this->subscribe<M>(topic, CNBIROS_MESSAGES_BUFFER, callback);
 }
 
 template<class M>

@@ -193,6 +193,32 @@ void SensorGrid::Update(const std::string& layer, sensor_msgs::LaserScan& msg, f
 	}
 }
 
+void SensorGrid::Update(const std::string& layer, sensor_msgs::PointCloud& msg) {
+
+	grid_map::Position position;
+	grid_map::Index    index;
+
+	for(auto it = msg.points.begin(); it != msg.points.end(); ++it) {
+	
+		position = grid_map::Position((*it).x, (*it).y);
+
+		if(this->isInside(position)) {
+			this->atPosition(layer, position) = 1.0f;
+		}
+
+	}
+}
+
+void SensorGrid::Update(const std::string& layer, geometry_msgs::Point32& msg) {
+
+	grid_map::Position position;
+	position = grid_map::Position(msg.x, msg.y);
+	
+	if(this->isInside(position)) {
+		this->atPosition(layer, position) = 1.0f;
+	}
+}
+
 void SensorGrid::Update(const std::string& layer, grid_map::Matrix& data) {
 }
 
