@@ -4,6 +4,8 @@
 #include <unordered_map>
 #include <tobiic/ICMessage.hpp>
 #include "cnbiros_bci/TiCMessage.h"
+#include "cnbiros_bci/TiCClassifier.h"
+#include "cnbiros_bci/TiCClass.h"
 
 namespace cnbiros {
 	namespace bci {
@@ -71,6 +73,15 @@ class TobiIcTools {
 		 * \return 			True if the conversion has been succeded
 		 */
 		bool GetMessage(cnbiros_bci::TiCMessage& msg);
+
+
+		bool HasClassifier(const std::string& name);
+
+		bool HasClass(const std::string& name, const std::string& label);
+
+		bool GetClassifier(const std::string& name, cnbiros_bci::TiCClassifier& icclassifier);
+
+		bool GetClass(const std::string& name, const std::string& label, cnbiros_bci::TiCClass& icclass);
 
 	private:
 		std::unordered_map<std::string, ICClassifier>			classifier_set_;

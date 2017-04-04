@@ -45,24 +45,14 @@ int main(int argc, char* argv[]) {
 	ICMessage icm;
 	ICSerializerRapid ics(&icm);
 
-	ICClass k1("0x301", 0.5f);
-	ICClass k2("0x302", 0.5f);
-	ICClass k3("0x303", 0.5f);
-	ICClass k4("0x304", 0.5f);
+	ICClass k1("0x100", 0.0f);
 
-	ICClassifier c1("classifier1", "Sinusoid classifier at 10 Hz",
-					ICClassifier::ValueProb, ICClassifier::LabelCustom);
-	ICClassifier c2("classifier2", "Sinusoid classifier at 20 Hz", 
+	ICClassifier c("classifier", "Sinusoid classifier at 10 Hz",
 					ICClassifier::ValueProb, ICClassifier::LabelCustom);
 
-	c1.classes.Add(&k1);
-	c1.classes.Add(&k2);
+	c.classes.Add(&k1);
 
-	c2.classes.Add(&k3);
-	c2.classes.Add(&k4);
-
-	icm.classifiers.Add(&c1);
-	icm.classifiers.Add(&c2);
+	icm.classifiers.Add(&c);
 
 	ClTobiIc ic(ClTobiIc::SetOnly);
 	std::string absolute, relative;
@@ -84,23 +74,20 @@ int main(int argc, char* argv[]) {
 
 
 	int block = 0;
-	float value1, value2;
+	float value;
 
 	CcTimeValue start;
 	CcTime::Tic(&start);
 
+	unsigned int i = 0;
 	while(true) {
 		icm.SetBlockIdx(block++);
 
-		value1 = sinewave(CcTime::Toc(&start), 10);
-		value2 = sinewave(CcTime::Toc(&start), 20);
+		value = sin(0.5*(2.0f*M_PI)*i/20.0f);
 
-		icm.SetValue("classifier1", "0x301", value1);
-		icm.SetValue("classifier1", "0x302", 1 - value1);
+		icm.SetValue("classifier", "0x100", value);
 
-		icm.SetValue("classifier2", "0x303", value2);
-		icm.SetValue("classifier2", "0x304", 1 - value2);
-		
+		i++;
 
 		if(ic.SetMessage(&ics) == ClTobiIc::Detached) {
 			CcLogFatal("Tobi Ic detached");

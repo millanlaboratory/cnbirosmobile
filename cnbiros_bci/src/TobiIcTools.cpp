@@ -99,6 +99,74 @@ bool TobiIcTools::GetMessage(cnbiros_bci::TiCMessage& msg) {
 	msg = this->rosmsg_;
 }
 
+bool TobiIcTools::HasClassifier(const std::string& name) {
+
+	bool has_classifier = false;
+
+	for(auto it=this->rosmsg_.classifiers.begin(); it!=this->rosmsg_.classifiers.end(); ++it) {
+		if((*it).name.compare(name) == 0) {
+			has_classifier = true;
+			break;
+		}
+	}
+
+	return has_classifier;
+}
+
+bool TobiIcTools::GetClassifier(const std::string& name, cnbiros_bci::TiCClassifier& classifier) {
+	
+	if(this->HasClassifier(name) == false) {
+		return false;
+	}
+
+	for(auto it=this->rosmsg_.classifiers.begin(); it!=this->rosmsg_.classifiers.end(); ++it) {
+		if((*it).name.compare(name) == true) {
+			classifier = (*it);
+			break;
+		}
+	}
+
+	return true;
+}
+
+bool TobiIcTools::HasClass(const std::string& name, const std::string& label) {
+
+	cnbiros_bci::TiCClassifier classifier;
+	bool has_class = false;
+
+	if(this->GetClassifier(name, classifier) == false) {
+		return has_class;
+	}
+
+	for(auto it = classifier.classes.begin(); it!=classifier.classes.end(); ++it) {
+		if((*it).label.compare(label) == 0) {
+			has_class = true;
+			break;
+		}
+	}
+
+	return has_class;
+}
+
+bool TobiIcTools::GetClass(const std::string& name, const std::string& label, 
+						   cnbiros_bci::TiCClass& icclass) {
+
+	cnbiros_bci::TiCClassifier classifier;
+
+	if(this->GetClassifier(name, classifier) == false) {
+		return false;
+	}
+
+	for(auto it = classifier.classes.begin(); it!=classifier.classes.end(); ++it) {
+		if((*it).label.compare(label) == 0) {
+			icclass = (*it);
+			break;
+		}
+	}
+
+	return true;
+}
+
 
 	}
 }
