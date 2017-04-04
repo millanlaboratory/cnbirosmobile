@@ -93,6 +93,9 @@ void Fusion::process_decay(SensorGrid& grid, std::string target, float decayrate
            grid[target]-mdecay , grid[target]);
   grid[target] = (grid[target].array() < 0.0f).select(
            grid[target]+mdecay , grid[target]);
+
+  grid[target] = (grid[target].array() > -decayrate && grid[target].array() < decayrate).select(
+           Eigen::MatrixXf::Zero(nrows, ncols), grid[target]);
 }
 
 bool Fusion::on_service_reset_(cnbiros_services::Reset::Request& req,

@@ -198,13 +198,21 @@ void SensorGrid::Update(const std::string& layer, sensor_msgs::PointCloud& msg) 
 	grid_map::Position position;
 	grid_map::Index    index;
 
+	unsigned int idx = 0;
+
 	for(auto it = msg.points.begin(); it != msg.points.end(); ++it) {
 	
 		position = grid_map::Position((*it).x, (*it).y);
 
 		if(this->isInside(position)) {
-			this->atPosition(layer, position) = 1.0f;
+			for(auto iti = msg.channels.begin(); iti != msg.channels.end(); ++iti) {
+				if((*iti).name.compare("strength") == 0) {
+					this->atPosition(layer, position) = (*iti).values[idx];
+				}
+			}
 		}
+
+		idx++;
 
 	}
 }

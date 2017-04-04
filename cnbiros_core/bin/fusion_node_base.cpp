@@ -15,8 +15,11 @@ int main(int argc, char** argv) {
 	Fusion* 	fusion;
 	fusion = new Fusion;				
 
+	fusion->AddSource("/camera/scan", 1);
+	fusion->AddSource("/sensor_infrared", 2);
+	fusion->AddSource("/ticproxy", 3);
 	// Configure fusion grid
-	fusion->SetFrequency(10.0f);
+	fusion->SetDecayTime(0.5f);
 
 	// Run main loop
 	fusion->Run();
