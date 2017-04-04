@@ -13,6 +13,10 @@ TobiIcTools::TobiIcTools(const cnbiros_bci::TiCMessage& msg) {
 	ICClassifier* clf;
 	ICClass*	  cls;
 
+	// Copy the message in the private member
+	this->rosmsg_ = msg;
+
+	// Update the classifier and class maps for further conversion
 	for(itclf = msg.classifiers.begin(); itclf != msg.classifiers.end(); ++itclf) {
 
 		// Create a new classifier
@@ -32,6 +36,7 @@ TobiIcTools::TobiIcTools(const cnbiros_bci::TiCMessage& msg) {
 		}
 		this->class_set_.emplace((*itclf).name, vec);
 	}
+
 	delete clf;
 	delete cls;
 }
