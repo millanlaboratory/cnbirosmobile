@@ -141,6 +141,7 @@ void TiDProxy::onReceived(const cnbiros_bci::TiDMessage& msg) {
 	IDMessage idm;
 	IDSerializerRapid ids(&idm);
 	std::map<std::string, ClTobiId*>::iterator it;
+	TobiIdTools* tools;
 
 	std::map<std::string, std::string>::iterator itpt;
 	std::map<std::string, unsigned int>::iterator itpm;
@@ -181,8 +182,11 @@ void TiDProxy::onReceived(const cnbiros_bci::TiDMessage& msg) {
 	// rosmessage and forward it to the loop
 	if(status == true) {
 		it = this->id_map_.find(msg.pipe);
-		TobiIdTools::GetMessage(msg, idm);
+		tools = new TobiIdTools(msg);
+		tools->GetMessage(idm);
 		it->second->SetMessage(&ids);
+
+		delete tools;
 	}
 }
 
@@ -194,6 +198,7 @@ void TiDProxy::onRunning(void) {
 	std::map<std::string, unsigned int>::iterator itm;
 	std::map<std::string, std::string>::iterator itp;
 	cnbiros_bci::TiDMessage msg;
+	TobiIdTools* tools;
 
 	// Check for all the reader or readerwriter interface registered and not attached. If it
 	// finds them, it tries to attach.
@@ -225,9 +230,11 @@ void TiDProxy::onRunning(void) {
 	for (it = this->id_map_.begin(); it != this->id_map_.end(); ++it) {
 		if(this->IsReader(it->first) && this->IsAttached(it->first)) {
 			if(it->second->GetMessage(&ids) == true) {
+				tools = new TobiIdTools(idm);
+				tools->GetMessage(msg);
 				msg.pipe = it->first;
-				TobiIdTools::GetMessage(idm, msg);
 				this->Publish("/" + this->GetName(), msg);
+				delete tools;
 			}
 		} 
 	}

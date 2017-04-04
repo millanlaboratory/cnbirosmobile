@@ -74,6 +74,7 @@ class TobiIcTools {
 		 */
 		bool GetMessage(cnbiros_bci::TiCMessage& msg);
 
+		bool IsFromPipe(const std::string& pipe);
 
 		bool HasClassifier(const std::string& name);
 

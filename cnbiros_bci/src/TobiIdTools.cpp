@@ -6,27 +6,44 @@
 namespace cnbiros {
 	namespace bci {
 
-TobiIdTools::TobiIdTools(void) {}
+TobiIdTools::TobiIdTools(const cnbiros_bci::TiDMessage& msg) {
+	this->rosmsg_ = msg;
+}
+
+TobiIdTools::TobiIdTools(const IDMessage& idm) {
+
+	// Fill the ros message with the IDMessage. Using default frameid
+	this->rosmsg_.header.stamp 		= ros::Time::now();
+	this->rosmsg_.header.frame_id 	= "base_link";
+	this->rosmsg_.family 		 	= idm.GetFamilyType();
+	this->rosmsg_.description  		= idm.GetDescription();
+	this->rosmsg_.event 		 	= idm.GetEvent();
+}
+
 TobiIdTools::~TobiIdTools(void) {}
 
-void TobiIdTools::GetMessage(const cnbiros_bci::TiDMessage& in, IDMessage& out) {
+void TobiIdTools::GetMessage(IDMessage& idm) {
 
 	// Fill the IDMessage with the ros message fields. Since ors has not a frame
 	// block (as the cnbiloop), set the block id as unset.
-	out.SetFamilyType(in.family);
-	out.SetDescription(in.description);
-	out.SetEvent(in.event);
-	out.SetBlockIdx(TCBlock::BlockIdxUnset);
+	idm.SetFamilyType(this->rosmsg_.family);
+	idm.SetDescription(this->rosmsg_.description);
+	idm.SetEvent(this->rosmsg_.event);
+	idm.SetBlockIdx(TCBlock::BlockIdxUnset);
 }
 
-void TobiIdTools::GetMessage(const IDMessage& in, cnbiros_bci::TiDMessage& out) {
+void TobiIdTools::GetMessage(cnbiros_bci::TiDMessage& out) {
+	out = this->rosmsg_;
+}
 
-	// Fill the ros message with the IDMessage. Using default frameid
-	out.header.stamp 	= ros::Time::now();
-	out.header.frame_id = "id_link";
-	out.family 		 	= in.GetFamilyType();
-	out.description  	= in.GetDescription();
-	out.event 		 	= in.GetEvent();
+bool TobiIdTools::IsFromPipe(const std::string& pipe) {
+	bool is_valid = false;
+
+	if(this->rosmsg_.pipe.compare(pipe) == 0) {
+		is_valid = true;
+	}
+
+	return is_valid;
 }
 
 

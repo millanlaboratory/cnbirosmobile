@@ -125,7 +125,7 @@ bool TobiIcTools::GetClassifier(const std::string& name, cnbiros_bci::TiCClassif
 	}
 
 	for(auto it=this->rosmsg_.classifiers.begin(); it!=this->rosmsg_.classifiers.end(); ++it) {
-		if((*it).name.compare(name) == true) {
+		if((*it).name.compare(name) == 0) {
 			classifier = (*it);
 			break;
 		}
@@ -172,6 +172,16 @@ bool TobiIcTools::GetClass(const std::string& name, const std::string& label,
 	return true;
 }
 
+bool TobiIcTools::IsFromPipe(const std::string& pipe) {
+
+	bool is_from_pipe = false;
+
+	if(this->rosmsg_.pipe.compare(pipe) == 0) {
+		is_from_pipe = true;
+	}
+
+	return is_from_pipe;
+}
 
 	}
 }

@@ -26,39 +26,38 @@ class TobiIdTools {
 	
 	public:
 		//! \brief Constructor
-		TobiIdTools(void);
+		TobiIdTools(const cnbiros_bci::TiDMessage& msg);
+		
+		TobiIdTools(const IDMessage& idm);
 		
 		//! \brief Destructor
 		~TobiIdTools(void);
 
-		/*! \brief Method to convert from cnbiros_bci::TiDMessage to IDMessage
+		/*! \brief Method to get the ID message in IDMessage (Tobi) format
 		 *
-		 * This methods convert a cnbiros_bci::TiDMessage (ROS ecosystem) into a
-		 * IDMessage (CNBI loop ecosystem). The resulting IDMessage can be
-		 * serialized and sent to the loop via a ClTobiId object (or via
-		 * TiDProxy). In this case, the block id of the message is set as
-		 * undefined. The method is defined as static (possibility to be used
-		 * without instantiation of the class).
+		 * This methods convert the IDMessage (CNBI loop ecosystem)	into a
+		 * cnbiros_bci::TiDMessage
 		 *
-		 * \param[in] 	in 		ROS message to be converted
-		 * \param[out] 	out 	Resulting IDMessage
+		 * \param[out] 	idm 	Resulting IDMessage
 		 *
 		 */
-		static void GetMessage(const cnbiros_bci::TiDMessage& in, IDMessage& out);
+		void GetMessage(IDMessage& idm);
 		
-		/*! \brief Method to convert from IDMessage to cnbiros_bci::TiDMessage
+		/*! \brief Method to get the ID message in cnbiros_bci::TiDMessage
+		 * format
 		 *
-		 * This methods convert a IDMessage (CNBI loop ecosystem) into a
-		 * cnbiros_bci::TiDMessage (ROS ecosystem). The resulting
-		 * cnbiros_bci::TiDMessage can be publish to a ROS topic (e.g.,  via
-		 * TiDProxy). The method is defined as static (possibility to be used
-		 * without instantiation of the class).
-		 *
-		 * \param[in] 	in 		IDMessage to be converted
-		 * \param[out] 	out 	Resulting ROS message
+		 * This methods convert the cnbiros_bci::TiDMessage into IDMessage (CNBI
+		 * loop ecosystem)		 
+		 * 
+		 * \param[out] 	msg 	Resulting ROS message
 		 *
 		 */
-		static void GetMessage(const IDMessage& in, cnbiros_bci::TiDMessage& out);
+		void GetMessage(cnbiros_bci::TiDMessage& msg);
+
+		bool IsFromPipe(const std::string& pipe);
+
+	private:
+		cnbiros_bci::TiDMessage 	rosmsg_;
 };
 
 	}
