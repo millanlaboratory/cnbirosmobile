@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(cnbiros_forcefield)
 
 
-find_package(catkin REQUIRED COMPONENTS roscpp sensor_msgs cnbiros_core grid_map_ros)
+find_package(catkin REQUIRED COMPONENTS roscpp sensor_msgs cnbiros_core cnbiros_bci grid_map_ros)
 find_package(PkgConfig)
 
 SET(CMAKE_BUILD_TYPE RelWithDebInfo)
@@ -20,18 +20,26 @@ catkin_package(
   CATKIN_DEPENDS
   	roscpp
   	cnbiros_core
+	cnbiros_bci
 )
 
 add_library(cnbiros_forcefield 
-			src/Actors.cpp)
+			src/Actors.cpp
+			src/DiscreteControl.cpp
+			src/ContinuousControl.cpp)
 target_link_libraries(cnbiros_forcefield
 					  cnbiros_core 
 					  ${catkin_LIBRARIES})
 
-# Attractors node
-#add_executable(forcefield_node_attractors src/forcefield_node_attractors.cpp)
-#target_link_libraries(forcefield_node_attractors cnbiros_forcefield)
+# BCI discrete control
+add_executable(forcefield_bci_discrete src/forcefield_bci_discrete.cpp)
+target_link_libraries(forcefield_bci_discrete cnbiros_forcefield)
 
-add_executable(forcefield_node_repellors src/forcefield_node_repellors.cpp)
-target_link_libraries(forcefield_node_repellors cnbiros_forcefield)
+# BCI continuous control
+add_executable(forcefield_bci_continuous src/forcefield_bci_continuous.cpp)
+target_link_libraries(forcefield_bci_continuous cnbiros_forcefield)
+
+# Fusion actors node
+add_executable(forcefield_fusion_actors src/forcefield_fusion_actors.cpp)
+target_link_libraries(forcefield_fusion_actors cnbiros_forcefield)
 

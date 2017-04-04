@@ -1,0 +1,17 @@
+<launch>
+	<!-- Arguments declaration -->
+	<arg name="icsrc"    default="/ticproxy"/>
+	<arg name="icpipe" 	 default="/ctrl10"/>
+	<arg name="icname" 	 default="mobile"/>
+	<arg name="iclabel"  default="control"/>
+	<arg name="icradius" default="0.3"/>
+
+	<group ns="forcefield">
+		<rosparam param="icsrc"    subst_value="True">$(arg icsrc)</rosparam>
+		<rosparam param="icpipe"   subst_value="True">$(arg icpipe)</rosparam>
+		<rosparam param="icname"   subst_value="True">$(arg icname)</rosparam>
+		<rosparam param="iclabel"  subst_value="True">$(arg iclabel)</rosparam>
+		<rosparam param="icradius" subst_value="True">$(arg icradius)</rosparam>
+		<node name="forcefield_bci_continuous" pkg="cnbiros_forcefield" type="forcefield_bci_continuous" output="screen" />
+	</group>
+</launch>

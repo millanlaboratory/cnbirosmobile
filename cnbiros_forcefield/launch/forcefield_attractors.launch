@@ -1,6 +1,0 @@
-<launch>
-	<!-- Attractors node -->
-	<group ns="forcefield">
-		<node name="forcefield_node_attractors" pkg="cnbiros_forcefield" type="forcefield_node_attractors" output="screen" />
-	</group>
-</launch>

@@ -8,6 +8,6 @@
 		<rosparam param="decay"  subst_value="True">$(arg decay)</rosparam>
 		<rosparam param="topics" subst_value="True">$(arg topics)</rosparam>
 		<rosparam param="types"  subst_value="True">$(arg types)</rosparam>
-		<node name="forcefield_node_repellors" pkg="cnbiros_forcefield" type="forcefield_node_repellors" output="screen" />
+		<node name="forcefield_fusion_actors" pkg="cnbiros_forcefield" type="forcefield_fusion_actors" output="screen" />
 	</group>
 </launch>

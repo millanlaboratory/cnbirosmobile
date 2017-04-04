@@ -1,0 +1,15 @@
+<launch>
+	<!-- Arguments declaration -->
+	<arg name="idsrc"  	   default="/tidproxy"/>
+	<arg name="idpipe" 	   default="/bus"/>
+	<arg name="idradius"   default="0.3"/>
+	<arg name="cmd_angles" default="{'1': -0.785, '2': 0.785}"/>
+
+	<group ns="forcefield">
+		<rosparam param="idsrc"  subst_value="True">$(arg idsrc)</rosparam>
+		<rosparam param="idpipe" subst_value="True">$(arg idpipe)</rosparam>
+		<rosparam param="idradius"  subst_value="True">$(arg idradius)</rosparam>
+		<rosparam param="cmd_angles"  subst_value="True">$(arg cmd_angles)</rosparam>
+		<node name="forcefield_bci_discrete" pkg="cnbiros_forcefield" type="forcefield_bci_discrete" output="screen" />
+	</group>
+</launch>

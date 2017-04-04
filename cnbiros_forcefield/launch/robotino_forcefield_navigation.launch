@@ -14,12 +14,27 @@
 	<!-- KinectScan -->
 	<include file="$(find cnbiros_common)/launch/common_kinectscan.launch" />
 
-	<!-- Forcefield repellors -->
-	<include file="$(find cnbiros_forcefield)/launch/forcefield_repellors.launch" >
-		<arg name="decay"  value="0.5"/>
-		<arg name="topics" value="[/camera/scan, /sensor_infrared]"/>
-		<arg name="types"  value="[1, 2]"/>
+	<!-- Forcefield bci discrete control -->
+	<include file="$(find cnbiros_forcefield)/launch/forcefield_bci_discrete.launch" >
+		<arg name="cmd_angles"  default="{'1': -0.785, '2': 0.785}"/>
 	</include>
+	
+	<!-- Forcefield bci continuous control -->
+	<include file="$(find cnbiros_forcefield)/launch/forcefield_bci_continuous.launch" >
+		<arg name="icpipe"  value="/ctrl10"/>
+		<arg name="icname"  value="mobile"/>
+		<arg name="iclabel"  value="control"/>
+	</include>
+	
+	<!-- Forcefield actors -->
+	<include file="$(find cnbiros_forcefield)/launch/forcefield_actors.launch" >
+		<arg name="decay"  value="0.5"/>
+		<arg name="topics" value="[/camera/scan, /sensor_infrared, /discrete_control, /continuous_control]"/>
+		<arg name="types"  value="[1, 2, 2, 2]"/>
+	</include>
+
+	<!-- Forcefield dynamical systems -->
+
 
 	<!-- Launch rviz -->
 	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find cnbiros_robotino)/rviz/grid_map.rviz" />

@@ -20,4 +20,6 @@
   <run_depend>cnbiros_messages</run_depend>
   <build_depend>cnbiros_services</build_depend>
   <run_depend>cnbiros_services</run_depend>
+  <build_depend>cnbiros_bci</build_depend>
+  <run_depend>cnbiros_bci</run_depend>	
 </package>
