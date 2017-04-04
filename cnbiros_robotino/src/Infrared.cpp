@@ -41,6 +41,7 @@ void Infrared::distancesChangedEvent(const float* ranges, unsigned int size) {
 	//float x, y, z;
 	float angle_inc, range_min, range_max, height, base_radius;
 	geometry_msgs::Point32 point;
+	sensor_msgs::ChannelFloat32 channel;
 
 	angle_inc   = CNBIROS_ROBOTINO_INFRARED_ANGLE_INC;
 	range_max   = CNBIROS_ROBOTINO_INFRARED_RANGE_MAX;
@@ -51,18 +52,29 @@ void Infrared::distancesChangedEvent(const float* ranges, unsigned int size) {
 	this->sensor_data_.header.stamp = ros::Time::now();
 	this->sensor_data_.header.frame_id = "base_link";
 	this->sensor_data_.points.clear();
+	this->sensor_data_.channels.clear();
+
+	
+
+	channel.name = "strength";
+	channel.values.resize(size);
 
 	// Fill the point cloud by iterating the input vector of distance. Checking
 	// if the distance are inside the min-max range of the infrared sensors.
 	// Otherwise set the value to 0 (not done by the robotino::api2)
 	for(auto i = 0; i < size; ++i) {
+		point.x = (ranges[i] + base_radius) * cos(angle_inc * i);
+		point.y = (ranges[i] + base_radius) * sin(angle_inc * i);
+		point.z = height;
+		
+		channel.values[i] = 0.0f;
 		if(ranges[i] > 0.0f && ranges[i] < range_max) {
-			point.x = (ranges[i] + base_radius) * cos(angle_inc * i);
-			point.y = (ranges[i] + base_radius) * sin(angle_inc * i);
-			point.z = height;
-			this->sensor_data_.points.push_back(point);
+			channel.values[i] = 1.0f;
 		} 
+
+		this->sensor_data_.points.push_back(point);
 	}
+	this->sensor_data_.channels.push_back(channel);
 
 	this->Publish(this->rostopic_, this->sensor_data_);
 }
