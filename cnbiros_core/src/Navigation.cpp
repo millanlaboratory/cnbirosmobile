@@ -8,34 +8,25 @@ namespace cnbiros {
 
 Navigation::Navigation(std::string name) : RosInterface(name) {
 
-	std::vector<std::string> sources;
-	const std::vector<std::string> defsources = {"/fusion"};
-	
 	// Abstract sensor initialization
-	this->rostopic_pub_ = "/cmd_vel";
-	this->SetPublisher<geometry_msgs::Twist>(this->rostopic_pub_);
+	this->topic_ = "/cmd_vel";
+	this->SetPublisher<geometry_msgs::Twist>(this->topic_);
 
-	// Add sources
-	this->GetParameter("sources", sources, defsources);
-	for(auto it = sources.begin(); it != sources.end(); ++it) {
-		ROS_INFO("Added source for '%s': %s", this->GetName().c_str(), (*it).c_str());
-		this->AddSource(*it);
-	}
 
 	// Service for navigation parameter
 	this->rossrv_parameter_ = this->advertiseService("set_parameter", 
-							  &Navigation::on_service_setparameter_, this);
+							  &Navigation::on_service_set_, this);
 }
 
 Navigation::~Navigation(void) {};
 
-bool Navigation::on_service_setparameter_(cnbiros_services::NavParameterSet::Request& req,
-							   cnbiros_services::NavParameterSet::Response& res) {
+bool Navigation::on_service_set_(cnbiros_services::NavigationParameter::Request& req,
+							   cnbiros_services::NavigationParameter::Response& res) {
 
 	ROS_INFO("%s navigation requested to set parameter %s to %f", 
 			 this->GetName().c_str(), req.name.c_str(), req.value);
 
-	res.result = this->SetNavigationParameter(req.name, req.value);
+	res.result = this->SetParameter(req.name, req.value);
 	
 	if(res.result == true) {
 		ROS_INFO("Parameter set for %s", this->GetName().c_str()); 
@@ -51,7 +42,7 @@ bool Navigation::on_service_setparameter_(cnbiros_services::NavParameterSet::Req
 	return res.result;
 }
 
-bool Navigation::SetNavigationParameter(std::string name, float value, bool create) {
+bool Navigation::SetParameter(std::string name, float value, bool create) {
 
 	bool result;
 	std::map<std::string, float>::iterator it;
@@ -71,7 +62,7 @@ bool Navigation::SetNavigationParameter(std::string name, float value, bool crea
 	return result;
 }
 
-bool Navigation::GetNavigationParameter(std::string name, float& value) {
+bool Navigation::GetParameter(std::string name, float& value) {
 
 	bool result;
 	std::map<std::string, float>::iterator it;
@@ -98,31 +89,31 @@ void Navigation::DumpParameters(void) {
 }
 
 void Navigation::AddSource(std::string topic) {
-	this->SetSubscriber(topic, &Navigation::rosnavigation_callback_, this);
+	this->SetSubscriber(topic, &Navigation::onReceived, this);
 }
 
-void Navigation::rosnavigation_callback_(const grid_map_msgs::GridMap& msg) {
+void Navigation::onReceived(const grid_map_msgs::GridMap& msg) {
 	
 	grid_map::GridMap grid;
 	
 	if(grid_map::GridMapRosConverter::fromMessage(msg, grid) == false)
 		ROS_WARN("%s cannot convert message to sensor grid", this->GetName().c_str());
 
-	this->rosgrid_.addDataFrom(grid, true, true, true);
+	this->grid_.addDataFrom(grid, true, true, true);
 }
 
 void Navigation::onStop(void) {
 	geometry_msgs::Twist msg;	
 	
-	this->Publish(this->rostopic_pub_, msg);
-	this->rosgrid_.Reset();
+	this->Publish(this->topic_, msg);
+	this->grid_.Reset();
 }
 
 void Navigation::onStart(void) {
 	geometry_msgs::Twist msg;	
 	
-	this->Publish(this->rostopic_pub_, msg);
-	this->rosgrid_.Reset();
+	this->Publish(this->topic_, msg);
+	this->grid_.Reset();
 }
 
 	}

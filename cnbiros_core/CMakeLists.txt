@@ -34,8 +34,7 @@ add_library(cnbiros_core
 			src/Odometry.cpp
 			src/Sensor.cpp
 			src/Fusion.cpp
-			#src/Navigation.cpp
-			#src/ForceField.cpp
+			src/Navigation.cpp
 			)
 target_link_libraries(cnbiros_core ${catkin_LIBRARIES} ${Eigen3_LIBRARY})
 
