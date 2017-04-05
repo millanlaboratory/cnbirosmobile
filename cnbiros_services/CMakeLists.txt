@@ -15,7 +15,7 @@ add_service_files(
   SetTwist.srv
   SetOdometry.srv
   RosInterfaceState.srv
-  NavParameterSet.srv
+  NavigationParameter.srv
 )
 
 generate_messages(

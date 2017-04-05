@@ -11,7 +11,7 @@ namespace cnbiros {
 
 class Actors : public core::Fusion {
 	public:
-		Actors(std::string name);
+		Actors(std::string name = "actors");
 		~Actors(void);
 
 		void Process(void);

@@ -34,6 +34,12 @@
 	</include>
 
 	<!-- Forcefield dynamical systems -->
+	<include file="$(find cnbiros_forcefield)/launch/forcefield_dynamics.launch" >
+		<arg name="source"  value="/fusion_actors"/>
+		<arg name="obstruction"  value="0.4"/>
+		<arg name="spatialdecay"  value="1.0f"/>
+		<arg name="layer"  value="actors"/>
+	</include>
 
 
 	<!-- Launch rviz -->

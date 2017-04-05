@@ -1,0 +1,15 @@
+<launch>
+	<!-- Arguments declaration -->
+	<arg name="obstruction"  default="0.4"/>
+	<arg name="spatialdecay" default="0.5"/>
+	<arg name="layer"  		 default="actors"/>
+	<arg name="source"  	 default="/fusion_actors"/>
+
+	<group ns="forcefield">
+		<rosparam param="obstruction"  subst_value="True">$(arg obstruction)</rosparam>
+		<rosparam param="spatialdecay" subst_value="True">$(arg spatialdecay)</rosparam>
+		<rosparam param="layer"  	   subst_value="True">$(arg layer)</rosparam>
+		<rosparam param="source"  	   subst_value="True">$(arg source)</rosparam>
+		<node name="forcefield_dynamics" pkg="cnbiros_forcefield" type="forcefield_dynamics" output="screen" />
+	</group>
+</launch>

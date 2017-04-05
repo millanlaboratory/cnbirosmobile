@@ -16,7 +16,7 @@ ContinuousControl::ContinuousControl(std::string name) : RosInterface(name) {
 	this->SetPublisher<sensor_msgs::PointCloud>(this->topic_);
 
 	// Service for sensor reset
-	this->rossrv_reset_ = this->advertiseService("reset_control", 
+	this->rossrv_reset_ = this->advertiseService("reset_continuous_control", 
 											&ContinuousControl::on_service_reset_, this);
 	
 	this->Reset();	

@@ -14,7 +14,7 @@ int main(int argc, char** argv) {
 	
 	// Create fusion object
 	Actors* actors;
-	actors = new Actors("actors");				
+	actors = new Actors();				
 	
 	// Get parameters from server (with default values)
 	actors->getParam("decay",  decay);

@@ -22,4 +22,6 @@
   <run_depend>cnbiros_services</run_depend>
   <build_depend>cnbiros_bci</build_depend>
   <run_depend>cnbiros_bci</run_depend>	
+  <build_depend>cnbiros_actions</build_depend>
+  <run_depend>cnbiros_actions</run_depend>	
 </package>

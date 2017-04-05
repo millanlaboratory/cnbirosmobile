@@ -11,12 +11,15 @@ DiscreteControl::DiscreteControl(std::string name) : RosInterface(name) {
 	this->flt_is_set_ = false;
 	this->flt_pipe_   = "";
 	this->flt_family_ = -1;
-
+	this->is_target_set_ = false;
+	this->target_ 		 = 0.0f;
 
 	this->SetPublisher<sensor_msgs::PointCloud>(this->topic_);
 
+	this->SetSubscriber("/odom", &DiscreteControl::onReceivedOdometry, this);
+
 	// Service for sensor reset
-	this->rossrv_reset_ = this->advertiseService("reset_control", 
+	this->rossrv_reset_ = this->advertiseService("reset_discrete_control", 
 											&DiscreteControl::on_service_reset_, this);
 	
 	this->Reset();	
@@ -74,11 +77,18 @@ void DiscreteControl::onReceived(const cnbiros_bci::TiDMessage& msg) {
 			this->data_.points.push_back(point);
 			this->data_.channels.push_back(channel);
 			this->data_.header.stamp = ros::Time::now();
+			this->is_target_set_ = true;
+			this->target_ 		 = -it->second + tf::getYaw(this->odometry_.pose.pose.orientation);
+			ROS_INFO("%s sets target at %f", this->GetName().c_str(), this->target_);
 		} else {
 			ROS_WARN("%s cannot find a value for the received event: %d", this->GetName().c_str(), msg.event);
 		}
 	}
 
+}
+
+void DiscreteControl::onReceivedOdometry(const nav_msgs::Odometry& msg) {
+	this->odometry_ = msg;
 }
 
 void DiscreteControl::Reset(void) {
@@ -89,6 +99,7 @@ void DiscreteControl::Reset(void) {
 	this->data_.header.frame_id = "base_link";
 	this->data_.points.clear();
 	this->data_.channels.clear();
+	this->target_ = 0.0f;
 }
 
 bool DiscreteControl::on_service_reset_(cnbiros_services::Reset::Request& req,
@@ -108,9 +119,27 @@ bool DiscreteControl::on_service_reset_(cnbiros_services::Reset::Request& req,
 
 }
 
+bool DiscreteControl::TargetReached(void) {
+
+	float angle;
+
+	if(this->is_target_set_) {
+		angle = tf::getYaw(this->odometry_.pose.pose.orientation);
+		if(fabs(angle-this->target_) < 0.1) {
+			this->is_target_set_ = false;
+			this->Reset();
+			this->Publish(this->topic_, this->data_);
+			ROS_INFO("Target reached");
+		}
+	}
+
+}
+
 void DiscreteControl::onRunning(void) {
 	if(this->data_.points.empty() == false)
 		this->Publish(this->topic_, this->data_);
+
+	this->TargetReached();
 }
 	
 	}
