@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
 	CcAddress nameserver;
 	bool dump = false;
 	
-	while((opt = getopt(argc, argv, "a:p:n:hd")) != -1) {
+	while((opt = getopt(argc, argv, "a:p:c:l:n:hd")) != -1) {
 		if(opt == 'p')
 			optport.assign(optarg);
 		else if(opt == 'n')
@@ -101,8 +101,8 @@ int main(int argc, char* argv[]) {
 	CcTime::Tic(&start);
 
 	while(true) {
-		icm->SetBlockIdx(block++);
-
+		//icm->SetBlockIdx(block++);
+		
 		value = sinewave(1.0f, CcTime::Toc(&start)/1000.0f, 0.5f);
 
 		icm->SetValue(optclass, optlabel, value);
@@ -115,7 +115,7 @@ int main(int argc, char* argv[]) {
 		if(dump == true)
 			icm->Dump();
 		
-		CcTime::Sleep(10.0f);
+		CcTime::Sleep(100.0f);
 
 		if(CcCore::receivedSIGAny.Get()) 
 			break;
